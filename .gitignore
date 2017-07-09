@@ -1,0 +1,23 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Demo.WindowsForms/obj/Debug
+/Demo.WindowsForms/bin/Debug
+/Setup/GMap.NET - Hot Build/obj/Debug
+/GMap.NET.WindowsPresentation/obj/Debug
+/GMap.NET.WindowsForms/obj/Debug
+/GMap.NET.Core/obj/Debug
+/Demo.WindowsPresentation/obj/Debug
+/Tools/MapCruncher/obj/Debug
+/Testing/TemplatedBinding/obj/Debug
+/Testing/Silverlight/SilverlightMapFusion.Web/obj/Debug
+/Testing/MvcMapFusion/obj/Debug
+/Testing/Demo.StreetView/obj/Debug
+/Testing/Demo.Docking/obj/Debug
+/Testing/Demo.Clouds/obj/Debug
+/Testing/ConsoleApplication/obj/Debug
+/Testing/BingWpfFusion/obj/Debug
+/Testing/BigMapMaker/obj/Debug
+/GMap.NET.Core/bin/Debug
+/GMap.NET.WindowsForms/bin/Debug
