@@ -8,7 +8,7 @@ namespace GMap.NET.MapProviders
     {
         public static readonly LithuaniaTOP50 Instance;
 
-        LithuaniaTOP50()
+        private LithuaniaTOP50()
         {
             MaxZoom = 15;
         }
@@ -20,7 +20,7 @@ namespace GMap.NET.MapProviders
 
         #region GMapProvider Members
 
-        Guid id = new Guid("2920B1AF-6D57-4895-9A21-D5837CBF1049");
+        private Guid id = new Guid("2920B1AF-6D57-4895-9A21-D5837CBF1049");
         public override Guid Id
         {
             get
@@ -45,7 +45,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        GMapProvider[] overlays;
+        private GMapProvider[] overlays;
         public override GMapProvider[] Overlays
         {
             get

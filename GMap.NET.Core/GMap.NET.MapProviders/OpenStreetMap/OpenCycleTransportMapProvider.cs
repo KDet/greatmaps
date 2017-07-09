@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly OpenCycleTransportMapProvider Instance;
 
-      OpenCycleTransportMapProvider()
+       private OpenCycleTransportMapProvider()
       {
          RefererUrl = "http://www.opencyclemap.org/";
       }
@@ -22,7 +22,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("AF66DF88-AD25-43A9-8F82-56FCA49A748A");
+       private readonly Guid id = new Guid("AF66DF88-AD25-43A9-8F82-56FCA49A748A");
       public override Guid Id
       {
          get
@@ -31,7 +31,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "OpenCycleTransportMap";
+       private readonly string name = "OpenCycleTransportMap";
       public override string Name
       {
          get
@@ -40,7 +40,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -62,12 +62,12 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          char letter = ServerLetters[GMapProvider.GetServerNum(pos, 3)];
          return string.Format(UrlFormat, letter, zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://{0}.tile2.opencyclemap.org/transport/{1}/{2}/{3}.png";
+       private static readonly string UrlFormat = "http://{0}.tile2.opencyclemap.org/transport/{1}/{2}/{3}.png";
    }
 }

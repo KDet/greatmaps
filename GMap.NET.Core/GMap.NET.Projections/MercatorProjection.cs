@@ -11,10 +11,10 @@ namespace GMap.NET.Projections
    {
       public static readonly MercatorProjection Instance = new MercatorProjection();
 
-      static readonly double MinLatitude = -85.05112878;
-      static readonly double MaxLatitude = 85.05112878;
-      static readonly double MinLongitude = -180;
-      static readonly double MaxLongitude = 180;
+       private static readonly double MinLatitude = -85.05112878;
+       private static readonly double MaxLatitude = 85.05112878;
+       private static readonly double MinLongitude = -180;
+       private static readonly double MaxLongitude = 180;
 
       public override RectLatLng Bounds
       {
@@ -24,7 +24,7 @@ namespace GMap.NET.Projections
          }
       }
 
-      readonly GSize tileSize = new GSize(256, 256);
+       private readonly GSize tileSize = new GSize(256, 256);
       public override GSize TileSize
       {
          get

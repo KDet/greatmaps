@@ -12,25 +12,25 @@ namespace GMap.NET.Projections
    {
       public static readonly LKS92Projection Instance = new LKS92Projection();
 
-      static readonly double MinLatitude = 55.55;
-      static readonly double MaxLatitude = 58.22;
-      static readonly double MinLongitude = 20.22;
-      static readonly double MaxLongitude = 28.28;
+       private static readonly double MinLatitude = 55.55;
+       private static readonly double MaxLatitude = 58.22;
+       private static readonly double MinLongitude = 20.22;
+       private static readonly double MaxLongitude = 28.28;
 
-      static readonly double orignX = -5120900;
-      static readonly double orignY = 3998100;
+       private static readonly double orignX = -5120900;
+       private static readonly double orignY = 3998100;
 
-      static readonly double scaleFactor = 0.9996;	                // scale factor				
-      static readonly double centralMeridian = 0.41887902047863912;// Center longitude (projection center) 
-      static readonly double latOrigin = 0.0;	                   // center latitude			
-      static readonly double falseNorthing = -6000000.0;	          // y offset in meters			
-      static readonly double falseEasting = 500000.0;	       // x offset in meters			
-      static readonly double semiMajor = 6378137.0;		    // major axis
-      static readonly double semiMinor = 6356752.3141403561; // minor axis
-      static readonly double semiMinor2 = 6356752.3142451793;		// minor axis
-      static readonly double metersPerUnit = 1.0;
-      static readonly double COS_67P5 = 0.38268343236508977; // cosine of 67.5 degrees
-      static readonly double AD_C = 1.0026000;               // Toms region 1 constant
+       private static readonly double scaleFactor = 0.9996;	                // scale factor				
+       private static readonly double centralMeridian = 0.41887902047863912;// Center longitude (projection center) 
+       private static readonly double latOrigin = 0.0;	                   // center latitude			
+       private static readonly double falseNorthing = -6000000.0;	          // y offset in meters			
+       private static readonly double falseEasting = 500000.0;	       // x offset in meters			
+       private static readonly double semiMajor = 6378137.0;		    // major axis
+       private static readonly double semiMinor = 6356752.3141403561; // minor axis
+       private static readonly double semiMinor2 = 6356752.3142451793;		// minor axis
+       private static readonly double metersPerUnit = 1.0;
+       private static readonly double COS_67P5 = 0.38268343236508977; // cosine of 67.5 degrees
+       private static readonly double AD_C = 1.0026000;               // Toms region 1 constant
 
       public override RectLatLng Bounds
       {
@@ -40,7 +40,7 @@ namespace GMap.NET.Projections
          }
       }
 
-      GSize tileSize = new GSize(256, 256);
+       private GSize tileSize = new GSize(256, 256);
       public override GSize TileSize
       {
          get
@@ -79,7 +79,7 @@ namespace GMap.NET.Projections
          return LksToPixel(lks, res);
       }
 
-      static GPoint LksToPixel(double[] lks, double res)
+       private static GPoint LksToPixel(double[] lks, double res)
       {
          return new GPoint((long)Math.Floor((lks[0] - orignX) / res), (long)Math.Floor((orignY - lks[1]) / res));
       }
@@ -101,7 +101,7 @@ namespace GMap.NET.Projections
          return ret;
       }
 
-      double[] DTM10(double[] lonlat)
+       private double[] DTM10(double[] lonlat)
       {
          // Eccentricity squared : (a^2 - b^2)/a^2
          double es = 1.0 - (semiMinor2 * semiMinor2) / (semiMajor * semiMajor); // e^2
@@ -122,7 +122,7 @@ namespace GMap.NET.Projections
          return new double[] { x, y, z, };
       }
 
-      double[] MTD10(double[] pnt)
+       private double[] MTD10(double[] pnt)
       {
          // Eccentricity squared : (a^2 - b^2)/a^2
          double es = 1.0 - (semiMinor * semiMinor) / (semiMajor * semiMajor); // e^2
@@ -207,7 +207,7 @@ namespace GMap.NET.Projections
          return new double[] { RadiansToDegrees(lon), RadiansToDegrees(lat), Height, };
       }
 
-      double[] DTM00(double[] lonlat)
+       private double[] DTM00(double[] lonlat)
       {
          double e0, e1, e2, e3;	// eccentricity constants		
          double e, es, esp;		// eccentricity constants		
@@ -258,7 +258,7 @@ namespace GMap.NET.Projections
             return new double[] { x / metersPerUnit, y / metersPerUnit, lonlat[2] };
       }
 
-      double[] DTM01(double[] lonlat)
+       private double[] DTM01(double[] lonlat)
       {
          // Eccentricity squared : (a^2 - b^2)/a^2
          double es = 1.0 - (semiMinor * semiMinor) / (semiMajor * semiMajor);
@@ -279,7 +279,7 @@ namespace GMap.NET.Projections
          return new double[] { x, y, z, };
       }
 
-      double[] MTD01(double[] pnt)
+       private double[] MTD01(double[] pnt)
       {
          // Eccentricity squared : (a^2 - b^2)/a^2
          double es = 1.0 - (semiMinor2 * semiMinor2) / (semiMajor * semiMajor);
@@ -366,7 +366,7 @@ namespace GMap.NET.Projections
          return new double[] { RadiansToDegrees(lon), RadiansToDegrees(lat), Height, };
       }
 
-      double[] MTD11(double[] p)
+       private double[] MTD11(double[] p)
       {
          double e0, e1, e2, e3;	// eccentricity constants		
          double e, es, esp;		// eccentricity constants		
@@ -569,8 +569,8 @@ namespace GMap.NET.Projections
          return GetTileMatrixResolution(zoom);
       }
 
-      Dictionary<int, GSize> extentMatrixMin;
-      Dictionary<int, GSize> extentMatrixMax;
+       private Dictionary<int, GSize> extentMatrixMin;
+       private Dictionary<int, GSize> extentMatrixMax;
 
       public override GSize GetTileMatrixMinXY(int zoom)
       {
@@ -590,7 +590,7 @@ namespace GMap.NET.Projections
          return extentMatrixMax[zoom];
       }
 
-      void GenerateExtents()
+       private void GenerateExtents()
       {
          extentMatrixMin = new Dictionary<int, GSize>();
          extentMatrixMax = new Dictionary<int, GSize>();

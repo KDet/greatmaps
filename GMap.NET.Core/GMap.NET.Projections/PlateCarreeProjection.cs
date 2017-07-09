@@ -11,10 +11,10 @@ namespace GMap.NET.Projections
    {
       public static readonly PlateCarreeProjection Instance = new PlateCarreeProjection();
 
-      static readonly double MinLatitude = -85.05112878;
-      static readonly double MaxLatitude = 85.05112878;
-      static readonly double MinLongitude = -180;
-      static readonly double MaxLongitude = 180;
+       private static readonly double MinLatitude = -85.05112878;
+       private static readonly double MaxLatitude = 85.05112878;
+       private static readonly double MinLongitude = -180;
+       private static readonly double MaxLongitude = 180;
 
       public override RectLatLng Bounds
       {
@@ -24,7 +24,7 @@ namespace GMap.NET.Projections
          }
       }
 
-      GSize tileSize = new GSize(512, 512);
+       private GSize tileSize = new GSize(512, 512);
       public override GSize TileSize
       {
          get

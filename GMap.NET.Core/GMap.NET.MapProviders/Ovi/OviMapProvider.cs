@@ -38,7 +38,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -67,7 +67,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly OviMapProvider Instance;
 
-      OviMapProvider()
+       private OviMapProvider()
       {
       }
 
@@ -78,7 +78,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("30DC1083-AC4D-4471-A232-D8A67AC9373A");
+       private readonly Guid id = new Guid("30DC1083-AC4D-4471-A232-D8A67AC9373A");
       public override Guid Id
       {
          get
@@ -87,7 +87,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "OviMap";
+       private readonly string name = "OviMap";
       public override string Name
       {
          get
@@ -105,13 +105,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://c.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.day/12/2321/1276/256/png8
 
          return string.Format(UrlFormat, UrlServerLetters[GetServerNum(pos, 4)], zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://{0}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.day/{1}/{2}/{3}/256/png8";
+       private static readonly string UrlFormat = "http://{0}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.day/{1}/{2}/{3}/256/png8";
    }
 }

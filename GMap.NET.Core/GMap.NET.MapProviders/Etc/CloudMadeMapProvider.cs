@@ -50,7 +50,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -94,14 +94,14 @@ namespace GMap.NET.MapProviders
 
       #region -- internals --
 
-      string MakeRoutingUrl(PointLatLng start, PointLatLng end, string travelType, string language, string units)
+       private string MakeRoutingUrl(PointLatLng start, PointLatLng end, string travelType, string language, string units)
       {
          // http://developers.cloudmade.com/projects/routing-http-api/examples/
          // http://routes.cloudmade.com/YOUR-API-KEY-GOES-HERE/api/0.3/start_point,[[transit_point1,...,transit_pointN]],end_point/route_type[/route_type_modifier].output_format[?lang=(en|de)][&units=(km|miles)]
          return string.Format(CultureInfo.InvariantCulture, UrlFormat, Key, Version, start.Lat, start.Lng, end.Lat, end.Lng, travelType, language, units);
       }
 
-      List<PointLatLng> GetRoutePoints(string url)
+       private List<PointLatLng> GetRoutePoints(string url)
       {
          List<PointLatLng> points = null;
          try
@@ -208,11 +208,11 @@ namespace GMap.NET.MapProviders
          return points;
       }
 
-      static readonly string UrlFormat = "http://routes.cloudmade.com/{0}/api/{1}/{2},{3},{4},{5}/{6}.gpx?lang={7}&units={8}";
-      static readonly string TravelTypeFoot = "foot";
-      static readonly string TravelTypeMotorCar = "car";
-      static readonly string WalkingStr = "Walking";
-      static readonly string DrivingStr = "Driving";
+       private static readonly string UrlFormat = "http://routes.cloudmade.com/{0}/api/{1}/{2},{3},{4},{5}/{6}.gpx?lang={7}&units={8}";
+       private static readonly string TravelTypeFoot = "foot";
+       private static readonly string TravelTypeMotorCar = "car";
+       private static readonly string WalkingStr = "Walking";
+       private static readonly string DrivingStr = "Driving";
 
       #endregion
 
@@ -312,7 +312,7 @@ namespace GMap.NET.MapProviders
 
       #region -- internals --
 
-      DirectionsStatusCode GetDirectionsUrl(string url, out GDirections direction)
+       private DirectionsStatusCode GetDirectionsUrl(string url, out GDirections direction)
       {
          DirectionsStatusCode ret = DirectionsStatusCode.UNKNOWN_ERROR;
          direction = null;
@@ -511,7 +511,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly CloudMadeMapProvider Instance;
 
-      CloudMadeMapProvider()
+       private CloudMadeMapProvider()
       {
          Key = "5937c2bd907f4f4a92d8980a7c666ac0"; // demo key of CloudMade
          StyleID = 45363; // grab your style here http://maps.cloudmade.com/?styleId=45363
@@ -524,7 +524,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("00403A36-725F-4BC4-934F-BFC1C164D003");
+       private readonly Guid id = new Guid("00403A36-725F-4BC4-934F-BFC1C164D003");
       public override Guid Id
       {
          get
@@ -533,7 +533,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "CloudMade, Demo";
+       private readonly string name = "CloudMade, Demo";
       public override string Name
       {
          get
@@ -551,11 +551,11 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          return string.Format(UrlFormat, ServerLetters[GetServerNum(pos, 3)], Key, StyleID, (DoubleResolution ? DoubleResolutionString : string.Empty), zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://{0}.tile.cloudmade.com/{1}/{2}{3}/256/{4}/{5}/{6}.png";
+       private static readonly string UrlFormat = "http://{0}.tile.cloudmade.com/{1}/{2}{3}/256/{4}/{5}/{6}.png";
    }
 }

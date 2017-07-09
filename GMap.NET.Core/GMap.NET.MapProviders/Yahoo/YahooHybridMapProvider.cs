@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly YahooHybridMapProvider Instance;
 
-      YahooHybridMapProvider()
+       private YahooHybridMapProvider()
       {
       }
 
@@ -23,7 +23,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("A084E0DB-F9A6-45C1-BC2F-791E1F4E958E");
+       private readonly Guid id = new Guid("A084E0DB-F9A6-45C1-BC2F-791E1F4E958E");
       public override Guid Id
       {
          get
@@ -32,7 +32,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "YahooHybridMap";
+       private readonly string name = "YahooHybridMap";
       public override string Name
       {
          get
@@ -41,7 +41,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -63,13 +63,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://maps1.yimg.com/hx/tl?b=1&v=4.3&t=h&.intl=en&x=14&y=5&z=7&r=1
 
          return string.Format(UrlFormat, ((GetServerNum(pos, 2)) + 1), Version, language, pos.X, (((1 << zoom) >> 1) - 1 - pos.Y), (zoom + 1));
       }
 
-      static readonly string UrlFormat = "http://maps{0}.yimg.com/hx/tl?v={1}&t=h&.intl={2}&x={3}&y={4}&z={5}&r=1";
+       private static readonly string UrlFormat = "http://maps{0}.yimg.com/hx/tl?v={1}&t=h&.intl={2}&x={3}&y={4}&z={5}&r=1";
    }
 }

@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly GoogleKoreaHybridMapProvider Instance;
 
-      GoogleKoreaHybridMapProvider()
+       private GoogleKoreaHybridMapProvider()
       {
       }
 
@@ -23,7 +23,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("41A91842-04BC-442B-9AC8-042156238A5B");
+       private readonly Guid id = new Guid("41A91842-04BC-442B-9AC8-042156238A5B");
       public override Guid Id
       {
          get
@@ -32,7 +32,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "GoogleKoreaHybridMap";
+       private readonly string name = "GoogleKoreaHybridMap";
       public override string Name
       {
          get
@@ -41,7 +41,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -63,7 +63,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          string sec1 = string.Empty;
          string sec2 = string.Empty;
@@ -72,8 +72,8 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, UrlFormatServer, GetServerNum(pos, 4), UrlFormatRequest, Version, language, pos.X, sec1, pos.Y, zoom, sec2, ServerKorea);
       }
 
-      static readonly string UrlFormatServer = "mt";
-      static readonly string UrlFormatRequest = "mt";
-      static readonly string UrlFormat = "http://{0}{1}.{10}/{2}/v={3}&hl={4}&x={5}{6}&y={7}&z={8}&s={9}";
+       private static readonly string UrlFormatServer = "mt";
+       private static readonly string UrlFormatRequest = "mt";
+       private static readonly string UrlFormat = "http://{0}{1}.{10}/{2}/v={3}&hl={4}&x={5}{6}&y={7}&z={8}&s={9}";
    }
 }

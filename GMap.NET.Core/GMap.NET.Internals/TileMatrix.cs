@@ -9,10 +9,10 @@ namespace GMap.NET.Internals
    /// <summary>
    /// matrix for tiles
    /// </summary>
-   internal class TileMatrix : IDisposable
+   public class TileMatrix : IDisposable
    {
-      List<Dictionary<GPoint, Tile>> Levels = new List<Dictionary<GPoint, Tile>>(33);
-      FastReaderWriterLock Lock = new FastReaderWriterLock();
+       private List<Dictionary<GPoint, Tile>> Levels = new List<Dictionary<GPoint, Tile>>(33);
+       private FastReaderWriterLock Lock = new FastReaderWriterLock();
 
       public TileMatrix()
       {
@@ -65,7 +65,7 @@ namespace GMap.NET.Internals
          }
       }
 
-      List<KeyValuePair<GPoint, Tile>> tmp = new List<KeyValuePair<GPoint, Tile>>(44);
+       private List<KeyValuePair<GPoint, Tile>> tmp = new List<KeyValuePair<GPoint, Tile>>(44);
 
       public void ClearLevelAndPointsNotIn(int zoom, List<DrawTile> list)
       {
@@ -215,7 +215,7 @@ namespace GMap.NET.Internals
          Dispose(false);
       }
 
-      void Dispose(bool disposing)
+       private void Dispose(bool disposing)
       {
          if(Lock != null)
          {

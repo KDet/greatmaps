@@ -45,7 +45,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -122,12 +122,12 @@ namespace GMap.NET.MapProviders
 
       #region -- internals --
 
-      string MakeGeocoderUrl(string keywords)
+       private string MakeGeocoderUrl(string keywords)
       {
          return string.Format(CultureInfo.InvariantCulture, GeocoderUrlFormat, keywords.Replace(' ', '+'), AppId, !string.IsNullOrEmpty(LanguageStr) ? "&locale=" + LanguageStr : "");
       }
 
-      string MakeGeocoderDetailedUrl(Placemark placemark)
+       private string MakeGeocoderDetailedUrl(Placemark placemark)
       {
           return string.Format(GeocoderDetailedUrlFormat,
                                PrepareUrlString(placemark.CountryName),
@@ -142,18 +142,18 @@ namespace GMap.NET.MapProviders
                                !string.IsNullOrEmpty(LanguageStr) ? "&locale=" + LanguageStr : string.Empty);
       }
 
-      string MakeReverseGeocoderUrl(PointLatLng pt)
+       private string MakeReverseGeocoderUrl(PointLatLng pt)
       {
          return string.Format(CultureInfo.InvariantCulture, ReverseGeocoderUrlFormat, pt.Lat, pt.Lng, AppId, !string.IsNullOrEmpty(LanguageStr) ? "&locale=" + LanguageStr : "");
       }
 
-      string PrepareUrlString(string str)
+       private string PrepareUrlString(string str)
       {
           if (str == null) return string.Empty;
           return str.Replace(' ', '+');
       }
 
-      GeoCoderStatusCode GetLatLngFromGeocoderUrl(string url, out List<PointLatLng> pointList)
+       private GeoCoderStatusCode GetLatLngFromGeocoderUrl(string url, out List<PointLatLng> pointList)
       {
           var status = GeoCoderStatusCode.Unknow;
           pointList = null;
@@ -229,7 +229,7 @@ namespace GMap.NET.MapProviders
           return status;
       }
 
-      GeoCoderStatusCode GetPlacemarksFromReverseGeocoderUrl(string url, out List<Placemark> placemarkList)
+       private GeoCoderStatusCode GetPlacemarksFromReverseGeocoderUrl(string url, out List<Placemark> placemarkList)
       {
           var status = GeoCoderStatusCode.Unknow;
           placemarkList = null;
@@ -352,9 +352,9 @@ namespace GMap.NET.MapProviders
           return status;
       }
 
-      static readonly string ReverseGeocoderUrlFormat = "http://where.yahooapis.com/geocode?q={0},{1}&appid={2}&flags=G&gflags=QRL{3}";
-      static readonly string GeocoderUrlFormat = "http://where.yahooapis.com/geocode?q={0}&appid={1}&flags=CG&gflags=QL{2}";
-      static readonly string GeocoderDetailedUrlFormat = "http://where.yahooapis.com/geocode?country={0}&state={1}&county={2}&city={3}&neighborhood={4}&postal={5}&street={6}&house={7}&appid={8}&flags=CG&gflags=QL{9}";
+       private static readonly string ReverseGeocoderUrlFormat = "http://where.yahooapis.com/geocode?q={0},{1}&appid={2}&flags=G&gflags=QRL{3}";
+       private static readonly string GeocoderUrlFormat = "http://where.yahooapis.com/geocode?q={0}&appid={1}&flags=CG&gflags=QL{2}";
+       private static readonly string GeocoderDetailedUrlFormat = "http://where.yahooapis.com/geocode?country={0}&state={1}&county={2}&city={3}&neighborhood={4}&postal={5}&street={6}&house={7}&appid={8}&flags=CG&gflags=QL{9}";
 
       #endregion
 
@@ -368,7 +368,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly YahooMapProvider Instance;
 
-      YahooMapProvider()
+       private YahooMapProvider()
       {
       }
 
@@ -381,7 +381,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("65DB032C-6869-49B0-A7FC-3AE41A26AF4D");
+       private readonly Guid id = new Guid("65DB032C-6869-49B0-A7FC-3AE41A26AF4D");
       public override Guid Id
       {
          get
@@ -390,7 +390,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "YahooMap";
+       private readonly string name = "YahooMap";
       public override string Name
       {
          get
@@ -408,7 +408,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://maps1.yimg.com/hx/tl?b=1&v=4.3&.intl=en&x=12&y=7&z=7&r=1
          // http://2.base.maps.api.here.com/maptile/2.1/maptile/newest/normal.day/11/1169/652/256/png8?lg=EN&token=TrLJuXVK62IQk0vuXFzaig%3D%3D&app_id=eAdkWGYRoc4RfxVo0Z4B
@@ -418,10 +418,10 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, ((GetServerNum(pos, 2)) + 1), Version, zoom, pos.X, pos.Y, language, rnd1, rnd2);
       }
 
-      string rnd1 = Guid.NewGuid().ToString("N").Substring(0, 28);
-      string rnd2 = Guid.NewGuid().ToString("N").Substring(0, 20);
+       private string rnd1 = Guid.NewGuid().ToString("N").Substring(0, 28);
+       private string rnd2 = Guid.NewGuid().ToString("N").Substring(0, 20);
 
       //static readonly string UrlFormat = "http://maps{0}.yimg.com/hx/tl?v={1}&.intl={2}&x={3}&y={4}&z={5}&r=1";
-      static readonly string UrlFormat = "http://{0}.base.maps.api.here.com/maptile/{1}/maptile/newest/normal.day/{2}/{3}/{4}/256/png8?lg={5}&token={6}&requestid=yahoo.prod&app_id={7}";
+       private static readonly string UrlFormat = "http://{0}.base.maps.api.here.com/maptile/{1}/maptile/newest/normal.day/{2}/{3}/{4}/256/png8?lg={5}&token={6}&requestid=yahoo.prod&app_id={7}";
    }
 }

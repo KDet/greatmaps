@@ -4,7 +4,7 @@ namespace GMap.NET.ObjectModel
 {
    public class ObservableCollectionThreadSafe<T> : ObservableCollection<T>
    {
-      NotifyCollectionChangedEventHandler collectionChanged;
+       private NotifyCollectionChangedEventHandler collectionChanged;
       public override event NotifyCollectionChangedEventHandler CollectionChanged
       {
          add

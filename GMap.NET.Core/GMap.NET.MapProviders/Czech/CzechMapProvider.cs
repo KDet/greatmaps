@@ -37,7 +37,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -64,7 +64,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly CzechMapProvider Instance;
 
-      CzechMapProvider()
+       private CzechMapProvider()
       {
       }
 
@@ -75,7 +75,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("13AB92EF-8C3B-4FAC-B2CD-2594C05F8BFC");
+       private readonly Guid id = new Guid("13AB92EF-8C3B-4FAC-B2CD-2594C05F8BFC");
       public override Guid Id
       {
          get
@@ -84,7 +84,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "CzechMap";
+       private readonly string name = "CzechMap";
       public override string Name
       {
          get
@@ -102,7 +102,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // ['base-m','ophoto-m','turist-m','army2-m']
          // http://m3.mapserver.mapy.cz/base-m/14-8802-5528
@@ -110,6 +110,6 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, GetServerNum(pos, 3) + 1, zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/base-m/{1}-{2}-{3}";
+       private static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/base-m/{1}-{2}-{3}";
    }
 }

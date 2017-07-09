@@ -9,7 +9,7 @@
     {
         public static readonly CzechGeographicMapProvider Instance;
 
-        CzechGeographicMapProvider()
+        private CzechGeographicMapProvider()
         {
         }
 
@@ -20,7 +20,7 @@
 
         #region GMapProvider Members
 
-        readonly Guid id = new Guid("50EC9FCC-E4D7-4F53-8700-2D1DB73A1D48");
+        private readonly Guid id = new Guid("50EC9FCC-E4D7-4F53-8700-2D1DB73A1D48");
         public override Guid Id
         {
             get
@@ -29,7 +29,7 @@
             }
         }
 
-        readonly string name = "CzechGeographicMap";
+        private readonly string name = "CzechGeographicMap";
         public override string Name
         {
             get
@@ -47,13 +47,13 @@
 
         #endregion
 
-        string MakeTileImageUrl(GPoint pos, int zoom, string language)
+        private string MakeTileImageUrl(GPoint pos, int zoom, string language)
         {
             // http://m3.mapserver.mapy.czzemepis-m/14-8802-5528
 
             return string.Format(UrlFormat, GetServerNum(pos, 3) + 1, zoom, pos.X, pos.Y);
         }
 
-        static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/zemepis-m/{1}-{2}-{3}";
+        private static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/zemepis-m/{1}-{2}-{3}";
     }
 }

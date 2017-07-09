@@ -39,7 +39,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -66,7 +66,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly LithuaniaMapProvider Instance;
 
-      LithuaniaMapProvider()
+       private LithuaniaMapProvider()
       {
       }
 
@@ -77,7 +77,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("5859079F-1B5E-484B-B05C-41CE664D8A93");
+       private readonly Guid id = new Guid("5859079F-1B5E-484B-B05C-41CE664D8A93");
       public override Guid Id
       {
          get
@@ -86,7 +86,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "LithuaniaMap";
+       private readonly string name = "LithuaniaMap";
       public override string Name
       {
          get
@@ -104,13 +104,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://dc5.maps.lt/cache/mapslt/map/_alllayers/L08/R00000912/C00000d25.png
 
          return string.Format(UrlFormat, zoom, pos.Y, pos.X);
       }
 
-      static readonly string UrlFormat = "http://dc5.maps.lt/cache/mapslt/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.png";
+       private static readonly string UrlFormat = "http://dc5.maps.lt/cache/mapslt/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.png";
    }
 }

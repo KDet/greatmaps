@@ -32,7 +32,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -65,7 +65,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly YandexMapProvider Instance;
 
-      YandexMapProvider()
+       private YandexMapProvider()
       {
          RefererUrl = "http://" + ServerCom + "/";
       }
@@ -77,7 +77,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("82DC969D-0491-40F3-8C21-4D90B67F47EB");
+       private readonly Guid id = new Guid("82DC969D-0491-40F3-8C21-4D90B67F47EB");
       public override Guid Id
       {
          get
@@ -86,7 +86,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "YandexMap";
+       private readonly string name = "YandexMap";
       public override string Name
       {
          get
@@ -104,12 +104,12 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          return string.Format(UrlFormat, UrlServer, GetServerNum(pos, 4) + 1, Version, pos.X, pos.Y, zoom, language, Server);
       }
 
-      static readonly string UrlServer = "vec";
-      static readonly string UrlFormat = "http://{0}0{1}.{7}/tiles?l=map&v={2}&x={3}&y={4}&z={5}&lang={6}";               
+       private static readonly string UrlServer = "vec";
+       private static readonly string UrlFormat = "http://{0}0{1}.{7}/tiles?l=map&v={2}&x={3}&y={4}&z={5}&lang={6}";               
    }
 }

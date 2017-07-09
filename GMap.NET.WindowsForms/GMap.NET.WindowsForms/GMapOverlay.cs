@@ -17,7 +17,7 @@ namespace GMap.NET.WindowsForms
    public class GMapOverlay: IDisposable
 #endif
    {
-      bool isVisibile = true;
+       private bool isVisibile = true;
 
       /// <summary>
       /// is overlay visible
@@ -94,7 +94,7 @@ namespace GMap.NET.WindowsForms
       /// </summary>
       public readonly ObservableCollectionThreadSafe<GMapPolygon> Polygons = new ObservableCollectionThreadSafe<GMapPolygon>();
 
-      GMapControl control;
+       private GMapControl control;
       public GMapControl Control
       {
          get
@@ -118,14 +118,14 @@ namespace GMap.NET.WindowsForms
          CreateEvents();
       }
 
-      void CreateEvents()
+       private void CreateEvents()
       {
          Markers.CollectionChanged += new NotifyCollectionChangedEventHandler(Markers_CollectionChanged);
          Routes.CollectionChanged += new NotifyCollectionChangedEventHandler(Routes_CollectionChanged);
          Polygons.CollectionChanged += new NotifyCollectionChangedEventHandler(Polygons_CollectionChanged);
       }
 
-      void ClearEvents()
+       private void ClearEvents()
       {
          Markers.CollectionChanged -= new NotifyCollectionChangedEventHandler(Markers_CollectionChanged);
          Routes.CollectionChanged -= new NotifyCollectionChangedEventHandler(Routes_CollectionChanged);
@@ -139,7 +139,7 @@ namespace GMap.NET.WindowsForms
          Polygons.Clear();
       }
 
-      void Polygons_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+       private void Polygons_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
       {
          if(e.NewItems != null)
          {
@@ -176,7 +176,7 @@ namespace GMap.NET.WindowsForms
          }
       }
 
-      void Routes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+       private void Routes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
       {
          if(e.NewItems != null)
          {
@@ -213,7 +213,7 @@ namespace GMap.NET.WindowsForms
          }
       }
 
-      void Markers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+       private void Markers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
       {
          if(e.NewItems != null)
          {
@@ -428,7 +428,7 @@ namespace GMap.NET.WindowsForms
 
       #region IDisposable Members
 
-      bool disposed = false;
+       private bool disposed = false;
 
       public void Dispose()
       {

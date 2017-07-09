@@ -27,7 +27,7 @@ namespace GMap.NET.Internals
         private byte[] _requestContentBuffer;
 
         // darn MS for making everything internal (yeah, I'm talking about you, System.net.KnownHttpVerb)
-        static readonly StringCollection validHttpVerbs =
+        private static readonly StringCollection validHttpVerbs =
             new StringCollection { "GET", "HEAD", "POST", "PUT", "DELETE", "TRACE", "OPTIONS" };
 
         #endregion
@@ -326,8 +326,8 @@ namespace GMap.NET.Internals
 
         #region Member Variables
 
-        WebHeaderCollection _httpResponseHeaders;
-        MemoryStream data;
+        private WebHeaderCollection _httpResponseHeaders;
+        private MemoryStream data;
 
         public override long ContentLength
         {

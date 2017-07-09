@@ -39,7 +39,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -66,7 +66,7 @@ namespace GMap.NET.MapProviders
     {
       public static readonly SwedenMapProvider Instance;
 
-      SwedenMapProvider()
+        private SwedenMapProvider()
       {
       }
 
@@ -77,7 +77,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("40890A96-6E82-4FA7-90A3-73D66B974F63");
+        private readonly Guid id = new Guid("40890A96-6E82-4FA7-90A3-73D66B974F63");
       public override Guid Id
       {
          get
@@ -86,7 +86,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "SwedenMap";
+        private readonly string name = "SwedenMap";
       public override string Name
       {
          get
@@ -104,14 +104,14 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+        private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
             // https://kso.etjanster.lantmateriet.se/karta/topowebb/v1/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=topowebb&STYLE=default&TILEMATRIXSET=3006&TILEMATRIX=2&TILEROW=6&TILECOL=7&FORMAT=image%2Fpng
 
             return string.Format(UrlFormat, zoom, pos.Y, pos.X);
       }
 
-      static readonly string UrlFormat = "http://kso.etjanster.lantmateriet.se/karta/topowebb/v1/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=topowebb&STYLE=default&TILEMATRIXSET=3006&TILEMATRIX={0}&TILEROW={1}&TILECOL={2}&FORMAT=image%2Fpng";
+        private static readonly string UrlFormat = "http://kso.etjanster.lantmateriet.se/karta/topowebb/v1/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=topowebb&STYLE=default&TILEMATRIXSET=3006&TILEMATRIX={0}&TILEROW={1}&TILECOL={2}&FORMAT=image%2Fpng";
    }
 }
 

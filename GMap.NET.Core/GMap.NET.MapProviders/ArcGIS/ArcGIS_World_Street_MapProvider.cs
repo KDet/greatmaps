@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly ArcGIS_World_Street_MapProvider Instance;
 
-      ArcGIS_World_Street_MapProvider()
+       private ArcGIS_World_Street_MapProvider()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("E1FACDF6-E535-4D69-A49F-12B623A467A9");
+       private readonly Guid id = new Guid("E1FACDF6-E535-4D69-A49F-12B623A467A9");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "ArcGIS_World_Street_Map";
+       private readonly string name = "ArcGIS_World_Street_Map";
       public override string Name
       {
          get
@@ -48,13 +48,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/0/0/0jpg
 
          return string.Format(UrlFormat, zoom, pos.Y, pos.X);
       }
 
-      static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{0}/{1}/{2}";
+       private static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{0}/{1}/{2}";
    }
 }

@@ -17,7 +17,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly OpenStreet4UMapProvider Instance;
 
-      OpenStreet4UMapProvider()
+       private OpenStreet4UMapProvider()
       {
          RefererUrl = "http://www.4umaps.eu/map.htm";
          Copyright = string.Format("© 4UMaps.eu, © OpenStreetMap - Map data ©{0} OpenStreetMap", DateTime.Today.Year);
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("3E3D919E-9814-4978-B430-6AAB2C1E41B2");
+       private readonly Guid id = new Guid("3E3D919E-9814-4978-B430-6AAB2C1E41B2");
       public override Guid Id
       {
          get
@@ -39,7 +39,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "OpenStreet4UMap";
+       private readonly string name = "OpenStreet4UMap";
       public override string Name
       {
          get
@@ -48,7 +48,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -69,11 +69,11 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom)
+       private string MakeTileImageUrl(GPoint pos, int zoom)
       {
          return string.Format(UrlFormat, zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://4umaps.eu/{0}/{1}/{2}.png";
+       private static readonly string UrlFormat = "http://4umaps.eu/{0}/{1}/{2}.png";
    }
 }

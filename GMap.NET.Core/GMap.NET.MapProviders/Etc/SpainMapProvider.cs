@@ -11,7 +11,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly SpainMapProvider Instance;
 
-      SpainMapProvider()
+       private SpainMapProvider()
       {
          Copyright = string.Format("©{0} SIGPAC", DateTime.Today.Year);
          MinZoom = 5;
@@ -23,7 +23,7 @@ namespace GMap.NET.MapProviders
          Instance = new SpainMapProvider();
       }
 
-      readonly string[] levels =
+       private readonly string[] levels =
       {
          "0", "1", "2", "3", "4", 
          "MTNSIGPAC", 
@@ -35,7 +35,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("7B70ABB0-1265-4D34-9442-F0788F4F689F");
+       private readonly Guid id = new Guid("7B70ABB0-1265-4D34-9442-F0788F4F689F");
       public override Guid Id
       {
          get
@@ -44,7 +44,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "SpainMap";
+       private readonly string name = "SpainMap";
       public override string Name
       {
          get
@@ -53,7 +53,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -83,11 +83,11 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          return string.Format(UrlFormat, levels[zoom], zoom, pos.X, ((2 << zoom - 1) - pos.Y - 1));
       }
 
-      static readonly string UrlFormat = "http://sigpac.mapa.es/kmlserver/raster/{0}@3785/{1}.{2}.{3}.img";
+       private static readonly string UrlFormat = "http://sigpac.mapa.es/kmlserver/raster/{0}@3785/{1}.{2}.{3}.img";
    }
 }

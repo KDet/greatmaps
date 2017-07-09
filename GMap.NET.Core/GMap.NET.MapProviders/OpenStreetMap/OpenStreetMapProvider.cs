@@ -86,12 +86,13 @@ namespace GMap.NET.MapProviders
       }
 
       #region -- internals --
-      string MakeRoutingUrl(PointLatLng start, PointLatLng end, string travelType)
+
+       private string MakeRoutingUrl(PointLatLng start, PointLatLng end, string travelType)
       {
          return string.Format(CultureInfo.InvariantCulture, RoutingUrlFormat, start.Lat, start.Lng, end.Lat, end.Lng, travelType);
       }
 
-      List<PointLatLng> GetRoutePoints(string url)
+       private List<PointLatLng> GetRoutePoints(string url)
       {
          List<PointLatLng> points = null;
          try
@@ -149,12 +150,12 @@ namespace GMap.NET.MapProviders
          return points;
       }
 
-      static readonly string RoutingUrlFormat = "http://www.yournavigation.org/api/1.0/gosmore.php?format=kml&flat={0}&flon={1}&tlat={2}&tlon={3}&v={4}&fast=1&layer=mapnik";
-      static readonly string TravelTypeFoot = "foot";
-      static readonly string TravelTypeMotorCar = "motorcar";
+       private static readonly string RoutingUrlFormat = "http://www.yournavigation.org/api/1.0/gosmore.php?format=kml&flat={0}&flon={1}&tlat={2}&tlon={3}&v={4}&fast=1&layer=mapnik";
+       private static readonly string TravelTypeFoot = "foot";
+       private static readonly string TravelTypeMotorCar = "motorcar";
 
-      static readonly string WalkingStr = "Walking";
-      static readonly string DrivingStr = "Driving";
+       private static readonly string WalkingStr = "Walking";
+       private static readonly string DrivingStr = "Driving";
       #endregion
 
       #endregion
@@ -261,12 +262,12 @@ namespace GMap.NET.MapProviders
 
       #region -- internals --
 
-      string MakeGeocoderUrl(string keywords)
+       private string MakeGeocoderUrl(string keywords)
       {
          return string.Format(GeocoderUrlFormat, keywords.Replace(' ', '+'));
       }
 
-      string MakeDetailedGeocoderUrl(Placemark placemark)
+       private string MakeDetailedGeocoderUrl(Placemark placemark)
       {
          var street = String.Join(" ", new[] { placemark.HouseNo, placemark.ThoroughfareName }).Trim();
          return string.Format(GeocoderDetailedUrlFormat,
@@ -278,12 +279,12 @@ namespace GMap.NET.MapProviders
                               placemark.PostalCodeNumber.Replace(' ', '+'));
       }
 
-      string MakeReverseGeocoderUrl(PointLatLng pt)
+       private string MakeReverseGeocoderUrl(PointLatLng pt)
       {
          return string.Format(CultureInfo.InvariantCulture, ReverseGeocoderUrlFormat, pt.Lat, pt.Lng);
       }
 
-      GeoCoderStatusCode GetLatLngFromGeocoderUrl(string url, out List<PointLatLng> pointList)
+       private GeoCoderStatusCode GetLatLngFromGeocoderUrl(string url, out List<PointLatLng> pointList)
       {
          var status = GeoCoderStatusCode.Unknow;
          pointList = null;
@@ -367,7 +368,7 @@ namespace GMap.NET.MapProviders
          return status;
       }
 
-      Placemark? GetPlacemarkFromReverseGeocoderUrl(string url, out GeoCoderStatusCode status)
+       private Placemark? GetPlacemarkFromReverseGeocoderUrl(string url, out GeoCoderStatusCode status)
       {
          status = GeoCoderStatusCode.Unknow;
          Placemark? ret = null;
@@ -469,9 +470,9 @@ namespace GMap.NET.MapProviders
          return ret;
       }
 
-      static readonly string ReverseGeocoderUrlFormat = "http://nominatim.openstreetmap.org/reverse?format=xml&lat={0}&lon={1}&zoom=18&addressdetails=1";
-      static readonly string GeocoderUrlFormat = "http://nominatim.openstreetmap.org/search?q={0}&format=xml";
-      static readonly string GeocoderDetailedUrlFormat = "http://nominatim.openstreetmap.org/search?street={0}&city={1}&county={2}&state={3}&country={4}&postalcode={5}&format=xml";
+       private static readonly string ReverseGeocoderUrlFormat = "http://nominatim.openstreetmap.org/reverse?format=xml&lat={0}&lon={1}&zoom=18&addressdetails=1";
+       private static readonly string GeocoderUrlFormat = "http://nominatim.openstreetmap.org/search?q={0}&format=xml";
+       private static readonly string GeocoderDetailedUrlFormat = "http://nominatim.openstreetmap.org/search?street={0}&city={1}&county={2}&state={3}&country={4}&postalcode={5}&format=xml";
 
       #endregion
 
@@ -485,7 +486,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly OpenStreetMapProvider Instance;
 
-      OpenStreetMapProvider()
+       private OpenStreetMapProvider()
       {
       }
 
@@ -496,7 +497,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("0521335C-92EC-47A8-98A5-6FD333DDA9C0");
+       private readonly Guid id = new Guid("0521335C-92EC-47A8-98A5-6FD333DDA9C0");
       public override Guid Id
       {
          get
@@ -505,7 +506,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "OpenStreetMap";
+       private readonly string name = "OpenStreetMap";
       public override string Name
       {
          get
@@ -514,7 +515,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -536,12 +537,12 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          char letter = ServerLetters[GetServerNum(pos, 3)];
          return string.Format(UrlFormat, letter, zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://{0}.tile.openstreetmap.org/{1}/{2}/{3}.png";
+       private static readonly string UrlFormat = "http://{0}.tile.openstreetmap.org/{1}/{2}/{3}.png";
    }
 }

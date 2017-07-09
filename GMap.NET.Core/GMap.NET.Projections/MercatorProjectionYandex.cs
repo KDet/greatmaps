@@ -3,18 +3,18 @@ namespace GMap.NET.Projections
 {
    using System;
 
-   class MercatorProjectionYandex : PureProjection
+    internal class MercatorProjectionYandex : PureProjection
    {
       public static readonly MercatorProjectionYandex Instance = new MercatorProjectionYandex();
 
-      static readonly double MinLatitude = -85.05112878;
-      static readonly double MaxLatitude = 85.05112878;
-      static readonly double MinLongitude = -177;
-      static readonly double MaxLongitude = 177;
+       private static readonly double MinLatitude = -85.05112878;
+       private static readonly double MaxLatitude = 85.05112878;
+       private static readonly double MinLongitude = -177;
+       private static readonly double MaxLongitude = 177;
 
-      static readonly double RAD_DEG = 180 / Math.PI;
-      static readonly double DEG_RAD = Math.PI / 180;
-      static readonly double MathPiDiv4 = Math.PI / 4;
+       private static readonly double RAD_DEG = 180 / Math.PI;
+       private static readonly double DEG_RAD = Math.PI / 180;
+       private static readonly double MathPiDiv4 = Math.PI / 4;
 
       public override RectLatLng Bounds
       {
@@ -24,7 +24,7 @@ namespace GMap.NET.Projections
          }
       }
 
-      GSize tileSize = new GSize(256, 256);
+       private GSize tileSize = new GSize(256, 256);
       public override GSize TileSize
       {
          get

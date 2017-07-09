@@ -17,17 +17,17 @@ using System.Drawing;
    /// </summary>
    public partial class TilePrefetcher : Form
    {
-      BackgroundWorker worker = new BackgroundWorker();
-      List<GPoint> list;
-      int zoom;
-      GMapProvider provider;
-      int sleep;
-      int all;
+       private BackgroundWorker worker = new BackgroundWorker();
+       private List<GPoint> list;
+       private int zoom;
+       private GMapProvider provider;
+       private int sleep;
+       private int all;
       public bool ShowCompleteMessage = false;
-      RectLatLng area;
-      GMap.NET.GSize maxOfTiles;
+       private RectLatLng area;
+       private GMap.NET.GSize maxOfTiles;
       public GMapOverlay Overlay;
-      int retry;
+       private int retry;
       public bool Shuffle = true;
 
       public TilePrefetcher()
@@ -45,9 +45,9 @@ using System.Drawing;
          worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
       }
 
-      readonly AutoResetEvent done = new AutoResetEvent(true);
+       private readonly AutoResetEvent done = new AutoResetEvent(true);
 
-      void OnTileCacheComplete()
+       private void OnTileCacheComplete()
       {
          if(!IsDisposed)
          {
@@ -61,7 +61,7 @@ using System.Drawing;
          }
       }
 
-      void OnTileCacheStart()
+       private void OnTileCacheStart()
       {
          if(!IsDisposed)
          {
@@ -75,7 +75,7 @@ using System.Drawing;
          }
       }
 
-      void OnTileCacheProgress(int left)
+       private void OnTileCacheProgress(int left)
       {
          if(!IsDisposed)
          {
@@ -133,7 +133,7 @@ using System.Drawing;
          done.Close();
       }
 
-      void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+       private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
       {
          if(ShowCompleteMessage)
          {
@@ -158,7 +158,7 @@ using System.Drawing;
          this.Close();
       }
 
-      bool CacheTiles(int zoom, GPoint p)
+       private bool CacheTiles(int zoom, GPoint p)
       {
          foreach(var pr in provider.Overlays)
          {
@@ -190,7 +190,7 @@ using System.Drawing;
 
       public readonly Queue<GPoint> CachedTiles = new Queue<GPoint>();
 
-      void worker_DoWork(object sender, DoWorkEventArgs e)
+       private void worker_DoWork(object sender, DoWorkEventArgs e)
       {
          if(list != null)
          {
@@ -264,7 +264,7 @@ using System.Drawing;
          }
       }
 
-      void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+       private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
       {
          this.label1.Text = "Fetching tile at zoom (" + zoom + "): " + ((int)e.UserState).ToString() + " of " + all + ", complete: " + e.ProgressPercentage.ToString() + "%";
          this.progressBarDownload.Value = e.ProgressPercentage;
@@ -310,9 +310,9 @@ using System.Drawing;
       }
    }
 
-   class GMapMarkerTile : GMapMarker
+    internal class GMapMarkerTile : GMapMarker
    {
-      static  Brush Fill = new SolidBrush(Color.FromArgb(155, Color.Blue));
+       private static  Brush Fill = new SolidBrush(Color.FromArgb(155, Color.Blue));
 
       public GMapMarkerTile(PointLatLng p, int size) : base(p)
       {

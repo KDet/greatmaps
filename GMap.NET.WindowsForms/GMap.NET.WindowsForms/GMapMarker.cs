@@ -25,7 +25,7 @@ namespace GMap.NET.WindowsForms
          attr.SetColorKey(Color.White, Color.White);
       }
 #endif
-      GMapOverlay overlay;
+       private GMapOverlay overlay;
       public GMapOverlay Overlay
       {
          get
@@ -64,7 +64,7 @@ namespace GMap.NET.WindowsForms
 
       public object Tag;
 
-      Point offset;
+       private Point offset;
       public Point Offset
       {
          get
@@ -88,7 +88,7 @@ namespace GMap.NET.WindowsForms
          }
       }
 
-      Rectangle area;
+       private Rectangle area;
 
       /// <summary>
       /// marker position in local coordinates, internal only, do not set it manualy
@@ -154,7 +154,7 @@ namespace GMap.NET.WindowsForms
 
       public MarkerTooltipMode ToolTipMode = MarkerTooltipMode.OnMouseOver;
 
-      string toolTipText;
+       private string toolTipText;
       public string ToolTipText
       {
          get
@@ -317,7 +317,7 @@ namespace GMap.NET.WindowsForms
 
       #region IDisposable Members
 
-      bool disposed = false;
+       private bool disposed = false;
 
       public virtual void Dispose()
       {

@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly CzechSatelliteMapProviderOld Instance;
 
-      CzechSatelliteMapProviderOld()
+       private CzechSatelliteMapProviderOld()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("7846D655-5F9C-4042-8652-60B6BF629C3C");
+       private readonly Guid id = new Guid("7846D655-5F9C-4042-8652-60B6BF629C3C");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "CzechSatelliteOldMap";
+       private readonly string name = "CzechSatelliteOldMap";
       public override string Name
       {
          get
@@ -48,7 +48,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          //http://m3.mapserver.mapy.cz/ophoto/9_7a80000_7a80000
 
@@ -58,6 +58,6 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, GetServerNum(pos, 3) + 1, zoom, xx, yy);
       }
 
-      static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/ophoto/{1}_{2:x7}_{3:x7}";
+       private static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/ophoto/{1}_{2:x7}_{3:x7}";
    }
 }

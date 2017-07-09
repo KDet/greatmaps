@@ -18,7 +18,7 @@ using System.Collections;
    public class GMapToolTip: IDisposable
 #endif
    {
-      GMapMarker marker;
+       private GMapMarker marker;
       public GMapMarker Marker
       {
          get
@@ -162,7 +162,7 @@ using System.Collections;
 
       #region IDisposable Members
 
-      bool disposed = false;
+       private bool disposed = false;
 
       public void Dispose()
       {

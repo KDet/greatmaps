@@ -9,10 +9,10 @@ namespace GMap.NET.Internals
    using System.Security.Cryptography;
     using System.Text;
 
-   /// <summary>
-   /// etc functions...
-   /// </summary>
-   internal class Stuff
+    /// <summary>
+    /// etc functions...
+    /// </summary>
+    public class Stuff
    {
       public static string EnumToString(Enum value)
       {
@@ -124,7 +124,8 @@ namespace GMap.NET.Internals
       }
 
       #region -- encryption --
-      static string EncryptString(string Message, string Passphrase)
+
+        private static string EncryptString(string Message, string Passphrase)
       {
           byte[] Results;
 
@@ -162,7 +163,7 @@ namespace GMap.NET.Internals
           return Convert.ToBase64String(Results);
       }
 
-      static string DecryptString(string Message, string Passphrase)
+        private static string DecryptString(string Message, string Passphrase)
       {
           byte[] Results;
 
@@ -215,7 +216,7 @@ namespace GMap.NET.Internals
           return ret;
       }
 
-      static readonly string manifesto = "GMap.NET is great and Powerful, Free, cross platform, open source .NET control.";
+        private static readonly string manifesto = "GMap.NET is great and Powerful, Free, cross platform, open source .NET control.";
       #endregion
    }
 

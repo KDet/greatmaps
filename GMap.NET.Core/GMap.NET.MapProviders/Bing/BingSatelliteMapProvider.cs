@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly BingSatelliteMapProvider Instance;
 
-      BingSatelliteMapProvider()
+       private BingSatelliteMapProvider()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("3AC742DD-966B-4CFB-B67D-33E7F82F2D37");
+       private readonly Guid id = new Guid("3AC742DD-966B-4CFB-B67D-33E7F82F2D37");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "BingSatelliteMap";
+       private readonly string name = "BingSatelliteMap";
       public override string Name
       {
          get
@@ -64,7 +64,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          string key = TileXYToQuadKey(pos.X, pos.Y, zoom);
 
@@ -76,10 +76,10 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, GetServerNum(pos, 4), key, Version, language, ForceSessionIdOnTileAccess ? "&key=" + SessionId : string.Empty);
       }
 
-      string UrlDynamicFormat = string.Empty;
+       private string UrlDynamicFormat = string.Empty;
 
       // http://ecn.t1.tiles.virtualearth.net/tiles/a12030003131321231.jpeg?g=875&mkt=en-us&n=z
 
-      static readonly string UrlFormat = "http://ecn.t{0}.tiles.virtualearth.net/tiles/a{1}.jpeg?g={2}&mkt={3}&n=z{4}";
+       private static readonly string UrlFormat = "http://ecn.t{0}.tiles.virtualearth.net/tiles/a{1}.jpeg?g={2}&mkt={3}&n=z{4}";
    }
 }

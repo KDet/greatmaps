@@ -37,7 +37,7 @@ namespace GMap.NET.WindowsForms
    /// </summary>
    public class GMapImageProxy : PureImageProxy
    {
-      GMapImageProxy()
+       private GMapImageProxy()
       {
 
       }
@@ -53,7 +53,7 @@ namespace GMap.NET.WindowsForms
       internal ColorMatrix ColorMatrix;
 #endif
 
-      static readonly bool Win7OrLater = Stuff.IsRunningOnWin7orLater();
+       private static readonly bool Win7OrLater = Stuff.IsRunningOnWin7orLater();
 
       public override PureImage FromStream(Stream stream)
       {
@@ -120,7 +120,7 @@ namespace GMap.NET.WindowsForms
       }
 
 #if !PocketPC
-      Bitmap ApplyColorMatrix(Image original, ColorMatrix matrix)
+       private Bitmap ApplyColorMatrix(Image original, ColorMatrix matrix)
       {
          // create a blank bitmap the same size as original
          Bitmap newBitmap = new Bitmap(original.Width, original.Height);

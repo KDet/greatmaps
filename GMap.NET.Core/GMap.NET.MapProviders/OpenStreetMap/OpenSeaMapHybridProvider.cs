@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly OpenSeaMapHybridProvider Instance;
 
-      OpenSeaMapHybridProvider()
+       private OpenSeaMapHybridProvider()
       {
          RefererUrl = "http://openseamap.org/";
       }
@@ -22,7 +22,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("FAACDE73-4B90-4AE6-BB4A-ADE4F3545592");
+       private readonly Guid id = new Guid("FAACDE73-4B90-4AE6-BB4A-ADE4F3545592");
       public override Guid Id
       {
          get
@@ -31,7 +31,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "OpenSeaMapHybrid";
+       private readonly string name = "OpenSeaMapHybrid";
       public override string Name
       {
          get
@@ -40,7 +40,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -62,11 +62,11 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          return string.Format(UrlFormat, zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://tiles.openseamap.org/seamark/{0}/{1}/{2}.png";
+       private static readonly string UrlFormat = "http://tiles.openseamap.org/seamark/{0}/{1}/{2}.png";
    }
 }

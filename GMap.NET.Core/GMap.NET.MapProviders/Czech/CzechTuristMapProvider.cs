@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly CzechTuristMapProvider Instance;
 
-      CzechTuristMapProvider()
+       private CzechTuristMapProvider()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("102A54BE-3894-439B-9C1F-CA6FF2EA1FE9");
+       private readonly Guid id = new Guid("102A54BE-3894-439B-9C1F-CA6FF2EA1FE9");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "CzechTuristMap";
+       private readonly string name = "CzechTuristMap";
       public override string Name
       {
          get
@@ -48,13 +48,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://m3.mapserver.mapy.cz/wtourist-m/14-8802-5528
 
          return string.Format(UrlFormat, GetServerNum(pos, 3) + 1, zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/wturist-m/{1}-{2}-{3}";
+       private static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/wturist-m/{1}-{2}-{3}";
    }
 }

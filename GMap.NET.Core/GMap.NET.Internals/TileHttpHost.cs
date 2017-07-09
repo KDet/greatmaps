@@ -12,11 +12,11 @@ namespace GMap.NET.Internals
 {
     internal class TileHttpHost
     {
-        volatile bool listen = false;
-        TcpListener server;
-        int port;
+        private volatile bool listen = false;
+        private TcpListener server;
+        private int port;
 
-        readonly byte[] responseHeaderBytes;
+        private readonly byte[] responseHeaderBytes;
 
         public TileHttpHost()
         {
@@ -95,7 +95,7 @@ namespace GMap.NET.Internals
             t.Start();
         }
 
-        void ProcessRequest(object p)
+        private void ProcessRequest(object p)
         {
           try
           {

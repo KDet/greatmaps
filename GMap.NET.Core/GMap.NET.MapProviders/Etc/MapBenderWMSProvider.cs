@@ -12,7 +12,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly MapBenderWMSProvider Instance;
 
-      MapBenderWMSProvider()
+       private MapBenderWMSProvider()
       {
       }
 
@@ -23,7 +23,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("45742F8D-B552-4CAF-89AE-F20951BBDB2B");
+       private readonly Guid id = new Guid("45742F8D-B552-4CAF-89AE-F20951BBDB2B");
       public override Guid Id
       {
          get
@@ -32,7 +32,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "MapBender, WMS demo";
+       private readonly string name = "MapBender, WMS demo";
       public override string Name
       {
          get
@@ -41,7 +41,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -71,7 +71,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          var px1 = Projection.FromTileXYToPixel(pos);
          var px2 = px1;
@@ -87,6 +87,6 @@ namespace GMap.NET.MapProviders
          return ret;
       }
 
-      static readonly string UrlFormat = "http://mapbender.wheregroup.com/cgi-bin/mapserv?map=/data/umn/osm/osm_basic.map&VERSION=1.1.1&REQUEST=GetMap&SERVICE=WMS&LAYERS=OSM_Basic&styles=&bbox={0},{1},{2},{3}&width={4}&height={5}&srs=EPSG:4326&format=image/png";
+       private static readonly string UrlFormat = "http://mapbender.wheregroup.com/cgi-bin/mapserv?map=/data/umn/osm/osm_basic.map&VERSION=1.1.1&REQUEST=GetMap&SERVICE=WMS&LAYERS=OSM_Basic&styles=&bbox={0},{1},{2},{3}&width={4}&height={5}&srs=EPSG:4326&format=image/png";
    }
 }

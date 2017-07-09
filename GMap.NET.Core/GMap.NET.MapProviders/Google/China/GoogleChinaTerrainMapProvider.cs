@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly GoogleChinaTerrainMapProvider Instance;
 
-      GoogleChinaTerrainMapProvider()
+       private GoogleChinaTerrainMapProvider()
       {
          RefererUrl = string.Format("http://ditu.{0}/", ServerChina);
       }
@@ -24,7 +24,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("831EC3CC-B044-4097-B4B7-FC9D9F6D2CFC");
+       private readonly Guid id = new Guid("831EC3CC-B044-4097-B4B7-FC9D9F6D2CFC");
       public override Guid Id
       {
          get
@@ -33,7 +33,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "GoogleChinaTerrainMap";
+       private readonly string name = "GoogleChinaTerrainMap";
       public override string Name
       {
          get
@@ -51,7 +51,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          string sec1 = string.Empty; // after &x=...
          string sec2 = string.Empty; // after &zoom=...
@@ -60,9 +60,9 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, UrlFormatServer, GetServerNum(pos, 4), UrlFormatRequest, Version, ChinaLanguage, pos.X, sec1, pos.Y, zoom, sec2, ServerChina);
       }
 
-      static readonly string ChinaLanguage = "zh-CN";
-      static readonly string UrlFormatServer = "mt";
-      static readonly string UrlFormatRequest = "vt";
-      static readonly string UrlFormat = "http://{0}{1}.{10}/{2}/lyrs={3}&hl={4}&gl=cn&x={5}{6}&y={7}&z={8}&s={9}";
+       private static readonly string ChinaLanguage = "zh-CN";
+       private static readonly string UrlFormatServer = "mt";
+       private static readonly string UrlFormatRequest = "vt";
+       private static readonly string UrlFormat = "http://{0}{1}.{10}/{2}/lyrs={3}&hl={4}&gl=cn&x={5}{6}&y={7}&z={8}&s={9}";
    }
 }

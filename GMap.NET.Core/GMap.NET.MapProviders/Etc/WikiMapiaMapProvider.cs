@@ -67,7 +67,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly WikiMapiaMapProvider Instance;
 
-      WikiMapiaMapProvider()
+       private WikiMapiaMapProvider()
       {
       }
 
@@ -78,7 +78,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("7974022B-1AA6-41F1-8D01-F49940E4B48C");
+       private readonly Guid id = new Guid("7974022B-1AA6-41F1-8D01-F49940E4B48C");
       public override Guid Id
       {
          get
@@ -87,7 +87,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "WikiMapiaMap";
+       private readonly string name = "WikiMapiaMap";
       public override string Name
       {
          get
@@ -96,7 +96,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -117,11 +117,11 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          return string.Format(UrlFormat, GetServerNum(pos), pos.X, pos.Y, zoom);
       }
 
-      static readonly string UrlFormat = "http://i{0}.wikimapia.org/?x={1}&y={2}&zoom={3}";
+       private static readonly string UrlFormat = "http://i{0}.wikimapia.org/?x={1}&y={2}&zoom={3}";
    }
 }

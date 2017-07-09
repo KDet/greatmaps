@@ -32,7 +32,7 @@ namespace GMap.NET
          }
       }
 
-      class SingletonCreator
+       private class SingletonCreator
       {
          static SingletonCreator()
          {

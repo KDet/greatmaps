@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly ArcGIS_Imagery_World_2D_MapProvider Instance;
 
-      ArcGIS_Imagery_World_2D_MapProvider()
+       private ArcGIS_Imagery_World_2D_MapProvider()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("FF7ADDAD-F155-41DB-BC42-CC6FD97C8B9D");
+       private readonly Guid id = new Guid("FF7ADDAD-F155-41DB-BC42-CC6FD97C8B9D");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "ArcGIS_Imagery_World_2D_Map";
+       private readonly string name = "ArcGIS_Imagery_World_2D_Map";
       public override string Name
       {
          get
@@ -48,13 +48,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/1/0/1.jpg
 
          return string.Format(UrlFormat, zoom, pos.Y, pos.X);
       }
 
-      static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/{0}/{1}/{2}";
+       private static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/ESRI_Imagery_World_2D/MapServer/tile/{0}/{1}/{2}";
    }
 }

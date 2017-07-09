@@ -15,7 +15,7 @@ namespace GMap.NET.Internals
        {
        }
 
-      readonly Queue<RawTile> Queue = new Queue<RawTile>();
+       private readonly Queue<RawTile> Queue = new Queue<RawTile>();
 
       /// <summary>
       /// the amount of tiles in MB to keep in memmory, default: 22MB, if each ~100Kb it's ~222 tiles
@@ -26,7 +26,7 @@ namespace GMap.NET.Internals
       public int MemoryCacheCapacity = 3;
 #endif
 
-      long memoryCacheSize = 0;
+       private long memoryCacheSize = 0;
 
       /// <summary>
       /// current memmory cache size in MB

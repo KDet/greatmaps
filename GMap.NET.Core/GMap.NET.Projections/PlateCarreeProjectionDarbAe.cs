@@ -45,8 +45,8 @@ namespace GMap.NET.Projections
       public static readonly double MinLongitude = 41.522866508209;
       public static readonly double MaxLongitude = 66.2882966568906;
 
-      static readonly double orignX = -400;
-      static readonly double orignY = 400;
+       private static readonly double orignX = -400;
+       private static readonly double orignY = 400;
 
       public override RectLatLng Bounds
       {
@@ -56,7 +56,7 @@ namespace GMap.NET.Projections
          }
       }
 
-      GSize tileSize = new GSize(256, 256);
+       private GSize tileSize = new GSize(256, 256);
       public override GSize TileSize
       {
          get

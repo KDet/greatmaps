@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly LithuaniaHybridMapProvider Instance;
 
-      LithuaniaHybridMapProvider()
+       private LithuaniaHybridMapProvider()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("279AB0E0-4704-4AA6-86AD-87D13B1F8975");
+       private readonly Guid id = new Guid("279AB0E0-4704-4AA6-86AD-87D13B1F8975");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "LithuaniaHybridMap";
+       private readonly string name = "LithuaniaHybridMap";
       public override string Name
       {
          get
@@ -39,7 +39,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -61,7 +61,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://dc5.maps.lt/cache/mapslt_ortofoto_overlay/map/_alllayers/L09/R000016b1/C000020e1.jpg
 

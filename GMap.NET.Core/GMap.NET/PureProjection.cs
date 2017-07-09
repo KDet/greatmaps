@@ -10,8 +10,8 @@ namespace GMap.NET
    /// </summary>
    public abstract class PureProjection
    {
-      readonly List<Dictionary<PointLatLng, GPoint>> FromLatLngToPixelCache = new List<Dictionary<PointLatLng, GPoint>>(33);
-      readonly List<Dictionary<GPoint, PointLatLng>> FromPixelToLatLngCache = new List<Dictionary<GPoint, PointLatLng>>(33);
+       private readonly List<Dictionary<PointLatLng, GPoint>> FromLatLngToPixelCache = new List<Dictionary<PointLatLng, GPoint>>(33);
+       private readonly List<Dictionary<GPoint, PointLatLng>> FromPixelToLatLngCache = new List<Dictionary<GPoint, PointLatLng>>(33);
 
       public PureProjection()
       {
@@ -292,8 +292,8 @@ namespace GMap.NET
       /// </summary>
       protected static readonly double DBLLONG = 4.61168601e18;
 
-      static readonly double R2D = 180 / Math.PI;
-      static readonly double D2R = Math.PI / 180;
+       private static readonly double R2D = 180 / Math.PI;
+       private static readonly double D2R = Math.PI / 180;
 
       public static double DegreesToRadians(double deg)
       {

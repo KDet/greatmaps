@@ -9,8 +9,8 @@ namespace GMap.NET
    /// </summary>
    public abstract class PureImageProxy
    {
-      abstract public PureImage FromStream(Stream stream);
-      abstract public bool Save(Stream stream, PureImage image);
+      public abstract PureImage FromStream(Stream stream);
+      public abstract bool Save(Stream stream, PureImage image);
 
       public PureImage FromArray(byte[] data)
       {
@@ -38,14 +38,14 @@ namespace GMap.NET
    {
       public MemoryStream Data;
 
-      internal bool IsParent;
-      internal long Ix;
-      internal long Xoff;
-      internal long Yoff;
+       public bool IsParent { get; set; }
+        public long Ix { get; set; }
+        public long Xoff { get; set; }
+        public long Yoff { get; set; }
 
-      #region IDisposable Members
+        #region IDisposable Members
 
-      public abstract void Dispose();
+        public abstract void Dispose();
 
       #endregion
    }

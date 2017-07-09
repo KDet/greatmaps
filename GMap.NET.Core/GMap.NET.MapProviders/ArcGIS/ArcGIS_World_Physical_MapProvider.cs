@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly ArcGIS_World_Physical_MapProvider Instance;
 
-      ArcGIS_World_Physical_MapProvider()
+       private ArcGIS_World_Physical_MapProvider()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("0C0E73E3-5EA6-4F08-901C-AE85BCB1BFC8");
+       private readonly Guid id = new Guid("0C0E73E3-5EA6-4F08-901C-AE85BCB1BFC8");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "ArcGIS_World_Physical_Map";
+       private readonly string name = "ArcGIS_World_Physical_Map";
       public override string Name
       {
          get
@@ -48,13 +48,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://services.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/2/0/2.jpg
 
          return string.Format(UrlFormat, zoom, pos.Y, pos.X);
       }
 
-      static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{0}/{1}/{2}";
+       private static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Physical_Map/MapServer/tile/{0}/{1}/{2}";
    }
 }

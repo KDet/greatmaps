@@ -13,10 +13,10 @@ namespace GMap.NET.Internals
     {
         public static readonly Tile Empty = new Tile();
 
-        GPoint pos;
-        int zoom;
-        PureImage[] overlays;
-        long OverlaysCount;
+        private GPoint pos;
+        private int zoom;
+        private PureImage[] overlays;
+        private long OverlaysCount;
 
         public readonly bool NotEmpty;
 

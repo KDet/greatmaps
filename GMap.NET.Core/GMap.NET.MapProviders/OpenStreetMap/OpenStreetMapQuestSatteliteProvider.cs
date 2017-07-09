@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly OpenStreetMapQuestSatteliteProvider Instance;
 
-      OpenStreetMapQuestSatteliteProvider()
+       private OpenStreetMapQuestSatteliteProvider()
       {
          Copyright = string.Format("© MapQuest - Map data ©{0} MapQuest, OpenStreetMap", DateTime.Today.Year);
       }
@@ -22,7 +22,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("E590D3B1-37F4-442B-9395-ADB035627F67");
+       private readonly Guid id = new Guid("E590D3B1-37F4-442B-9395-ADB035627F67");
       public override Guid Id
       {
          get
@@ -31,7 +31,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "OpenStreetMapQuestSattelite";
+       private readonly string name = "OpenStreetMapQuestSattelite";
       public override string Name
       {
          get
@@ -40,7 +40,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -62,11 +62,11 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          return string.Format(UrlFormat, GetServerNum(pos, 3) + 1, zoom, pos.X, pos.Y);
       }
 
-      static readonly string UrlFormat = "http://otile{0}.mqcdn.com/tiles/1.0.0/sat/{1}/{2}/{3}.jpg";
+       private static readonly string UrlFormat = "http://otile{0}.mqcdn.com/tiles/1.0.0/sat/{1}/{2}/{3}.jpg";
    }
 }

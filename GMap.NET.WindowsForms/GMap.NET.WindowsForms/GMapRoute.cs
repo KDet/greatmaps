@@ -19,7 +19,7 @@ namespace GMap.NET.WindowsForms
     public class GMapRoute : MapRoute, IDisposable
 #endif
     {
-        GMapOverlay overlay;
+        private GMapOverlay overlay;
         public GMapOverlay Overlay
         {
             get
@@ -116,7 +116,7 @@ namespace GMap.NET.WindowsForms
             return false;
         }
 
-      GraphicsPath graphicsPath;
+        private GraphicsPath graphicsPath;
       internal void UpdateGraphicsPath()
       {
          if(graphicsPath == null)
@@ -266,7 +266,7 @@ namespace GMap.NET.WindowsForms
 
         #region IDisposable Members
 
-        bool disposed = false;
+        private bool disposed = false;
 
         public virtual void Dispose()
         {

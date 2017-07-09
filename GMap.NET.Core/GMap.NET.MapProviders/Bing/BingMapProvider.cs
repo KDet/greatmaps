@@ -137,7 +137,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -164,7 +164,8 @@ namespace GMap.NET.MapProviders
       /// http://msdn.microsoft.com/en-us/library/ff428642.aspx
       /// </summary>
       public bool TryGetDefaultKey = true;
-      static bool init = false;
+
+       private static bool init = false;
 
       public override void OnInitialized()
       {
@@ -399,7 +400,7 @@ namespace GMap.NET.MapProviders
          return ret;
       }
 
-      string MakeRouteUrl(string start, string end, string language, bool avoidHighways, bool walkingMode)
+       private string MakeRouteUrl(string start, string end, string language, bool avoidHighways, bool walkingMode)
       {
          string addition = avoidHighways ? "&avoid=highways" : string.Empty;
          string mode = walkingMode ? "Walking" : "Driving";
@@ -407,7 +408,7 @@ namespace GMap.NET.MapProviders
          return string.Format(CultureInfo.InvariantCulture, RouteUrlFormatPointQueries, mode, start, end, addition, SessionId);
       }
 
-      string MakeRouteUrl(PointLatLng start, PointLatLng end, string language, bool avoidHighways, bool walkingMode)
+       private string MakeRouteUrl(PointLatLng start, PointLatLng end, string language, bool avoidHighways, bool walkingMode)
       {
          string addition = avoidHighways ? "&avoid=highways" : string.Empty;
          string mode = walkingMode ? "Walking" : "Driving";
@@ -415,7 +416,7 @@ namespace GMap.NET.MapProviders
          return string.Format(CultureInfo.InvariantCulture, RouteUrlFormatPointLatLng, mode, start.Lat, start.Lng, end.Lat, end.Lng, addition, SessionId);
       }
 
-      List<PointLatLng> GetRoutePoints(string url, int zoom, out string tooltipHtml, out int numLevel, out int zoomFactor)
+       private List<PointLatLng> GetRoutePoints(string url, int zoom, out string tooltipHtml, out int numLevel, out int zoomFactor)
       {
          List<PointLatLng> points = null;
          tooltipHtml = string.Empty;
@@ -514,8 +515,8 @@ namespace GMap.NET.MapProviders
       }
 
       // example : http://dev.virtualearth.net/REST/V1/Routes/Driving?o=xml&wp.0=44.979035,-93.26493&wp.1=44.943828508257866,-93.09332862496376&optmz=distance&rpo=Points&key=[PROVIDEYOUROWNKEY!!]
-      static readonly string RouteUrlFormatPointLatLng = "http://dev.virtualearth.net/REST/V1/Routes/{0}?o=xml&wp.0={1},{2}&wp.1={3},{4}{5}&optmz=distance&rpo=Points&key={6}";
-      static readonly string RouteUrlFormatPointQueries = "http://dev.virtualearth.net/REST/V1/Routes/{0}?o=xml&wp.0={1}&wp.1={2}{3}&optmz=distance&rpo=Points&key={4}";
+       private static readonly string RouteUrlFormatPointLatLng = "http://dev.virtualearth.net/REST/V1/Routes/{0}?o=xml&wp.0={1},{2}&wp.1={3},{4}{5}&optmz=distance&rpo=Points&key={6}";
+       private static readonly string RouteUrlFormatPointQueries = "http://dev.virtualearth.net/REST/V1/Routes/{0}?o=xml&wp.0={1}&wp.1={2}{3}&optmz=distance&rpo=Points&key={4}";
 
       #endregion RoutingProvider
 
@@ -546,7 +547,7 @@ namespace GMap.NET.MapProviders
          return pointList != null && pointList.Count > 0 ? pointList[0] : (PointLatLng?)null;
       }
 
-      string MakeGeocoderDetailedUrl(Placemark placemark)
+       private string MakeGeocoderDetailedUrl(Placemark placemark)
       {
          string parameters = string.Empty;
 
@@ -565,7 +566,7 @@ namespace GMap.NET.MapProviders
          return MakeGeocoderUrl(parameters);
       }
 
-      bool AddFieldIfNotEmpty(ref string Input, string FieldName, string Value)
+       private bool AddFieldIfNotEmpty(ref string Input, string FieldName, string Value)
       {
          if(!string.IsNullOrEmpty(Value))
          {
@@ -593,12 +594,12 @@ namespace GMap.NET.MapProviders
          throw new NotImplementedException();
       }
 
-      string MakeGeocoderUrl(string keywords)
+       private string MakeGeocoderUrl(string keywords)
       {
          return string.Format(CultureInfo.InvariantCulture, GeocoderUrlFormat, keywords, SessionId);
       }
 
-      GeoCoderStatusCode GetLatLngFromGeocoderUrl(string url, out List<PointLatLng> pointList)
+       private GeoCoderStatusCode GetLatLngFromGeocoderUrl(string url, out List<PointLatLng> pointList)
       {
          var status = GeoCoderStatusCode.Unknow;
          pointList = null;
@@ -692,7 +693,7 @@ namespace GMap.NET.MapProviders
       }
 
       // http://dev.virtualearth.net/REST/v1/Locations/1%20Microsoft%20Way%20Redmond%20WA%2098052?o=xml&key=BingMapsKey
-      static readonly string GeocoderUrlFormat = "http://dev.virtualearth.net/REST/v1/Locations?{0}&o=xml&key={1}";
+       private static readonly string GeocoderUrlFormat = "http://dev.virtualearth.net/REST/v1/Locations?{0}&o=xml&key={1}";
 
       #endregion GeocodingProvider
    }
@@ -704,7 +705,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly BingMapProvider Instance;
 
-      BingMapProvider()
+       private BingMapProvider()
       {
       }
 
@@ -715,7 +716,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("D0CEB371-F10A-4E12-A2C1-DF617D6674A8");
+       private readonly Guid id = new Guid("D0CEB371-F10A-4E12-A2C1-DF617D6674A8");
       public override Guid Id
       {
          get
@@ -724,7 +725,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "BingMap";
+       private readonly string name = "BingMap";
       public override string Name
       {
          get
@@ -758,7 +759,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          string key = TileXYToQuadKey(pos.X, pos.Y, zoom);
 
@@ -770,10 +771,10 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, GetServerNum(pos, 4), key, Version, language, ForceSessionIdOnTileAccess ? "&key=" + SessionId : string.Empty);
       }
 
-      string UrlDynamicFormat = string.Empty;
+       private string UrlDynamicFormat = string.Empty;
 
       // http://ecn.t0.tiles.virtualearth.net/tiles/r120030?g=875&mkt=en-us&lbl=l1&stl=h&shading=hill&n=z
 
-      static readonly string UrlFormat = "http://ecn.t{0}.tiles.virtualearth.net/tiles/r{1}?g={2}&mkt={3}&lbl=l1&stl=h&shading=hill&n=z{4}";
+       private static readonly string UrlFormat = "http://ecn.t{0}.tiles.virtualearth.net/tiles/r{1}?g={2}&mkt={3}&lbl=l1&stl=h&shading=hill&n=z{4}";
    }
 }

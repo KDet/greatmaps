@@ -61,13 +61,13 @@ namespace GMap.NET.WindowsForms.Markers
    public class GMarkerGoogle : GMapMarker
 #endif
    {
-      Bitmap Bitmap;
-      Bitmap BitmapShadow;
+       private Bitmap Bitmap;
+       private Bitmap BitmapShadow;
 
-      static Bitmap arrowshadow;
-      static Bitmap msmarker_shadow;
-      static Bitmap shadow_small;
-      static Bitmap pushpin_shadow;
+       private static Bitmap arrowshadow;
+       private static Bitmap msmarker_shadow;
+       private static Bitmap shadow_small;
+       private static Bitmap pushpin_shadow;
 
       public readonly GMarkerGoogleType Type;
 
@@ -82,7 +82,7 @@ namespace GMap.NET.WindowsForms.Markers
          }
       }
 
-      void LoadBitmap()
+       private void LoadBitmap()
       {
          Bitmap = GetIcon(Type.ToString());
          Size = new System.Drawing.Size(Bitmap.Width, Bitmap.Height);
@@ -195,7 +195,7 @@ namespace GMap.NET.WindowsForms.Markers
          Offset = new Point(-Size.Width / 2, -Size.Height);
       }
 
-      static readonly Dictionary<string, Bitmap> iconCache = new Dictionary<string, Bitmap>();
+       private static readonly Dictionary<string, Bitmap> iconCache = new Dictionary<string, Bitmap>();
 
       internal static Bitmap GetIcon(string name)
       {

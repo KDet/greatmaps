@@ -106,9 +106,9 @@ namespace GMap.NET
       /// <summary>
       /// tile queue to cache
       /// </summary>
-      readonly Queue<CacheQueueItem> tileCacheQueue = new Queue<CacheQueueItem>();
+      private readonly Queue<CacheQueueItem> tileCacheQueue = new Queue<CacheQueueItem>();
 
-      bool? isRunningOnMono;
+       private bool? isRunningOnMono;
 
       /// <summary>
       /// return true if running on mono
@@ -140,7 +140,7 @@ namespace GMap.NET
       /// <summary>
       /// cache worker
       /// </summary>
-      Thread CacheEngine;
+      private Thread CacheEngine;
 
       internal readonly AutoResetEvent WaitForCache = new AutoResetEvent(false);
 
@@ -314,7 +314,7 @@ namespace GMap.NET
       /// enqueueens tile to cache
       /// </summary>
       /// <param name="task"></param>
-      void EnqueueCacheTask(CacheQueueItem task)
+      private void EnqueueCacheTask(CacheQueueItem task)
       {
          lock(tileCacheQueue)
          {
@@ -347,7 +347,7 @@ namespace GMap.NET
          }
       }
 
-      volatile bool abortCacheLoop = false;
+       private volatile bool abortCacheLoop = false;
       internal volatile bool noMapInstances = false;
 
       public TileCacheComplete OnTileCacheComplete;
@@ -369,8 +369,8 @@ namespace GMap.NET
          }
       }
 
-      int readingCache = 0;      
-      volatile bool cacheOnIdleRead = true;
+       private int readingCache = 0;
+       private volatile bool cacheOnIdleRead = true;
 
       /// <summary>
       /// delays writing tiles to cache while performing reads
@@ -387,7 +387,7 @@ namespace GMap.NET
           }
       }
 
-      volatile bool boostCacheEngine = false;
+       private volatile bool boostCacheEngine = false;
 
       /// <summary>
       /// disables delay between saving tiles into database/cache
@@ -409,7 +409,7 @@ namespace GMap.NET
       /// </summary>
       /// <param name="sender"></param>
       /// <param name="e"></param>
-      void CacheEngineLoop()
+      private void CacheEngineLoop()
       {
          Debug.WriteLine("CacheEngine: start");
          int left = 0;
@@ -541,7 +541,7 @@ namespace GMap.NET
          }
       }
 
-      class StringWriterExt : StringWriter
+       private class StringWriterExt : StringWriter
       {
          public StringWriterExt(IFormatProvider info)
             : base(info)
@@ -815,10 +815,10 @@ namespace GMap.NET
          return ret;
       }
 
-      readonly Exception noDataException = new Exception("No data in local tile cache...");
+       private readonly Exception noDataException = new Exception("No data in local tile cache...");
 
 #if !PocketPC
-      TileHttpHost host;
+       private TileHttpHost host;
 
       /// <summary>
       /// turns on tile host

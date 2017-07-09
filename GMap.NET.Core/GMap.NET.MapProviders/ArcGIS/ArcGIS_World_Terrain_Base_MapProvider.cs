@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly ArcGIS_World_Terrain_Base_MapProvider Instance;
 
-      ArcGIS_World_Terrain_Base_MapProvider()
+       private ArcGIS_World_Terrain_Base_MapProvider()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("927F175B-5200-4D95-A99B-1C87C93099DA");
+       private readonly Guid id = new Guid("927F175B-5200-4D95-A99B-1C87C93099DA");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "ArcGIS_World_Terrain_Base_Map";
+       private readonly string name = "ArcGIS_World_Terrain_Base_Map";
       public override string Name
       {
          get
@@ -48,13 +48,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://services.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/0/0/0jpg
 
          return string.Format(UrlFormat, zoom, pos.Y, pos.X);
       }
 
-      static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{0}/{1}/{2}";
+       private static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Terrain_Base/MapServer/tile/{0}/{1}/{2}";
    }
 }

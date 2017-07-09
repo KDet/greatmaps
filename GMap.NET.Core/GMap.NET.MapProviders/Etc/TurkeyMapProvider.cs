@@ -11,7 +11,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly TurkeyMapProvider Instance;
 
-      TurkeyMapProvider()
+       private TurkeyMapProvider()
       {
          Copyright = string.Format("©{0} Pergo - Map data ©{0} Fideltus Advanced Technology", DateTime.Today.Year);
          Area = new RectLatLng(42.5830078125, 25.48828125, 19.05029296875, 6.83349609375);
@@ -25,7 +25,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("EDE895BD-756D-4BE4-8D03-D54DD8856F1D");
+       private readonly Guid id = new Guid("EDE895BD-756D-4BE4-8D03-D54DD8856F1D");
       public override Guid Id
       {
          get
@@ -34,7 +34,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "TurkeyMap";
+       private readonly string name = "TurkeyMap";
       public override string Name
       {
          get
@@ -43,7 +43,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -73,7 +73,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://{domain}/{layerName}/{zoomLevel}/{first3LetterOfTileX}/{second3LetterOfTileX}/{third3LetterOfTileX}/{first3LetterOfTileY}/{second3LetterOfTileY}/{third3LetterOfTileXY}.png
 
@@ -92,8 +92,8 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, GetServerNum(pos, 3), zoom, x, y);
       }
 
-      static readonly string Zeros = "000000000";
-      static readonly string Slash = "/";
-      static readonly string UrlFormat = "http://map{0}.pergo.com.tr/publish/tile/tile9913/{1:00}/{2}/{3}.png";
+       private static readonly string Zeros = "000000000";
+       private static readonly string Slash = "/";
+       private static readonly string UrlFormat = "http://map{0}.pergo.com.tr/publish/tile/tile9913/{1:00}/{2}/{3}.png";
    }
 }

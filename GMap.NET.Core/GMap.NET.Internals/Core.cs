@@ -24,7 +24,7 @@ namespace GMap.NET.Internals
     /// <summary>
     /// internal map control core
     /// </summary>
-    internal class Core : IDisposable
+    public class Core : IDisposable
     {
         public PointLatLng position;
         public GPoint positionPixel;
@@ -67,30 +67,30 @@ namespace GMap.NET.Internals
 #endif
 
 #if !PocketPC
-        static readonly int GThreadPoolSize = 4;
+        private static readonly int GThreadPoolSize = 4;
 #else
         static readonly int GThreadPoolSize = 2;
 #endif
 
-        DateTime LastTileLoadStart = DateTime.Now;
-        DateTime LastTileLoadEnd = DateTime.Now;
-        internal volatile bool IsStarted = false;
-        int zoom;
+        private DateTime LastTileLoadStart = DateTime.Now;
+        private DateTime LastTileLoadEnd = DateTime.Now;
+        public volatile bool IsStarted = false;
+        private int zoom;
 
-        internal double scaleX = 1;
-        internal double scaleY = 1;
+        public double scaleX = 1;
+        public double scaleY = 1;
 
-        internal int maxZoom = 2;
-        internal int minZoom = 2;
-        internal int Width;
-        internal int Height;
+        public int maxZoom = 2;
+        public int minZoom = 2;
+        public int Width;
+        public int Height;
 
-        internal int pxRes100m;  // 100 meters
-        internal int pxRes1000m;  // 1km  
-        internal int pxRes10km; // 10km
-        internal int pxRes100km; // 100km
-        internal int pxRes1000km; // 1000km
-        internal int pxRes5000km; // 5000km
+        public int pxRes100m;  // 100 meters
+        public int pxRes1000m;  // 1km  
+        public int pxRes10km; // 10km
+        public int pxRes100km; // 100km
+        public int pxRes1000km; // 1000km
+        public int pxRes5000km; // 5000km
 
         /// <summary>
         /// is user dragging map
@@ -257,7 +257,7 @@ namespace GMap.NET.Internals
             }
         }
 
-        internal bool zoomToArea = true;
+        public bool zoomToArea = true;
 
         /// <summary>
         /// sets zoom to max to fit rect
@@ -365,17 +365,17 @@ namespace GMap.NET.Internals
         /// </summary>
         public event MapTypeChanged OnMapTypeChanged;
 
-        readonly List<Thread> GThreadPool = new List<Thread>();
+        private readonly List<Thread> GThreadPool = new List<Thread>();
         // ^
         // should be only one pool for multiply controls, any ideas how to fix?
         //static readonly List<Thread> GThreadPool = new List<Thread>();
 
         // windows forms or wpf
-        internal string SystemType;
+        public string SystemType;
 
         internal static int instances = 0;
 
-        BackgroundWorker invalidator;
+        private BackgroundWorker invalidator;
 
         public BackgroundWorker OnMapOpen()
         {
@@ -412,10 +412,10 @@ namespace GMap.NET.Internals
             Dispose();
         }
 
-        internal readonly object invalidationLock = new object();
-        internal DateTime lastInvalidation = DateTime.Now;
+        public readonly object invalidationLock = new object();
+        public DateTime lastInvalidation = DateTime.Now;
 
-        void invalidatorWatch(object sender, DoWorkEventArgs e)
+        private void invalidatorWatch(object sender, DoWorkEventArgs e)
         {
             var w = sender as BackgroundWorker;
 
@@ -774,13 +774,13 @@ namespace GMap.NET.Internals
             }
         }
 
-        bool RaiseEmptyTileError = false;
-        internal Dictionary<LoadTask, Exception> FailedLoads = new Dictionary<LoadTask, Exception>(new LoadTaskComparer());
+        private bool RaiseEmptyTileError = false;
+        public Dictionary<LoadTask, Exception> FailedLoads = new Dictionary<LoadTask, Exception>(new LoadTaskComparer());
 
         internal static readonly int WaitForTileLoadThreadTimeout = 5 * 1000 * 60; // 5 min.
 
-        volatile int okZoom = 0;
-        volatile int skipOverZoom = 0;
+        private volatile int okZoom = 0;
+        private volatile int skipOverZoom = 0;
 
 #if NET40
         static readonly BlockingCollection<LoadTask> tileLoadQueue4 = new BlockingCollection<LoadTask>(new ConcurrentStack<LoadTask>());
@@ -832,9 +832,9 @@ namespace GMap.NET.Internals
             tileLoadQueue4.Add(t);
         }
 #else
-        byte loadWaitCount = 0;
+        private byte loadWaitCount = 0;
 
-        void tileLoadThread()
+        private void tileLoadThread()
         {
             LoadTask? task = null;
             bool stop = false;
@@ -903,7 +903,7 @@ namespace GMap.NET.Internals
         }
 #endif
 
-        static void ProcessLoadTask(LoadTask task, string ctid)
+        private static void ProcessLoadTask(LoadTask task, string ctid)
         {
             try
             {
@@ -1063,7 +1063,7 @@ namespace GMap.NET.Internals
             }
         }
 
-        void OnLoadComplete(string ctid)
+        private void OnLoadComplete(string ctid)
         {
             LastTileLoadEnd = DateTime.Now;
             long lastTileLoadTimeMs = (long)(LastTileLoadEnd - LastTileLoadStart).TotalMilliseconds;
@@ -1106,7 +1106,7 @@ namespace GMap.NET.Internals
         /// <summary>
         /// updates map bounds
         /// </summary>
-        void UpdateBounds()
+        private void UpdateBounds()
         {
             if (!IsStarted || Provider.Equals(EmptyProvider.Instance))
             {
@@ -1251,7 +1251,7 @@ namespace GMap.NET.Internals
         /// <summary>
         /// updates ground resolution info
         /// </summary>
-        void UpdateGroundResolution()
+        private void UpdateGroundResolution()
         {
             double rez = Provider.Projection.GetGroundResolution(Zoom, Position.Lat);
             pxRes100m = (int)(100.0 / rez); // 100 meters
@@ -1269,7 +1269,7 @@ namespace GMap.NET.Internals
             Dispose(false);
         }
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (IsStarted)
             {

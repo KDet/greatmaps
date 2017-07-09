@@ -43,7 +43,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        GMapProviders()
+        private GMapProviders()
         {
         }
 
@@ -156,7 +156,7 @@ namespace GMap.NET.MapProviders
 
         public static readonly SwedenMapProvider SwedenMap = SwedenMapProvider.Instance;
 
-        static List<GMapProvider> list;
+        private static List<GMapProvider> list;
 
         /// <summary>
         /// get all instances of the supported providers
@@ -169,7 +169,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        static Dictionary<Guid, GMapProvider> Hash;
+        private static Dictionary<Guid, GMapProvider> Hash;
 
         public static GMapProvider TryGetProvider(Guid id)
         {
@@ -181,7 +181,7 @@ namespace GMap.NET.MapProviders
             return null;
         }
 
-        static Dictionary<int, GMapProvider> DbHash;
+        private static Dictionary<int, GMapProvider> DbHash;
 
         public static GMapProvider TryGetProvider(int DbId)
         {
@@ -239,7 +239,7 @@ namespace GMap.NET.MapProviders
         /// <returns></returns>
         public abstract PureImage GetTileImage(GPoint pos, int zoom);
 
-        static readonly List<GMapProvider> MapProviders = new List<GMapProvider>();
+        private static readonly List<GMapProvider> MapProviders = new List<GMapProvider>();
 
         protected GMapProvider()
         {
@@ -260,7 +260,7 @@ namespace GMap.NET.MapProviders
             WebProxy = EmptyWebProxy.Instance;
         }
 
-        bool isInitialized = false;
+        private bool isInitialized = false;
 
         /// <summary>
         /// was provider initialized
@@ -349,7 +349,7 @@ namespace GMap.NET.MapProviders
         /// </summary>
         public bool InvertedAxisY = false;
 
-        static string languageStr = "en";
+        private static string languageStr = "en";
         public static string LanguageStr
         {
             get
@@ -357,7 +357,8 @@ namespace GMap.NET.MapProviders
                 return languageStr;
             }
         }
-        static LanguageType language = LanguageType.English;
+
+        private static LanguageType language = LanguageType.English;
 
         /// <summary>
         /// map language
@@ -383,18 +384,18 @@ namespace GMap.NET.MapProviders
         /// <summary>
         /// internal proxy for image managment
         /// </summary>
-        internal static PureImageProxy TileImageProxy;
+        public static PureImageProxy TileImageProxy;
 
-        static readonly string requestAccept = "*/*";
-        static readonly string responseContentType = "image";
+        private static readonly string requestAccept = "*/*";
+        private static readonly string responseContentType = "image";
 
         protected virtual bool CheckTileImageHttpResponse(WebResponse response)
         {
             //Debug.WriteLine(response.StatusCode + "/" + response.StatusDescription + "/" + response.ContentType + " -> " + response.ResponseUri);
             return response.ContentType.Contains(responseContentType);
         }
-        
-        string Authorization = string.Empty;
+
+        private string Authorization = string.Empty;
         
         /// <summary>
         /// http://blog.kowalczyk.info/article/at3/Forcing-basic-http-authentication-for-HttpWebReq.html
@@ -622,7 +623,7 @@ namespace GMap.NET.MapProviders
     {
         public static readonly EmptyProvider Instance;
 
-        EmptyProvider()
+        private EmptyProvider()
         {
             MaxZoom = null;
         }
@@ -642,7 +643,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        readonly string name = "None";
+        private readonly string name = "None";
         public override string Name
         {
             get
@@ -651,7 +652,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        readonly MercatorProjection projection = MercatorProjection.Instance;
+        private readonly MercatorProjection projection = MercatorProjection.Instance;
         public override PureProjection Projection
         {
             get

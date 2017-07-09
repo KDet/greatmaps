@@ -67,7 +67,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        GMapProvider [] overlays;
+        private GMapProvider [] overlays;
         public override GMapProvider [] Overlays
         {
             get
@@ -87,7 +87,7 @@ namespace GMap.NET.MapProviders
         #endregion
 
         public bool TryCorrectVersion = true;
-        static bool init = false;
+        private static bool init = false;
 
         public override void OnInitialized()
         {
@@ -214,7 +214,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        static readonly string Sec1 = "&s=";
+        private static readonly string Sec1 = "&s=";
 
         #region RoutingProvider Members
 
@@ -248,19 +248,19 @@ namespace GMap.NET.MapProviders
 
         #region -- internals --
 
-        string MakeRouteUrl(PointLatLng start, PointLatLng end, string language, bool avoidHighways, bool walkingMode)
+        private string MakeRouteUrl(PointLatLng start, PointLatLng end, string language, bool avoidHighways, bool walkingMode)
         {
             string opt = walkingMode ? WalkingStr : (avoidHighways ? RouteWithoutHighwaysStr : RouteStr);
             return string.Format(CultureInfo.InvariantCulture, RouteUrlFormatPointLatLng, language, opt, start.Lat, start.Lng, end.Lat, end.Lng, Server);
         }
 
-        string MakeRouteUrl(string start, string end, string language, bool avoidHighways, bool walkingMode)
+        private string MakeRouteUrl(string start, string end, string language, bool avoidHighways, bool walkingMode)
         {
             string opt = walkingMode ? WalkingStr : (avoidHighways ? RouteWithoutHighwaysStr : RouteStr);
             return string.Format(RouteUrlFormatStr, language, opt, start.Replace(' ', '+'), end.Replace(' ', '+'), Server);
         }
 
-        List<PointLatLng> GetRoutePoints(string url, int zoom, out string tooltipHtml, out int numLevel, out int zoomFactor)
+        private List<PointLatLng> GetRoutePoints(string url, int zoom, out string tooltipHtml, out int numLevel, out int zoomFactor)
         {
             List<PointLatLng> points = null;
             tooltipHtml = string.Empty;
@@ -455,12 +455,12 @@ namespace GMap.NET.MapProviders
             return points;
         }
 
-        static readonly string RouteUrlFormatPointLatLng = "http://maps.{6}/maps?f=q&output=dragdir&doflg=p&hl={0}{1}&q=&saddr=@{2},{3}&daddr=@{4},{5}";
-        static readonly string RouteUrlFormatStr = "http://maps.{4}/maps?f=q&output=dragdir&doflg=p&hl={0}{1}&q=&saddr=@{2}&daddr=@{3}";
+        private static readonly string RouteUrlFormatPointLatLng = "http://maps.{6}/maps?f=q&output=dragdir&doflg=p&hl={0}{1}&q=&saddr=@{2},{3}&daddr=@{4},{5}";
+        private static readonly string RouteUrlFormatStr = "http://maps.{4}/maps?f=q&output=dragdir&doflg=p&hl={0}{1}&q=&saddr=@{2}&daddr=@{3}";
 
-        static readonly string WalkingStr = "&mra=ls&dirflg=w";
-        static readonly string RouteWithoutHighwaysStr = "&mra=ls&dirflg=dh";
-        static readonly string RouteStr = "&mra=ls&dirflg=d";
+        private static readonly string WalkingStr = "&mra=ls&dirflg=w";
+        private static readonly string RouteWithoutHighwaysStr = "&mra=ls&dirflg=dh";
+        private static readonly string RouteStr = "&mra=ls&dirflg=d";
 
         #endregion
 
@@ -518,17 +518,17 @@ namespace GMap.NET.MapProviders
 
         // The Coogle Geocoding API: http://tinyurl.com/cdlj889
 
-        string MakeGeocoderUrl(string keywords, string language)
+        private string MakeGeocoderUrl(string keywords, string language)
         {
             return string.Format(CultureInfo.InvariantCulture, GeocoderUrlFormat, ServerAPIs, Uri.EscapeDataString(keywords).Replace(' ', '+'), language);
         }
 
-        string MakeReverseGeocoderUrl(PointLatLng pt, string language)
+        private string MakeReverseGeocoderUrl(PointLatLng pt, string language)
         {
             return string.Format(CultureInfo.InvariantCulture, ReverseGeocoderUrlFormat, ServerAPIs, pt.Lat, pt.Lng, language);
         }
 
-        GeoCoderStatusCode GetLatLngFromGeocoderUrl(string url, out List<PointLatLng> pointList)
+        private GeoCoderStatusCode GetLatLngFromGeocoderUrl(string url, out List<PointLatLng> pointList)
         {
             var status = GeoCoderStatusCode.Unknow;
             pointList = null;
@@ -750,7 +750,7 @@ namespace GMap.NET.MapProviders
             return status;
         }
 
-        GeoCoderStatusCode GetPlacemarkFromReverseGeocoderUrl(string url, out List<Placemark> placemarkList)
+        private GeoCoderStatusCode GetPlacemarkFromReverseGeocoderUrl(string url, out List<Placemark> placemarkList)
         {
             GeoCoderStatusCode status = GeoCoderStatusCode.Unknow;
             placemarkList = null;
@@ -1360,8 +1360,8 @@ namespace GMap.NET.MapProviders
             return status;
         }
 
-        static readonly string ReverseGeocoderUrlFormat = "http://maps.{0}/maps/api/geocode/xml?latlng={1},{2}&language={3}&sensor=false";
-        static readonly string GeocoderUrlFormat = "http://maps.{0}/maps/api/geocode/xml?address={1}&language={2}&sensor=false";
+        private static readonly string ReverseGeocoderUrlFormat = "http://maps.{0}/maps/api/geocode/xml?latlng={1},{2}&language={3}&sensor=false";
+        private static readonly string GeocoderUrlFormat = "http://maps.{0}/maps/api/geocode/xml?address={1}&language={2}&sensor=false";
 
         #endregion
 
@@ -1429,7 +1429,7 @@ namespace GMap.NET.MapProviders
 
         // The Coogle Directions API: http://tinyurl.com/6vv4cac
 
-        string MakeDirectionsUrl(PointLatLng start, PointLatLng end, string language, bool avoidHighways, bool avoidTolls, bool walkingMode, bool sensor, bool metric)
+        private string MakeDirectionsUrl(PointLatLng start, PointLatLng end, string language, bool avoidHighways, bool avoidTolls, bool walkingMode, bool sensor, bool metric)
         {
             string av = (avoidHighways ? "&avoid=highways" : string.Empty) + (avoidTolls ? "&avoid=tolls" : string.Empty); // 6
             string mt = "&units=" + (metric ? "metric" : "imperial");     // 7
@@ -1438,7 +1438,7 @@ namespace GMap.NET.MapProviders
             return string.Format(CultureInfo.InvariantCulture, DirectionUrlFormatPoint, start.Lat, start.Lng, end.Lat, end.Lng, sensor.ToString().ToLower(), language, av, mt, wk, ServerAPIs);
         }
 
-        string MakeDirectionsUrl(string start, string end, string language, bool avoidHighways, bool walkingMode, bool avoidTolls, bool sensor, bool metric)
+        private string MakeDirectionsUrl(string start, string end, string language, bool avoidHighways, bool walkingMode, bool avoidTolls, bool sensor, bool metric)
         {
             string av = (avoidHighways ? "&avoid=highways" : string.Empty) + (avoidTolls ? "&avoid=tolls" : string.Empty); // 4
             string mt = "&units=" + (metric ? "metric" : "imperial");     // 5
@@ -1447,7 +1447,7 @@ namespace GMap.NET.MapProviders
             return string.Format(DirectionUrlFormatStr, start.Replace(' ', '+'), end.Replace(' ', '+'), sensor.ToString().ToLower(), language, av, mt, wk, ServerAPIs);
         }
 
-        string MakeDirectionsUrl(PointLatLng start, IEnumerable<PointLatLng> wayPoints, PointLatLng end, string language, bool avoidHighways, bool avoidTolls, bool walkingMode, bool sensor, bool metric)
+        private string MakeDirectionsUrl(PointLatLng start, IEnumerable<PointLatLng> wayPoints, PointLatLng end, string language, bool avoidHighways, bool avoidTolls, bool walkingMode, bool sensor, bool metric)
         {
             string av = (avoidHighways ? "&avoid=highways" : string.Empty) + (avoidTolls ? "&avoid=tolls" : string.Empty); // 6
             string mt = "&units=" + (metric ? "metric" : "imperial"); // 7
@@ -1463,7 +1463,7 @@ namespace GMap.NET.MapProviders
             return string.Format(CultureInfo.InvariantCulture, DirectionUrlFormatWaypoint, start.Lat, start.Lng, wpLatLng, sensor.ToString().ToLower(), language, av, mt, wk, ServerAPIs, end.Lat, end.Lng);
         }
 
-        string MakeDirectionsUrl(string start, IEnumerable<string> wayPoints, string end, string language, bool avoidHighways, bool avoidTolls, bool walkingMode, bool sensor, bool metric)
+        private string MakeDirectionsUrl(string start, IEnumerable<string> wayPoints, string end, string language, bool avoidHighways, bool avoidTolls, bool walkingMode, bool sensor, bool metric)
         {
             string av = (avoidHighways ? "&avoid=highways" : string.Empty) + (avoidTolls ? "&avoid=tolls" : string.Empty); // 6
             string mt = "&units=" + (metric ? "metric" : "imperial"); // 7
@@ -1479,7 +1479,7 @@ namespace GMap.NET.MapProviders
             return string.Format(CultureInfo.InvariantCulture, DirectionUrlFormatWaypointStr, start.Replace(' ', '+'), wpLatLng, sensor.ToString().ToLower(), language, av, mt, wk, ServerAPIs, end.Replace(' ', '+'));
         }
 
-        DirectionsStatusCode GetDirectionsUrl(string url, out GDirections direction)
+        private DirectionsStatusCode GetDirectionsUrl(string url, out GDirections direction)
         {
             DirectionsStatusCode ret = DirectionsStatusCode.UNKNOWN_ERROR;
             direction = null;
@@ -2021,7 +2021,7 @@ namespace GMap.NET.MapProviders
             return ret;
         }
 
-        static void DecodePointsInto(List<PointLatLng> path, string encodedPath)
+        private static void DecodePointsInto(List<PointLatLng> path, string encodedPath)
         {
             // https://github.com/googlemaps/google-maps-services-java/blob/master/src/main/java/com/google/maps/internal/PolylineEncoding.java
             int len = encodedPath.Length;
@@ -2059,10 +2059,10 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        static readonly string DirectionUrlFormatStr = "http://maps.{7}/maps/api/directions/xml?origin={0}&destination={1}&sensor={2}&language={3}{4}{5}{6}";
-        static readonly string DirectionUrlFormatPoint = "http://maps.{9}/maps/api/directions/xml?origin={0},{1}&destination={2},{3}&sensor={4}&language={5}{6}{7}{8}";
-        static readonly string DirectionUrlFormatWaypoint = "http://maps.{8}/maps/api/directions/xml?origin={0},{1}&waypoints={2}&destination={9},{10}&sensor={3}&language={4}{5}{6}{7}";
-        static readonly string DirectionUrlFormatWaypointStr = "http://maps.{7}/maps/api/directions/xml?origin={0}&waypoints={1}&destination={8}&sensor={2}&language={3}{4}{5}{6}";
+        private static readonly string DirectionUrlFormatStr = "http://maps.{7}/maps/api/directions/xml?origin={0}&destination={1}&sensor={2}&language={3}{4}{5}{6}";
+        private static readonly string DirectionUrlFormatPoint = "http://maps.{9}/maps/api/directions/xml?origin={0},{1}&destination={2},{3}&sensor={4}&language={5}{6}{7}{8}";
+        private static readonly string DirectionUrlFormatWaypoint = "http://maps.{8}/maps/api/directions/xml?origin={0},{1}&waypoints={2}&destination={9},{10}&sensor={3}&language={4}{5}{6}{7}";
+        private static readonly string DirectionUrlFormatWaypointStr = "http://maps.{7}/maps/api/directions/xml?origin={0}&waypoints={1}&destination={8}&sensor={2}&language={3}{4}{5}{6}";
 
         #endregion
 
@@ -2103,7 +2103,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        string GetSignedUri(Uri uri)
+        private string GetSignedUri(Uri uri)
         {
             var builder = new UriBuilder(uri);
             builder.Query = builder.Query.Substring(1) + "&client=" + _clientId;
@@ -2113,12 +2113,12 @@ namespace GMap.NET.MapProviders
             return uri.Scheme + "://" + uri.Host + uri.LocalPath + uri.Query + "&signature=" + signature;
         }
 
-        string GetSignedUri(string url)
+        private string GetSignedUri(string url)
         {
             return GetSignedUri(new Uri(url));
         }
 
-        string GetSignature(Uri uri)
+        private string GetSignature(Uri uri)
         {
             byte[] encodedPathQuery = Encoding.ASCII.GetBytes(uri.LocalPath + uri.Query);
             var hashAlgorithm = new HMACSHA1(_privateKeyBytes);
@@ -2135,7 +2135,7 @@ namespace GMap.NET.MapProviders
     {
         public static readonly GoogleMapProvider Instance;
 
-        GoogleMapProvider()
+        private GoogleMapProvider()
         {
         }
 
@@ -2148,7 +2148,7 @@ namespace GMap.NET.MapProviders
 
         #region GMapProvider Members
 
-        readonly Guid id = new Guid("D7287DA0-A7FF-405F-8166-B6BAF26D066C");
+        private readonly Guid id = new Guid("D7287DA0-A7FF-405F-8166-B6BAF26D066C");
         public override Guid Id
         {
             get
@@ -2157,7 +2157,7 @@ namespace GMap.NET.MapProviders
             }
         }
 
-        readonly string name = "GoogleMap";
+        private readonly string name = "GoogleMap";
         public override string Name
         {
             get
@@ -2175,7 +2175,7 @@ namespace GMap.NET.MapProviders
 
         #endregion
 
-        string MakeTileImageUrl(GPoint pos, int zoom, string language)
+        private string MakeTileImageUrl(GPoint pos, int zoom, string language)
         {
             string sec1 = string.Empty; // after &x=...
             string sec2 = string.Empty; // after &zoom=...
@@ -2184,8 +2184,8 @@ namespace GMap.NET.MapProviders
             return string.Format(UrlFormat, UrlFormatServer, GetServerNum(pos, 4), UrlFormatRequest, Version, language, pos.X, sec1, pos.Y, zoom, sec2, Server);
         }
 
-        static readonly string UrlFormatServer = "mt";
-        static readonly string UrlFormatRequest = "vt";
-        static readonly string UrlFormat = "http://{0}{1}.{10}/maps/{2}/lyrs={3}&hl={4}&x={5}{6}&y={7}&z={8}&s={9}";
+        private static readonly string UrlFormatServer = "mt";
+        private static readonly string UrlFormatRequest = "vt";
+        private static readonly string UrlFormat = "http://{0}{1}.{10}/maps/{2}/lyrs={3}&hl={4}&x={5}{6}&y={7}&z={8}&s={9}";
     }
 }

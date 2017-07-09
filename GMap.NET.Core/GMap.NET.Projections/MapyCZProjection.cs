@@ -11,13 +11,14 @@ namespace GMap.NET.Projections
    {
       public static readonly MapyCZProjection Instance = new MapyCZProjection();
 
-      static readonly double MinLatitude = 26;
-      static readonly double MaxLatitude = 76;
-      static readonly double MinLongitude = -26;
-      static readonly double MaxLongitude = 38;
+       private static readonly double MinLatitude = 26;
+       private static readonly double MaxLatitude = 76;
+       private static readonly double MinLongitude = -26;
+       private static readonly double MaxLongitude = 38;
 
       #region -- Common --
-      static int getLCM(int zone)
+
+       private static int getLCM(int zone)
       {
          if((zone < 1) || (zone > 60))
          {
@@ -29,7 +30,7 @@ namespace GMap.NET.Projections
          }
       }
 
-      static double roundoff(double xx, double yy)
+       private static double roundoff(double xx, double yy)
       {
          var x = xx;
          var y = yy;
@@ -37,8 +38,8 @@ namespace GMap.NET.Projections
          return x;
       }
 
-      static readonly double UTMSIZE = 2;
-      static readonly double UNITS = 1;
+       private static readonly double UTMSIZE = 2;
+       private static readonly double UNITS = 1;
 
       #endregion
 
@@ -51,7 +52,7 @@ namespace GMap.NET.Projections
          return pp;
       }
 
-      static long[] utmEEToPP(double east, double north)
+       private static long[] utmEEToPP(double east, double north)
       {
          var x = (Math.Round(east) - (-3700000.0)) * Math.Pow(2, 5);
          var y = (Math.Round(north) - (1300000.0)) * Math.Pow(2, 5);
@@ -59,7 +60,7 @@ namespace GMap.NET.Projections
          return new long[] { (long)x, (long)y };
       }
 
-      double[] wgsToUTM(double la, double lo, int zone)
+       private double[] wgsToUTM(double la, double lo, int zone)
       {
          var latrad = la;
          var lonrad = lo;
@@ -117,7 +118,7 @@ namespace GMap.NET.Projections
          return ret;
       }
 
-      double[] ppToUTMEE(double x, double y)
+       private double[] ppToUTMEE(double x, double y)
       {
          var north = y * Math.Pow(2, -5) + 1300000.0;
          var east = x * Math.Pow(2, -5) + (-3700000.0);
@@ -127,7 +128,7 @@ namespace GMap.NET.Projections
          return new double[] { east, north };
       }
 
-      double[] utmToWGS(double eastIn, double northIn, int zone)
+       private double[] utmToWGS(double eastIn, double northIn, int zone)
       {
          var k = 0.9996f;
          var a = Axis;

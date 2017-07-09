@@ -34,7 +34,7 @@ namespace GMap.NET.Internals
             internal static extern void ReleaseSRWLockShared(ref IntPtr srw);
         }
 
-        IntPtr LockSRW = IntPtr.Zero;
+        private IntPtr LockSRW = IntPtr.Zero;
 
         public FastReaderWriterLock()
         {
@@ -56,7 +56,7 @@ namespace GMap.NET.Internals
             Dispose(false);
         }
 
-        void Dispose(bool disposing)
+        private void Dispose(bool disposing)
         {
             if (pLock != null)
             {
@@ -65,10 +65,10 @@ namespace GMap.NET.Internals
             }
         }
 
-        FastResourceLock pLock;
+        private FastResourceLock pLock;
 #endif
 
-      static readonly bool UseNativeSRWLock = Stuff.IsRunningOnVistaOrLater() && IntPtr.Size == 4; // works only in 32-bit mode, any ideas on native 64-bit support? 
+        private static readonly bool UseNativeSRWLock = Stuff.IsRunningOnVistaOrLater() && IntPtr.Size == 4; // works only in 32-bit mode, any ideas on native 64-bit support? 
 
 #endif
 

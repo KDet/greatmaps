@@ -11,7 +11,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly LithuaniaReliefMapProvider Instance;
 
-      LithuaniaReliefMapProvider()
+       private LithuaniaReliefMapProvider()
       {
 
       }
@@ -23,7 +23,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("85F89205-1062-4F10-B536-90CD8B2F1B7D");
+       private readonly Guid id = new Guid("85F89205-1062-4F10-B536-90CD8B2F1B7D");
       public override Guid Id
       {
          get
@@ -32,7 +32,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "LithuaniaReliefMap";
+       private readonly string name = "LithuaniaReliefMap";
       public override string Name
       {
          get
@@ -58,13 +58,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://dc5.maps.lt/cache/mapslt_relief_vector/map/_alllayers/L09/R00001892/C000020df.jpg
 
          return string.Format(UrlFormat, zoom, pos.Y, pos.X);
       }
 
-      static readonly string UrlFormat = "http://dc5.maps.lt/cache/mapslt_relief_vector/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.png";
+       private static readonly string UrlFormat = "http://dc5.maps.lt/cache/mapslt_relief_vector/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.png";
    }
 }

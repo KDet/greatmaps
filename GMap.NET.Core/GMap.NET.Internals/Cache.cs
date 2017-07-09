@@ -1,46 +1,35 @@
-﻿
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using GMap.NET.CacheProviders;
+using System.Security.Cryptography;
+
 namespace GMap.NET.Internals
 {
-   using System;
-   using System.Diagnostics;
-   using System.IO;
-   using System.Text;
-   using GMap.NET.CacheProviders;
-   using System.Security.Cryptography;
-
-   internal class CacheLocator
+    public class CacheLocator
    {
-      private static string location;
+      private static string _location;
       public static string Location
       {
          get
          {
-            if(string.IsNullOrEmpty(location))
-            {
-               Reset();
-            }
-
-            return location;
+             if (string.IsNullOrEmpty(_location))
+                 Reset();
+             return _location;
          }
          set
          {
-            if(string.IsNullOrEmpty(value)) // setting to null resets to default
-            {
-               Reset();
-            }
-            else
-            {
-               location = value;
-            }
-
-            if(Delay)
-            {
-               Cache.Instance.CacheLocation = location;
-            }
+             if (string.IsNullOrEmpty(value)) // setting to null resets to default
+                 Reset();
+             else
+                 _location = value;
+             if (Delay)
+                 Cache.Instance.CacheLocation = _location;
          }
       }
 
-      static void Reset()
+        private static void Reset()
       {    
          string appDataLocation = GetApplicationDataFolderPath();
 
@@ -123,7 +112,7 @@ namespace GMap.NET.Internals
       /// </summary>
       public PureImageCache ImageCacheSecond;
 
-      string cache;
+       private string _cache;
 
       /// <summary>
       /// local cache location
@@ -132,11 +121,11 @@ namespace GMap.NET.Internals
       {
          get
          {
-            return cache;
+            return _cache;
          }
          set
          {
-            cache = value;
+            _cache = value;
 #if SQLite
             if(ImageCache is SQLitePureImageCache)
             {
@@ -216,9 +205,9 @@ namespace GMap.NET.Internals
 
       #region -- etc cache --
 
-      static readonly SHA1CryptoServiceProvider HashProvider = new SHA1CryptoServiceProvider();
+       private static readonly SHA1CryptoServiceProvider HashProvider = new SHA1CryptoServiceProvider();
 
-      void ConvertToHash(ref string s)
+       private void ConvertToHash(ref string s)
       {
           s = BitConverter.ToString(HashProvider.ComputeHash(Encoding.Unicode.GetBytes(s)));
       }
@@ -229,7 +218,7 @@ namespace GMap.NET.Internals
          {
             ConvertToHash(ref url);
 
-            string dir = Path.Combine(cache, type.ToString()) + Path.DirectorySeparatorChar;
+            string dir = Path.Combine(_cache, type.ToString()) + Path.DirectorySeparatorChar;
 
             // precrete dir
             if(!Directory.Exists(dir))
@@ -258,7 +247,7 @@ namespace GMap.NET.Internals
          {
             ConvertToHash(ref url);
 
-            string dir = Path.Combine(cache, type.ToString()) + Path.DirectorySeparatorChar;
+            string dir = Path.Combine(_cache, type.ToString()) + Path.DirectorySeparatorChar;
             string file = dir + url + ".txt";
 
             if(File.Exists(file))

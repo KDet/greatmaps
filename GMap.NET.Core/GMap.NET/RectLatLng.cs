@@ -164,7 +164,7 @@ namespace GMap.NET
          }
       }
 
-      bool NotEmpty;
+       private bool NotEmpty;
 
       /// <summary>
       /// returns true if coordinates wasn't assigned

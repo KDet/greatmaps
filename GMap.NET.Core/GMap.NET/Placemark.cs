@@ -6,7 +6,7 @@ namespace GMap.NET
    /// </summary>
    public struct Placemark
    {
-      string address;
+       private string address;
 
       /// <summary>
       /// the address

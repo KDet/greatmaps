@@ -12,7 +12,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly ArcGIS_DarbAE_Q2_2011_NAVTQ_Eng_V5_MapProvider Instance;
 
-      ArcGIS_DarbAE_Q2_2011_NAVTQ_Eng_V5_MapProvider()
+       private ArcGIS_DarbAE_Q2_2011_NAVTQ_Eng_V5_MapProvider()
       {
          MaxZoom = 12;
          Area = RectLatLng.FromLTRB(49.8846923723311, 28.0188609585523, 58.2247031977662, 21.154115956732);
@@ -26,7 +26,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("E03CFEDF-9277-49B3-9912-D805347F934B");
+       private readonly Guid id = new Guid("E03CFEDF-9277-49B3-9912-D805347F934B");
       public override Guid Id
       {
          get
@@ -35,7 +35,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "ArcGIS_DarbAE_Q2_2011_NAVTQ_Eng_V5_MapProvider";
+       private readonly string name = "ArcGIS_DarbAE_Q2_2011_NAVTQ_Eng_V5_MapProvider";
       public override string Name
       {
          get
@@ -52,7 +52,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -74,13 +74,13 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom)
+       private string MakeTileImageUrl(GPoint pos, int zoom)
       {
          // http://www.darb.ae/ArcGIS/rest/services/BaseMaps/Q2_2011_NAVTQ_Eng_V5/MapServer/tile/0/121/144
 
          return string.Format(UrlFormat, zoom, pos.Y, pos.X);
       }
 
-      static readonly string UrlFormat = "http://www.darb.ae/ArcGIS/rest/services/BaseMaps/Q2_2011_NAVTQ_Eng_V5/MapServer/tile/{0}/{1}/{2}";
+       private static readonly string UrlFormat = "http://www.darb.ae/ArcGIS/rest/services/BaseMaps/Q2_2011_NAVTQ_Eng_V5/MapServer/tile/{0}/{1}/{2}";
    }
 }

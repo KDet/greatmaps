@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly NearSatelliteMapProvider Instance;
 
-      NearSatelliteMapProvider()
+       private NearSatelliteMapProvider()
       {
       }
 
@@ -21,7 +21,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("56D00148-05B7-408D-8F7A-8D7250FF8121");
+       private readonly Guid id = new Guid("56D00148-05B7-408D-8F7A-8D7250FF8121");
       public override Guid Id
       {
          get
@@ -30,7 +30,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "NearSatelliteMap";
+       private readonly string name = "NearSatelliteMap";
       public override string Name
       {
          get
@@ -48,7 +48,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          // http://web2.nearmap.com/maps/hl=en&x=14&y=8&z=5&nml=Vert&s=kdj00
          // http://web2.nearmap.com/maps/hl=en&x=6&y=4&z=4&nml=Vert
@@ -58,6 +58,6 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, GetServerNum(pos, 4), pos.X, pos.Y, zoom, GetSafeString(pos));
       }
 
-      static readonly string UrlFormat = "http://web{0}.nearmap.com/maps/hl=en&x={1}&y={2}&z={3}&nml=Vert{4}";
+       private static readonly string UrlFormat = "http://web{0}.nearmap.com/maps/hl=en&x={1}&y={2}&z={3}&nml=Vert{4}";
    }
 }

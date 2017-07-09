@@ -10,7 +10,7 @@ namespace GMap.NET.MapProviders
    {
       public static readonly GoogleChinaHybridMapProvider Instance;
 
-      GoogleChinaHybridMapProvider()
+       private GoogleChinaHybridMapProvider()
       {
          RefererUrl = string.Format("http://ditu.{0}/", ServerChina);
       }
@@ -24,7 +24,7 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-      readonly Guid id = new Guid("B8A2A78D-1C49-45D0-8F03-9B95C83116B7");
+       private readonly Guid id = new Guid("B8A2A78D-1C49-45D0-8F03-9B95C83116B7");
       public override Guid Id
       {
          get
@@ -33,7 +33,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      readonly string name = "GoogleChinaHybridMap";
+       private readonly string name = "GoogleChinaHybridMap";
       public override string Name
       {
          get
@@ -42,7 +42,7 @@ namespace GMap.NET.MapProviders
          }
       }
 
-      GMapProvider[] overlays;
+       private GMapProvider[] overlays;
       public override GMapProvider[] Overlays
       {
          get
@@ -64,7 +64,7 @@ namespace GMap.NET.MapProviders
 
       #endregion
 
-      string MakeTileImageUrl(GPoint pos, int zoom, string language)
+       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
       {
          string sec1 = string.Empty; // after &x=...
          string sec2 = string.Empty; // after &zoom=...
@@ -73,9 +73,9 @@ namespace GMap.NET.MapProviders
          return string.Format(UrlFormat, UrlFormatServer, GetServerNum(pos, 4), UrlFormatRequest, Version, ChinaLanguage, pos.X, sec1, pos.Y, zoom, sec2, ServerChina);
       }
 
-      static readonly string ChinaLanguage = "zh-CN";
-      static readonly string UrlFormatServer = "mt";
-      static readonly string UrlFormatRequest = "vt";
-      static readonly string UrlFormat = "http://{0}{1}.{10}/{2}/imgtp=png32&lyrs={3}&hl={4}&gl=cn&x={5}{6}&y={7}&z={8}&s={9}";
+       private static readonly string ChinaLanguage = "zh-CN";
+       private static readonly string UrlFormatServer = "mt";
+       private static readonly string UrlFormatRequest = "vt";
+       private static readonly string UrlFormat = "http://{0}{1}.{10}/{2}/imgtp=png32&lyrs={3}&hl={4}&gl=cn&x={5}{6}&y={7}&z={8}&s={9}";
    }
 }
