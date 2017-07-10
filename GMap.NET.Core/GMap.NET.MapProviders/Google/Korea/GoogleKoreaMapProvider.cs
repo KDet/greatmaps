@@ -1,67 +1,64 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
+	/// <summary>
+	/// GoogleKoreaMap provider
+	/// </summary>
+	public class GoogleKoreaMapProvider : GoogleMapProviderBase
+	{
+		public static readonly GoogleKoreaMapProvider Instance;
 
-   /// <summary>
-   /// GoogleKoreaMap provider
-   /// </summary>
-   public class GoogleKoreaMapProvider : GoogleMapProviderBase
-   {
-      public static readonly GoogleKoreaMapProvider Instance;
+		private GoogleKoreaMapProvider()
+		{
+			Area = new RectLatLng(38.6597777307125, 125.738525390625, 4.02099609375, 4.42072406219614);
+		}
 
-       private GoogleKoreaMapProvider()
-      {
-         Area = new RectLatLng(38.6597777307125, 125.738525390625, 4.02099609375, 4.42072406219614);
-      }
+		static GoogleKoreaMapProvider()
+		{
+			Instance = new GoogleKoreaMapProvider();
+		}
 
-      static GoogleKoreaMapProvider()
-      {
-         Instance = new GoogleKoreaMapProvider();
-      }
+		public string Version = "kr1.12";
 
-      public string Version = "kr1.12";
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("0079D360-CB1B-4986-93D5-AD299C8E20E6");
 
-       private readonly Guid id = new Guid("0079D360-CB1B-4986-93D5-AD299C8E20E6");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "GoogleKoreaMap";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "GoogleKoreaMap";
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		public override string Name
+		{
+			get { return name; }
+		}
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
-      #endregion
+			return GetTileImageUsingHttp(url);
+		}
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         string sec1 = string.Empty;
-         string sec2 = string.Empty;
-         GetSecureWords(pos, out sec1, out sec2);
+		#endregion
 
-         return string.Format(UrlFormat, UrlFormatServer, GetServerNum(pos, 4), UrlFormatRequest, Version, language, pos.X, sec1, pos.Y, zoom, sec2, ServerKorea);
-      }
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			var sec1 = string.Empty;
+			var sec2 = string.Empty;
+			GetSecureWords(pos, out sec1, out sec2);
 
-       private static readonly string UrlFormatServer = "mt";
-       private static readonly string UrlFormatRequest = "mt";
-       private static readonly string UrlFormat = "http://{0}{1}.{10}/{2}/v={3}&hl={4}&x={5}{6}&y={7}&z={8}&s={9}";
-   }
+			return string.Format(UrlFormat, UrlFormatServer, GetServerNum(pos, 4), UrlFormatRequest, Version, language, pos.X,
+				sec1, pos.Y, zoom, sec2, ServerKorea);
+		}
+
+		private static readonly string UrlFormatServer = "mt";
+		private static readonly string UrlFormatRequest = "mt";
+		private static readonly string UrlFormat = "http://{0}{1}.{10}/{2}/v={3}&hl={4}&x={5}{6}&y={7}&z={8}&s={9}";
+	}
 }

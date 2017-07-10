@@ -1,60 +1,57 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
+	/// <summary>
+	/// ArcGIS_Topo_US_2D_Map provider, http://server.arcgisonline.com
+	/// </summary>
+	public class ArcGIS_Topo_US_2D_MapProvider : ArcGISMapPlateCarreeProviderBase
+	{
+		public static readonly ArcGIS_Topo_US_2D_MapProvider Instance;
 
-   /// <summary>
-   /// ArcGIS_Topo_US_2D_Map provider, http://server.arcgisonline.com
-   /// </summary>
-   public class ArcGIS_Topo_US_2D_MapProvider : ArcGISMapPlateCarreeProviderBase
-   {
-      public static readonly ArcGIS_Topo_US_2D_MapProvider Instance;
+		private ArcGIS_Topo_US_2D_MapProvider()
+		{
+		}
 
-       private ArcGIS_Topo_US_2D_MapProvider()
-      {
-      }
+		static ArcGIS_Topo_US_2D_MapProvider()
+		{
+			Instance = new ArcGIS_Topo_US_2D_MapProvider();
+		}
 
-      static ArcGIS_Topo_US_2D_MapProvider()
-      {
-         Instance = new ArcGIS_Topo_US_2D_MapProvider();
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("7652CC72-5C92-40F5-B572-B8FEAA728F6D");
 
-       private readonly Guid id = new Guid("7652CC72-5C92-40F5-B572-B8FEAA728F6D");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "ArcGIS_Topo_US_2D_Map";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "ArcGIS_Topo_US_2D_Map";
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		public override string Name
+		{
+			get { return name; }
+		}
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
-      #endregion
+			return GetTileImageUsingHttp(url);
+		}
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         // http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/4/3/15
+		#endregion
 
-         return string.Format(UrlFormat, zoom, pos.Y, pos.X);
-      }
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			// http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/4/3/15
 
-       private static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/{0}/{1}/{2}";
-   }
+			return string.Format(UrlFormat, zoom, pos.Y, pos.X);
+		}
+
+		private static readonly string UrlFormat =
+			"http://server.arcgisonline.com/ArcGIS/rest/services/NGS_Topo_US_2D/MapServer/tile/{0}/{1}/{2}";
+	}
 }

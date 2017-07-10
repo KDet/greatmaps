@@ -1,115 +1,110 @@
 ﻿
+using System;
+using GMap.NET.Internals;
+using GMap.NET.Projections;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
-   using GMap.NET.Projections;
-   using GMap.NET.Internals;
+	public abstract class YandexMapProviderBase : GMapProvider
+	{
+		#region GMapProvider Members
 
-   public abstract class YandexMapProviderBase : GMapProvider
-   {
-      #region GMapProvider Members
-      public override Guid Id
-      {
-         get
-         {
-            throw new NotImplementedException();
-         }
-      }
+		public override Guid Id
+		{
+			get { throw new NotImplementedException(); }
+		}
 
-      public override string Name
-      {
-         get
-         {
-            throw new NotImplementedException();
-         }
-      }
+		public override string Name
+		{
+			get { throw new NotImplementedException(); }
+		}
 
-      public override PureProjection Projection
-      {
-         get
-         {
-            return MercatorProjectionYandex.Instance;
-         }
-      }
+		public override PureProjection Projection
+		{
+			get { return MercatorProjectionYandex.Instance; }
+		}
 
-       private GMapProvider[] overlays;
-      public override GMapProvider[] Overlays
-      {
-         get
-         {
-            if(overlays == null)
-            {
-               overlays = new GMapProvider[] { this };
-            }
-            return overlays;
-         }
-      }
+		private GMapProvider[] overlays;
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         throw new NotImplementedException();
-      }
-      #endregion
+		public override GMapProvider[] Overlays
+		{
+			get
+			{
+				if (overlays == null)
+				{
+					overlays = new GMapProvider[] {this};
+				}
+				return overlays;
+			}
+		}
 
-      protected string Version = "4.6.9";
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			throw new NotImplementedException();
+		}
 
-      public readonly string Server /*d{'_'}b*/ = /*{^_^}*/ Stuff.GString /*{"_"}*/ (/* ;}~ */"MECxW6okUK3Ir7a9ue/vIA=="/* ;}~ */);
-      public readonly string ServerRu /*d{'_'}b*/ = /*{^_^}*/ Stuff.GString /*{"_"}*/ (/* ;}~ */"MECxW6okUK0FRlRPbF0BQg=="/* ;}~ */);
-      public readonly string ServerCom /*d{'_'}b*/ = /*{^_^}*/ Stuff.GString/*{"_"}*/ (/* ;}~ */"MECxW6okUK2JNHOW5AuimA=="/* ;}~ */);     
-   }
+		#endregion
 
-   /// <summary>
-   /// YenduxMap provider
-   /// </summary>
-   public class YandexMapProvider : YandexMapProviderBase
-   {
-      public static readonly YandexMapProvider Instance;
+		protected string Version = "4.6.9";
 
-       private YandexMapProvider()
-      {
-         RefererUrl = "http://" + ServerCom + "/";
-      }
+		public readonly string Server /*d{'_'}b*/ = /*{^_^}*/ Stuff.GString /*{"_"}*/( /* ;}~ */"MECxW6okUK3Ir7a9ue/vIA=="
+			/* ;}~ */);
 
-      static YandexMapProvider()
-      {
-         Instance = new YandexMapProvider();
-      }
+		public readonly string ServerRu /*d{'_'}b*/ = /*{^_^}*/ Stuff.GString /*{"_"}*/( /* ;}~ */"MECxW6okUK0FRlRPbF0BQg=="
+			/* ;}~ */);
 
-      #region GMapProvider Members
+		public readonly string ServerCom /*d{'_'}b*/ = /*{^_^}*/ Stuff.GString /*{"_"}*/( /* ;}~ */"MECxW6okUK2JNHOW5AuimA=="
+			/* ;}~ */);
+	}
 
-       private readonly Guid id = new Guid("82DC969D-0491-40F3-8C21-4D90B67F47EB");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+	/// <summary>
+	/// YenduxMap provider
+	/// </summary>
+	public class YandexMapProvider : YandexMapProviderBase
+	{
+		public static readonly YandexMapProvider Instance;
 
-       private readonly string name = "YandexMap";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private YandexMapProvider()
+		{
+			RefererUrl = "http://" + ServerCom + "/";
+		}
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		static YandexMapProvider()
+		{
+			Instance = new YandexMapProvider();
+		}
 
-         return GetTileImageUsingHttp(url);
-      }
+		#region GMapProvider Members
 
-      #endregion
+		private readonly Guid id = new Guid("82DC969D-0491-40F3-8C21-4D90B67F47EB");
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         return string.Format(UrlFormat, UrlServer, GetServerNum(pos, 4) + 1, Version, pos.X, pos.Y, zoom, language, Server);
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private static readonly string UrlServer = "vec";
-       private static readonly string UrlFormat = "http://{0}0{1}.{7}/tiles?l=map&v={2}&x={3}&y={4}&z={5}&lang={6}";               
-   }
+		private readonly string name = "YandexMap";
+
+		public override string Name
+		{
+			get { return name; }
+		}
+
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
+
+			return GetTileImageUsingHttp(url);
+		}
+
+		#endregion
+
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			return string.Format(UrlFormat, UrlServer, GetServerNum(pos, 4) + 1, Version, pos.X, pos.Y, zoom, language, Server);
+		}
+
+		private static readonly string UrlServer = "vec";
+		private static readonly string UrlFormat = "http://{0}0{1}.{7}/tiles?l=map&v={2}&x={3}&y={4}&z={5}&lang={6}";
+	}
 }

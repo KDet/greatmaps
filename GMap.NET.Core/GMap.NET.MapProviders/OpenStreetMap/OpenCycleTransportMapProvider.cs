@@ -1,73 +1,70 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
+	/// <summary>
+	/// OpenCycleMap Transport provider - http://www.opencyclemap.org
+	/// </summary>
+	public class OpenCycleTransportMapProvider : OpenStreetMapProviderBase
+	{
+		public static readonly OpenCycleTransportMapProvider Instance;
 
-   /// <summary>
-   /// OpenCycleMap Transport provider - http://www.opencyclemap.org
-   /// </summary>
-   public class OpenCycleTransportMapProvider : OpenStreetMapProviderBase
-   {
-      public static readonly OpenCycleTransportMapProvider Instance;
+		private OpenCycleTransportMapProvider()
+		{
+			RefererUrl = "http://www.opencyclemap.org/";
+		}
 
-       private OpenCycleTransportMapProvider()
-      {
-         RefererUrl = "http://www.opencyclemap.org/";
-      }
+		static OpenCycleTransportMapProvider()
+		{
+			Instance = new OpenCycleTransportMapProvider();
+		}
 
-      static OpenCycleTransportMapProvider()
-      {
-         Instance = new OpenCycleTransportMapProvider();
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("AF66DF88-AD25-43A9-8F82-56FCA49A748A");
 
-       private readonly Guid id = new Guid("AF66DF88-AD25-43A9-8F82-56FCA49A748A");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "OpenCycleTransportMap";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "OpenCycleTransportMap";
 
-       private GMapProvider[] overlays;
-      public override GMapProvider[] Overlays
-      {
-         get
-         {
-            if(overlays == null)
-            {
-               overlays = new GMapProvider[] { this };
-            }
-            return overlays;
-         }
-      }
+		public override string Name
+		{
+			get { return name; }
+		}
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, string.Empty);
+		private GMapProvider[] overlays;
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override GMapProvider[] Overlays
+		{
+			get
+			{
+				if (overlays == null)
+				{
+					overlays = new GMapProvider[] {this};
+				}
+				return overlays;
+			}
+		}
 
-      #endregion
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, string.Empty);
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         char letter = ServerLetters[GMapProvider.GetServerNum(pos, 3)];
-         return string.Format(UrlFormat, letter, zoom, pos.X, pos.Y);
-      }
+			return GetTileImageUsingHttp(url);
+		}
 
-       private static readonly string UrlFormat = "http://{0}.tile2.opencyclemap.org/transport/{1}/{2}/{3}.png";
-   }
+		#endregion
+
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			var letter = ServerLetters[GetServerNum(pos, 3)];
+			return string.Format(UrlFormat, letter, zoom, pos.X, pos.Y);
+		}
+
+		private static readonly string UrlFormat = "http://{0}.tile2.opencyclemap.org/transport/{1}/{2}/{3}.png";
+	}
 }

@@ -1,327 +1,324 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Threading;
+using System.Windows.Forms;
+using GMap.NET.Internals;
+using GMap.NET.MapProviders;
+using GMap.NET.WindowsForms;
+
 namespace GMap.NET
 {
-   using System.Collections.Generic;
-   using System.ComponentModel;
-   using System.Windows.Forms;
-   using GMap.NET.Internals;
-   using System;
-   using GMap.NET.MapProviders;
-   using System.Threading;
-   using GMap.NET.WindowsForms;
-   using GMap.NET.WindowsForms.Markers;
-using System.Drawing;
+	/// <summary>
+	/// form helping to prefetch tiles on local db
+	/// </summary>
+	public partial class TilePrefetcher : Form
+	{
+		private BackgroundWorker _worker = new BackgroundWorker();
+		private List<GPoint> _list;
+		private int _zoom;
+		private GMapProvider _provider;
+		private int _sleep;
+		private int _all;
+		public bool ShowCompleteMessage = false;
+		private RectLatLng _area;
+		private GSize _maxOfTiles;
+		public GMapOverlay Overlay;
+		private int _retry;
+		public bool Shuffle = true;
 
-   /// <summary>
-   /// form helping to prefetch tiles on local db
-   /// </summary>
-   public partial class TilePrefetcher : Form
-   {
-       private BackgroundWorker worker = new BackgroundWorker();
-       private List<GPoint> list;
-       private int zoom;
-       private GMapProvider provider;
-       private int sleep;
-       private int all;
-      public bool ShowCompleteMessage = false;
-       private RectLatLng area;
-       private GMap.NET.GSize maxOfTiles;
-      public GMapOverlay Overlay;
-       private int retry;
-      public bool Shuffle = true;
+		public TilePrefetcher()
+		{
+			InitializeComponent();
 
-      public TilePrefetcher()
-      {
-         InitializeComponent();
+			GMaps.Instance.OnTileCacheComplete += OnTileCacheComplete;
+			GMaps.Instance.OnTileCacheStart += OnTileCacheStart;
+			GMaps.Instance.OnTileCacheProgress += OnTileCacheProgress;
 
-         GMaps.Instance.OnTileCacheComplete += new TileCacheComplete(OnTileCacheComplete);
-         GMaps.Instance.OnTileCacheStart += new TileCacheStart(OnTileCacheStart);
-         GMaps.Instance.OnTileCacheProgress += new TileCacheProgress(OnTileCacheProgress);
+			_worker.WorkerReportsProgress = true;
+			_worker.WorkerSupportsCancellation = true;
+			_worker.ProgressChanged += worker_ProgressChanged;
+			_worker.DoWork += worker_DoWork;
+			_worker.RunWorkerCompleted += worker_RunWorkerCompleted;
+		}
 
-         worker.WorkerReportsProgress = true;
-         worker.WorkerSupportsCancellation = true;
-         worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
-         worker.DoWork += new DoWorkEventHandler(worker_DoWork);
-         worker.RunWorkerCompleted += new RunWorkerCompletedEventHandler(worker_RunWorkerCompleted);
-      }
+		private readonly AutoResetEvent _done = new AutoResetEvent(true);
 
-       private readonly AutoResetEvent done = new AutoResetEvent(true);
+		private void OnTileCacheComplete()
+		{
+			if (!IsDisposed)
+			{
+				_done.Set();
 
-       private void OnTileCacheComplete()
-      {
-         if(!IsDisposed)
-         {
-            done.Set();
+				MethodInvoker m = delegate
+				{
+					label2.Text = "all tiles saved";
+				};
+				Invoke(m);
+			}
+		}
 
-            MethodInvoker m = delegate
-            {
-               label2.Text = "all tiles saved";
-            };
-            Invoke(m);
-         }
-      }
+		private void OnTileCacheStart()
+		{
+			if (!IsDisposed)
+			{
+				_done.Reset();
 
-       private void OnTileCacheStart()
-      {
-         if(!IsDisposed)
-         {
-            done.Reset();
+				MethodInvoker m = delegate
+				{
+					label2.Text = "saving tiles...";
+				};
+				Invoke(m);
+			}
+		}
 
-            MethodInvoker m = delegate
-            {
-               label2.Text = "saving tiles...";
-            };
-            Invoke(m);
-         }
-      }
+		private void OnTileCacheProgress(int left)
+		{
+			if (!IsDisposed)
+			{
+				MethodInvoker m = delegate
+				{
+					label2.Text = left + " tile to save...";
+				};
+				Invoke(m);
+			}
+		}
 
-       private void OnTileCacheProgress(int left)
-      {
-         if(!IsDisposed)
-         {
-            MethodInvoker m = delegate
-            {
-               label2.Text = left + " tile to save...";
-            };
-            Invoke(m);
-         }
-      }
+		public void Start(RectLatLng area, int zoom, GMapProvider provider, int sleep, int retry)
+		{
+			if (!_worker.IsBusy)
+			{
+				label1.Text = "...";
+				progressBarDownload.Value = 0;
 
-      public void Start(RectLatLng area, int zoom, GMapProvider provider, int sleep, int retry)
-      {
-         if(!worker.IsBusy)
-         {
-            this.label1.Text = "...";
-            this.progressBarDownload.Value = 0;
+				_area = area;
+				_zoom = zoom;
+				_provider = provider;
+				_sleep = sleep;
+				_retry = retry;
 
-            this.area = area;
-            this.zoom = zoom;
-            this.provider = provider;
-            this.sleep = sleep;
-            this.retry = retry;
+				GMaps.Instance.UseMemoryCache = false;
+				GMaps.Instance.CacheOnIdleRead = false;
+				GMaps.Instance.BoostCacheEngine = true;
 
-            GMaps.Instance.UseMemoryCache = false;
-            GMaps.Instance.CacheOnIdleRead = false;
-            GMaps.Instance.BoostCacheEngine = true;
+				if (Overlay != null)
+				{
+					Overlay.Markers.Clear();
+				}
 
-            if (Overlay != null)
-            {
-                Overlay.Markers.Clear();
-            }
+				_worker.RunWorkerAsync();
 
-            worker.RunWorkerAsync();
+				ShowDialog();
+			}
+		}
 
-            this.ShowDialog();
-         }
-      }
+		public void Stop()
+		{
+			GMaps.Instance.OnTileCacheComplete -= OnTileCacheComplete;
+			GMaps.Instance.OnTileCacheStart -= OnTileCacheStart;
+			GMaps.Instance.OnTileCacheProgress -= OnTileCacheProgress;
 
-      public void Stop()
-      {
-         GMaps.Instance.OnTileCacheComplete -= new TileCacheComplete(OnTileCacheComplete);
-         GMaps.Instance.OnTileCacheStart -= new TileCacheStart(OnTileCacheStart);
-         GMaps.Instance.OnTileCacheProgress -= new TileCacheProgress(OnTileCacheProgress);
+			_done.Set();
 
-         done.Set();
+			if (_worker.IsBusy)
+			{
+				_worker.CancelAsync();
+			}
 
-         if(worker.IsBusy)
-         {
-            worker.CancelAsync();
-         }
+			GMaps.Instance.CancelTileCaching();
 
-         GMaps.Instance.CancelTileCaching();
+			_done.Close();
+		}
 
-         done.Close();
-      }
+		private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+		{
+			if (ShowCompleteMessage)
+			{
+				if (!e.Cancelled)
+				{
+					MessageBox.Show(this, "Prefetch Complete! => " + ((int) e.Result) + " of " + _all);
+				}
+				else
+				{
+					MessageBox.Show(this, "Prefetch Canceled! => " + ((int) e.Result) + " of " + _all);
+				}
+			}
 
-       private void worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-      {
-         if(ShowCompleteMessage)
-         {
-            if(!e.Cancelled)
-            {
-               MessageBox.Show(this, "Prefetch Complete! => " + ((int)e.Result).ToString() + " of " + all);
-            }
-            else
-            {
-               MessageBox.Show(this, "Prefetch Canceled! => " + ((int)e.Result).ToString() + " of " + all);
-            }
-         }
+			_list.Clear();
 
-         list.Clear();
+			GMaps.Instance.UseMemoryCache = true;
+			GMaps.Instance.CacheOnIdleRead = true;
+			GMaps.Instance.BoostCacheEngine = false;
 
-         GMaps.Instance.UseMemoryCache = true;
-         GMaps.Instance.CacheOnIdleRead = true;
-         GMaps.Instance.BoostCacheEngine = false;
+			_worker.Dispose();
 
-         worker.Dispose();
+			Close();
+		}
 
-         this.Close();
-      }
+		private bool CacheTiles(int zoom, GPoint p)
+		{
+			foreach (var pr in _provider.Overlays)
+			{
+				Exception ex;
+				PureImage img;
 
-       private bool CacheTiles(int zoom, GPoint p)
-      {
-         foreach(var pr in provider.Overlays)
-         {
-            Exception ex;
-            PureImage img;
+				// tile number inversion(BottomLeft -> TopLeft)
+				if (pr.InvertedAxisY)
+				{
+					img = GMaps.Instance.GetImageFrom(pr, new GPoint(p.X, _maxOfTiles.Height - p.Y), zoom, out ex);
+				}
+				else // ok
+				{
+					img = GMaps.Instance.GetImageFrom(pr, p, zoom, out ex);
+				}
 
-            // tile number inversion(BottomLeft -> TopLeft)
-            if(pr.InvertedAxisY)
-            {
-               img = GMaps.Instance.GetImageFrom(pr, new GPoint(p.X, maxOfTiles.Height - p.Y), zoom, out ex);
-            }
-            else // ok
-            {
-               img = GMaps.Instance.GetImageFrom(pr, p, zoom, out ex);
-            }
+				if (img != null)
+				{
+					img.Dispose();
+					img = null;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			return true;
+		}
 
-            if(img != null)
-            {
-               img.Dispose();
-               img = null;
-            }
-            else
-            {
-               return false;
-            }
-         }
-         return true;
-      }
+		public readonly Queue<GPoint> CachedTiles = new Queue<GPoint>();
 
-      public readonly Queue<GPoint> CachedTiles = new Queue<GPoint>();
+		private void worker_DoWork(object sender, DoWorkEventArgs e)
+		{
+			if (_list != null)
+			{
+				_list.Clear();
+				_list = null;
+			}
+			_list = _provider.Projection.GetAreaTileList(_area, _zoom, 0);
+			_maxOfTiles = _provider.Projection.GetTileMatrixMaxXY(_zoom);
+			_all = _list.Count;
 
-       private void worker_DoWork(object sender, DoWorkEventArgs e)
-      {
-         if(list != null)
-         {
-            list.Clear();
-            list = null;
-         }
-         list = provider.Projection.GetAreaTileList(area, zoom, 0);
-         maxOfTiles = provider.Projection.GetTileMatrixMaxXY(zoom);
-         all = list.Count;
+			var countOk = 0;
+			var retryCount = 0;
 
-         int countOk = 0;
-         int retryCount = 0;
+			if (Shuffle)
+			{
+				Stuff.Shuffle(_list);
+			}
 
-         if(Shuffle)
-         {
-            Stuff.Shuffle<GPoint>(list);
-         }
+			lock (this)
+			{
+				CachedTiles.Clear();
+			}
 
-         lock(this)
-         {
-            CachedTiles.Clear();
-         }
+			for (var i = 0; i < _all; i++)
+			{
+				if (_worker.CancellationPending)
+					break;
 
-         for(int i = 0; i < all; i++)
-         {
-            if(worker.CancellationPending)
-               break;
+				var p = _list[i];
+				{
+					if (CacheTiles(_zoom, p))
+					{
+						if (Overlay != null)
+						{
+							lock (this)
+							{
+								CachedTiles.Enqueue(p);
+							}
+						}
+						countOk++;
+						retryCount = 0;
+					}
+					else
+					{
+						if (++retryCount <= _retry) // retry only one
+						{
+							i--;
+							Thread.Sleep(1111);
+							continue;
+						}
+						retryCount = 0;
+					}
+				}
 
-            GPoint p = list[i];
-            {
-               if(CacheTiles(zoom, p))
-               {
-                   if (Overlay != null)
-                   {
-                       lock (this)
-                       {
-                           CachedTiles.Enqueue(p);
-                       }
-                   }
-                  countOk++;
-                  retryCount = 0;
-               }
-               else
-               {
-                  if(++retryCount <= retry) // retry only one
-                  {
-                     i--;
-                     System.Threading.Thread.Sleep(1111);
-                     continue;
-                  }
-                  else
-                  {
-                     retryCount = 0;
-                  }
-               }
-            }
+				_worker.ReportProgress((i + 1)*100/_all, i + 1);
 
-            worker.ReportProgress((int)((i + 1) * 100 / all), i + 1);
+				if (_sleep > 0)
+				{
+					Thread.Sleep(_sleep);
+				}
+			}
 
-            if (sleep > 0)
-            {
-                System.Threading.Thread.Sleep(sleep);
-            }
-         }
+			e.Result = countOk;
 
-         e.Result = countOk;
+			if (!IsDisposed)
+			{
+				_done.WaitOne();
+			}
+		}
 
-         if(!IsDisposed)
-         {
-            done.WaitOne();
-         }
-      }
+		private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+		{
+			label1.Text = "Fetching tile at zoom (" + _zoom + "): " + ((int) e.UserState) + " of " + _all + ", complete: " +
+			              e.ProgressPercentage + "%";
+			progressBarDownload.Value = e.ProgressPercentage;
 
-       private void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-      {
-         this.label1.Text = "Fetching tile at zoom (" + zoom + "): " + ((int)e.UserState).ToString() + " of " + all + ", complete: " + e.ProgressPercentage.ToString() + "%";
-         this.progressBarDownload.Value = e.ProgressPercentage;
+			if (Overlay != null)
+			{
+				GPoint? l = null;
 
-         if (Overlay != null)
-         {
-             GPoint? l = null;
+				lock (this)
+				{
+					if (CachedTiles.Count > 0)
+					{
+						l = CachedTiles.Dequeue();
+					}
+				}
 
-             lock (this)
-             {
-                 if (CachedTiles.Count > 0)
-                 {
-                     l = CachedTiles.Dequeue();
-                 }
-             }
+				if (l.HasValue)
+				{
+					var px = Overlay.Control.MapProvider.Projection.FromTileXYToPixel(l.Value);
+					var p = Overlay.Control.MapProvider.Projection.FromPixelToLatLng(px, _zoom);
 
-             if (l.HasValue)
-             {
-                 var px = Overlay.Control.MapProvider.Projection.FromTileXYToPixel(l.Value);
-                 var p = Overlay.Control.MapProvider.Projection.FromPixelToLatLng(px, zoom);
+					var r1 = Overlay.Control.MapProvider.Projection.GetGroundResolution(_zoom, p.Lat);
+					var r2 = Overlay.Control.MapProvider.Projection.GetGroundResolution((int) Overlay.Control.Zoom, p.Lat);
+					var sizeDiff = r2/r1;
 
-                 var r1 = Overlay.Control.MapProvider.Projection.GetGroundResolution(zoom, p.Lat);
-                 var r2 = Overlay.Control.MapProvider.Projection.GetGroundResolution((int)Overlay.Control.Zoom, p.Lat);
-                 var sizeDiff = r2 / r1;
+					var m = new GMapMarkerTile(p, (int) (Overlay.Control.MapProvider.Projection.TileSize.Width/sizeDiff));
+					Overlay.Markers.Add(m);
+				}
+			}
+		}
 
-                 GMapMarkerTile m = new GMapMarkerTile(p, (int)(Overlay.Control.MapProvider.Projection.TileSize.Width / sizeDiff));
-                 Overlay.Markers.Add(m);
-             }
-         }
-      }
+		private void Prefetch_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (e.KeyCode == Keys.Escape)
+			{
+				Close();
+			}
+		}
 
-      private void Prefetch_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
-      {
-         if(e.KeyCode == Keys.Escape)
-         {
-            this.Close();
-         }
-      }
+		private void Prefetch_FormClosed(object sender, FormClosedEventArgs e)
+		{
+			Stop();
+		}
+	}
 
-      private void Prefetch_FormClosed(object sender, FormClosedEventArgs e)
-      {
-         this.Stop();
-      }
-   }
+	internal class GMapMarkerTile : GMapMarker
+	{
+		private static Brush _fill = new SolidBrush(Color.FromArgb(155, Color.Blue));
 
-    internal class GMapMarkerTile : GMapMarker
-   {
-       private static  Brush Fill = new SolidBrush(Color.FromArgb(155, Color.Blue));
+		public GMapMarkerTile(PointLatLng p, int size) : base(p)
+		{
+			Size = new Size(size, size);
+		}
 
-      public GMapMarkerTile(PointLatLng p, int size) : base(p)
-      {
-         Size = new System.Drawing.Size(size, size);
-      }
-
-      public override void OnRender(Graphics g)
-      {
-         g.FillRectangle(Fill, new System.Drawing.Rectangle(LocalPosition.X, LocalPosition.Y, Size.Width, Size.Height));
-      }
-   }
+		public override void OnRender(Graphics g)
+		{
+			g.FillRectangle(_fill, new Rectangle(LocalPosition.X, LocalPosition.Y, Size.Width, Size.Height));
+		}
+	}
 }

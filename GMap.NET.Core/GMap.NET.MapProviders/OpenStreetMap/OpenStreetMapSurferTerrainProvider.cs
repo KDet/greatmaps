@@ -1,12 +1,10 @@
 ﻿
 namespace GMap.NET.MapProviders
 {
-   using System;
-
 #if OpenStreetMapSurfer
-   /// <summary>
-   /// OpenStreetMapSurferTerrain provider
-   /// </summary>
+	/// <summary>
+	/// OpenStreetMapSurferTerrain provider
+	/// </summary>
    public class OpenStreetMapSurferTerrainProvider : OpenStreetMapProviderBase
    {
       public static readonly OpenStreetMapSurferTerrainProvider Instance;

@@ -1,65 +1,62 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
+	/// <summary>
+	/// Lithuania3dMap (2.5d) provider
+	/// </summary>
+	public class Lithuania3dMapProvider : LithuaniaMapProviderBase
+	{
+		public static readonly Lithuania3dMapProvider Instance;
 
-   /// <summary>
-   /// Lithuania3dMap (2.5d) provider
-   /// </summary>
-   public class Lithuania3dMapProvider : LithuaniaMapProviderBase
-   {
-      public static readonly Lithuania3dMapProvider Instance;
+		private Lithuania3dMapProvider()
+		{
+		}
 
-       private Lithuania3dMapProvider()
-      {
-      }
+		static Lithuania3dMapProvider()
+		{
+			Instance = new Lithuania3dMapProvider();
+		}
 
-      static Lithuania3dMapProvider()
-      {
-         Instance = new Lithuania3dMapProvider();
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("CCC5B65F-C8BC-47CE-B39D-5E262E6BF083");
 
-       private readonly Guid id = new Guid("CCC5B65F-C8BC-47CE-B39D-5E262E6BF083");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "Lithuania 2.5d Map";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "Lithuania 2.5d Map";
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		public override string Name
+		{
+			get { return name; }
+		}
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
-      #endregion
+			return GetTileImageUsingHttp(url);
+		}
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         // http://dc1.maps.lt/cache/mapslt_25d_vkkp/map/_alllayers/L01/R00007194/C0000a481.png
-         int z = zoom;
-         if(zoom >= 10)
-         {
-            z -= 10;
-         }
+		#endregion
 
-         return string.Format(UrlFormat, z, pos.Y, pos.X);
-      }
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			// http://dc1.maps.lt/cache/mapslt_25d_vkkp/map/_alllayers/L01/R00007194/C0000a481.png
+			var z = zoom;
+			if (zoom >= 10)
+			{
+				z -= 10;
+			}
 
-       private static readonly string UrlFormat = "http://dc1.maps.lt/cache/mapslt_25d_vkkp/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.png";
-   }
+			return string.Format(UrlFormat, z, pos.Y, pos.X);
+		}
+
+		private static readonly string UrlFormat =
+			"http://dc1.maps.lt/cache/mapslt_25d_vkkp/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.png";
+	}
 }

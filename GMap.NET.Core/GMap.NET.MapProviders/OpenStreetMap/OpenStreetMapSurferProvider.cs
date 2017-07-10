@@ -1,16 +1,14 @@
 ﻿
 namespace GMap.NET.MapProviders
 {
-   using System;   
-
 #if OpenStreetMapSurfer
-   /// <summary>
-   /// OpenStreetMapSurfer provider
-   /// http://wiki.openstreetmap.org/wiki/MapSurfer.Net
-   /// 
-   /// Since May 2011 the service http://www.mapsurfer.net is unavailable due
-   /// to hosting problems.
-   /// </summary>
+	/// <summary>
+	/// OpenStreetMapSurfer provider
+	/// http://wiki.openstreetmap.org/wiki/MapSurfer.Net
+	/// 
+	/// Since May 2011 the service http://www.mapsurfer.net is unavailable due
+	/// to hosting problems.
+	/// </summary>
    public class OpenStreetMapSurferProvider : OpenStreetMapProviderBase
    {
       public static readonly OpenStreetMapSurferProvider Instance;

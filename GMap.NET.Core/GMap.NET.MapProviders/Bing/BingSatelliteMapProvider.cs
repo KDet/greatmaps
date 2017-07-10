@@ -1,85 +1,83 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
+	/// <summary>
+	/// BingSatelliteMapProvider provider
+	/// </summary>
+	public class BingSatelliteMapProvider : BingMapProviderBase
+	{
+		public static readonly BingSatelliteMapProvider Instance;
 
-   /// <summary>
-   /// BingSatelliteMapProvider provider
-   /// </summary>
-   public class BingSatelliteMapProvider : BingMapProviderBase
-   {
-      public static readonly BingSatelliteMapProvider Instance;
+		private BingSatelliteMapProvider()
+		{
+		}
 
-       private BingSatelliteMapProvider()
-      {
-      }
+		static BingSatelliteMapProvider()
+		{
+			Instance = new BingSatelliteMapProvider();
+		}
 
-      static BingSatelliteMapProvider()
-      {
-         Instance = new BingSatelliteMapProvider();
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("3AC742DD-966B-4CFB-B67D-33E7F82F2D37");
 
-       private readonly Guid id = new Guid("3AC742DD-966B-4CFB-B67D-33E7F82F2D37");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "BingSatelliteMap";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "BingSatelliteMap";
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		public override string Name
+		{
+			get { return name; }
+		}
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
-      public override void OnInitialized()
-      {
-         base.OnInitialized();
+			return GetTileImageUsingHttp(url);
+		}
 
-         if(!DisableDynamicTileUrlFormat)
-         {
-            //UrlFormat[Aerial]: http://ecn.{subdomain}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=3179
+		public override void OnInitialized()
+		{
+			base.OnInitialized();
 
-            UrlDynamicFormat = GetTileUrl("Aerial");
-            if(!string.IsNullOrEmpty(UrlDynamicFormat))
-            {
-               UrlDynamicFormat = UrlDynamicFormat.Replace("{subdomain}", "t{0}").Replace("{quadkey}", "{1}");
-            }
-         }
-      }
+			if (!DisableDynamicTileUrlFormat)
+			{
+				//UrlFormat[Aerial]: http://ecn.{subdomain}.tiles.virtualearth.net/tiles/a{quadkey}.jpeg?g=3179
 
-      #endregion
+				UrlDynamicFormat = GetTileUrl("Aerial");
+				if (!string.IsNullOrEmpty(UrlDynamicFormat))
+				{
+					UrlDynamicFormat = UrlDynamicFormat.Replace("{subdomain}", "t{0}").Replace("{quadkey}", "{1}");
+				}
+			}
+		}
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         string key = TileXYToQuadKey(pos.X, pos.Y, zoom);
+		#endregion
 
-         if(!DisableDynamicTileUrlFormat && !string.IsNullOrEmpty(UrlDynamicFormat))
-         {
-            return string.Format(UrlDynamicFormat, GetServerNum(pos, 4), key);
-         }
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			var key = TileXYToQuadKey(pos.X, pos.Y, zoom);
 
-         return string.Format(UrlFormat, GetServerNum(pos, 4), key, Version, language, ForceSessionIdOnTileAccess ? "&key=" + SessionId : string.Empty);
-      }
+			if (!DisableDynamicTileUrlFormat && !string.IsNullOrEmpty(UrlDynamicFormat))
+			{
+				return string.Format(UrlDynamicFormat, GetServerNum(pos, 4), key);
+			}
 
-       private string UrlDynamicFormat = string.Empty;
+			return string.Format(UrlFormat, GetServerNum(pos, 4), key, Version, language,
+				ForceSessionIdOnTileAccess ? "&key=" + SessionId : string.Empty);
+		}
 
-      // http://ecn.t1.tiles.virtualearth.net/tiles/a12030003131321231.jpeg?g=875&mkt=en-us&n=z
+		private string UrlDynamicFormat = string.Empty;
 
-       private static readonly string UrlFormat = "http://ecn.t{0}.tiles.virtualearth.net/tiles/a{1}.jpeg?g={2}&mkt={3}&n=z{4}";
-   }
+		// http://ecn.t1.tiles.virtualearth.net/tiles/a12030003131321231.jpeg?g=875&mkt=en-us&n=z
+
+		private static readonly string UrlFormat =
+			"http://ecn.t{0}.tiles.virtualearth.net/tiles/a{1}.jpeg?g={2}&mkt={3}&n=z{4}";
+	}
 }

@@ -1,117 +1,108 @@
 ﻿
+using System;
+using GMap.NET.Projections;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
-   using GMap.NET.Projections;
+	public abstract class OviMapProviderBase : GMapProvider
+	{
+		public OviMapProviderBase()
+		{
+			MaxZoom = null;
+			RefererUrl = "http://maps.ovi.com/";
+			Copyright = string.Format("©{0} OVI Nokia - Map data ©{0} NAVTEQ, Imagery ©{0} DigitalGlobe", DateTime.Today.Year);
+		}
 
-   public abstract class OviMapProviderBase : GMapProvider
-   {
-      public OviMapProviderBase()
-      {
-         MaxZoom = null;
-         RefererUrl = "http://maps.ovi.com/";
-         Copyright = string.Format("©{0} OVI Nokia - Map data ©{0} NAVTEQ, Imagery ©{0} DigitalGlobe", DateTime.Today.Year);
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
-      public override Guid Id
-      {
-         get
-         {
-            throw new NotImplementedException();
-         }
-      }
+		public override Guid Id
+		{
+			get { throw new NotImplementedException(); }
+		}
 
-      public override string Name
-      {
-         get
-         {
-            throw new NotImplementedException();
-         }
-      }
+		public override string Name
+		{
+			get { throw new NotImplementedException(); }
+		}
 
-      public override PureProjection Projection
-      {
-         get
-         {
-            return MercatorProjection.Instance;
-         }
-      }
+		public override PureProjection Projection
+		{
+			get { return MercatorProjection.Instance; }
+		}
 
-       private GMapProvider[] overlays;
-      public override GMapProvider[] Overlays
-      {
-         get
-         {
-            if(overlays == null)
-            {
-               overlays = new GMapProvider[] { this };
-            }
-            return overlays;
-         }
-      }
+		private GMapProvider[] overlays;
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         throw new NotImplementedException();
-      }
-      #endregion
+		public override GMapProvider[] Overlays
+		{
+			get
+			{
+				if (overlays == null)
+				{
+					overlays = new GMapProvider[] {this};
+				}
+				return overlays;
+			}
+		}
 
-      protected static readonly string UrlServerLetters = "bcde";
-   }
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			throw new NotImplementedException();
+		}
 
-   /// <summary>
-   /// OviMap provider
-   /// </summary>
-   public class OviMapProvider : OviMapProviderBase
-   {
-      public static readonly OviMapProvider Instance;
+		#endregion
 
-       private OviMapProvider()
-      {
-      }
+		protected static readonly string UrlServerLetters = "bcde";
+	}
 
-      static OviMapProvider()
-      {
-         Instance = new OviMapProvider();
-      }
+	/// <summary>
+	/// OviMap provider
+	/// </summary>
+	public class OviMapProvider : OviMapProviderBase
+	{
+		public static readonly OviMapProvider Instance;
 
-      #region GMapProvider Members
+		private OviMapProvider()
+		{
+		}
 
-       private readonly Guid id = new Guid("30DC1083-AC4D-4471-A232-D8A67AC9373A");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		static OviMapProvider()
+		{
+			Instance = new OviMapProvider();
+		}
 
-       private readonly string name = "OviMap";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		#region GMapProvider Members
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		private readonly Guid id = new Guid("30DC1083-AC4D-4471-A232-D8A67AC9373A");
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-      #endregion
+		private readonly string name = "OviMap";
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         // http://c.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.day/12/2321/1276/256/png8
+		public override string Name
+		{
+			get { return name; }
+		}
 
-         return string.Format(UrlFormat, UrlServerLetters[GetServerNum(pos, 4)], zoom, pos.X, pos.Y);
-      }
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
-       private static readonly string UrlFormat = "http://{0}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.day/{1}/{2}/{3}/256/png8";
-   }
+			return GetTileImageUsingHttp(url);
+		}
+
+		#endregion
+
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			// http://c.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.day/12/2321/1276/256/png8
+
+			return string.Format(UrlFormat, UrlServerLetters[GetServerNum(pos, 4)], zoom, pos.X, pos.Y);
+		}
+
+		private static readonly string UrlFormat =
+			"http://{0}.maptile.maps.svc.ovi.com/maptiler/v2/maptile/newest/normal.day/{1}/{2}/{3}/256/png8";
+	}
 }

@@ -1,18 +1,16 @@
 ﻿
 namespace GMap.NET.MapProviders
 {
-   using System;
-
 #if OpenStreetOsm
-   /// <summary>
-   /// OpenStreetOsm provider
-   /// http://wiki.openstreetmap.org/wiki/Osmarender
-   /// 
-   /// Osmarender is a rule-based rendering tool for generating SVG images
-   /// of OSM data. Note that Osmarender has not been actively maintained
-   /// since March 2012 and was discontinued as a main Slippy Map layer on
-   /// openstreetmap.org around that time.
-   /// </summary>
+	/// <summary>
+	/// OpenStreetOsm provider
+	/// http://wiki.openstreetmap.org/wiki/Osmarender
+	/// 
+	/// Osmarender is a rule-based rendering tool for generating SVG images
+	/// of OSM data. Note that Osmarender has not been actively maintained
+	/// since March 2012 and was discontinued as a main Slippy Map layer on
+	/// openstreetmap.org around that time.
+	/// </summary>
    public class OpenStreetOsmProvider : OpenStreetMapProviderBase
    {
       public static readonly OpenStreetOsmProvider Instance;

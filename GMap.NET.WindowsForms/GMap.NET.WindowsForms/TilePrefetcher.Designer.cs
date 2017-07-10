@@ -1,11 +1,14 @@
-﻿namespace GMap.NET
+﻿using System.ComponentModel;
+using System.Windows.Forms;
+
+namespace GMap.NET
 {
    partial class TilePrefetcher
    {
       /// <summary>
       /// Required designer variable.
       /// </summary>
-      private System.ComponentModel.IContainer components = null;
+      private IContainer components = null;
 
       /// <summary>
       /// Clean up any resources being used.
@@ -116,9 +119,9 @@
 
       #endregion
 
-      private System.Windows.Forms.Label label1;
-      private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-      private System.Windows.Forms.ProgressBar progressBarDownload;
-      private System.Windows.Forms.Label label2;
+      private Label label1;
+      private TableLayoutPanel tableLayoutPanel1;
+      private ProgressBar progressBarDownload;
+      private Label label2;
    }
 }

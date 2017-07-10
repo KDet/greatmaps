@@ -1,224 +1,225 @@
 ﻿
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Runtime.Serialization;
+using System.Windows.Forms.Properties;
+
 namespace GMap.NET.WindowsForms.Markers
 {
-   using System.Drawing;
-   using System.Collections.Generic;
-
 #if !PocketPC
-   using System.Windows.Forms.Properties;
-   using System;
-   using System.Runtime.Serialization;
+
 #else
    using GMap.NET.WindowsMobile.Properties;
 #endif
 
-   public enum GMarkerGoogleType
-   {
-      none = 0,
-      arrow,
-      blue,
-      blue_small,
-      blue_dot,
-      blue_pushpin,
-      brown_small,
-      gray_small,
-      green,
-      green_small,
-      green_dot,
-      green_pushpin,
-      green_big_go,
-      yellow,
-      yellow_small,
-      yellow_dot,
-      yellow_big_pause,
-      yellow_pushpin,
-      lightblue,
-      lightblue_dot,
-      lightblue_pushpin,
-      orange,
-      orange_small,
-      orange_dot,
-      pink,
-      pink_dot,
-      pink_pushpin,
-      purple,
-      purple_small,
-      purple_dot,
-      purple_pushpin,
-      red,
-      red_small,
-      red_dot,
-      red_pushpin,
-      red_big_stop,
-      black_small,
-      white_small,
-   }
+	public enum GMarkerGoogleType
+	{
+		None = 0,
+		Arrow,
+		Blue,
+		BlueSmall,
+		BlueDot,
+		BluePushpin,
+		BrownSmall,
+		GraySmall,
+		Green,
+		GreenSmall,
+		GreenDot,
+		GreenPushpin,
+		GreenBigGo,
+		Yellow,
+		YellowSmall,
+		YellowDot,
+		YellowBigPause,
+		YellowPushpin,
+		Lightblue,
+		LightblueDot,
+		LightbluePushpin,
+		Orange,
+		OrangeSmall,
+		OrangeDot,
+		Pink,
+		PinkDot,
+		PinkPushpin,
+		Purple,
+		PurpleSmall,
+		PurpleDot,
+		PurplePushpin,
+		Red,
+		RedSmall,
+		RedDot,
+		RedPushpin,
+		RedBigStop,
+		BlackSmall,
+		WhiteSmall
+	}
 
 #if !PocketPC
-   [Serializable]
-   public class GMarkerGoogle : GMapMarker, ISerializable, IDeserializationCallback
+	[Serializable]
+	public class GMarkerGoogle : GMapMarker, ISerializable, IDeserializationCallback
 #else
    public class GMarkerGoogle : GMapMarker
 #endif
-   {
-       private Bitmap Bitmap;
-       private Bitmap BitmapShadow;
+	{
+		private Bitmap _bitmap;
+		private Bitmap _bitmapShadow;
 
-       private static Bitmap arrowshadow;
-       private static Bitmap msmarker_shadow;
-       private static Bitmap shadow_small;
-       private static Bitmap pushpin_shadow;
+		private static Bitmap _arrowshadow;
+		private static Bitmap _msmarkerShadow;
+		private static Bitmap _shadowSmall;
+		private static Bitmap _pushpinShadow;
 
-      public readonly GMarkerGoogleType Type;
+		public readonly GMarkerGoogleType Type;
 
-      public GMarkerGoogle(PointLatLng p, GMarkerGoogleType type)
-         : base(p)
-      {
-         this.Type = type;
+		public GMarkerGoogle(PointLatLng p, GMarkerGoogleType type)
+			: base(p)
+		{
+			Type = type;
 
-         if(type != GMarkerGoogleType.none)
-         {
-            LoadBitmap();
-         }
-      }
+			if (type != GMarkerGoogleType.None)
+			{
+				LoadBitmap();
+			}
+		}
 
-       private void LoadBitmap()
-      {
-         Bitmap = GetIcon(Type.ToString());
-         Size = new System.Drawing.Size(Bitmap.Width, Bitmap.Height);
+		private void LoadBitmap()
+		{
+			_bitmap = GetIcon(Type.ToString());
+			Size = new Size(_bitmap.Width, _bitmap.Height);
 
-         switch(Type)
-         {
-            case GMarkerGoogleType.arrow:
-            {
-               Offset = new Point(-11, -Size.Height);
+			switch (Type)
+			{
+				case GMarkerGoogleType.Arrow:
+				{
+					Offset = new Point(-11, -Size.Height);
 
-               if(arrowshadow == null)
-               {
-                  arrowshadow = Resources.arrowshadow;
-               }
-               BitmapShadow = arrowshadow;
-            }
-            break;
+					if (_arrowshadow == null)
+					{
+						_arrowshadow = Resources.arrowshadow;
+					}
+					_bitmapShadow = _arrowshadow;
+				}
+					break;
 
-            case GMarkerGoogleType.blue:
-            case GMarkerGoogleType.blue_dot:
-            case GMarkerGoogleType.green:
-            case GMarkerGoogleType.green_dot:
-            case GMarkerGoogleType.yellow:
-            case GMarkerGoogleType.yellow_dot:
-            case GMarkerGoogleType.lightblue:
-            case GMarkerGoogleType.lightblue_dot:
-            case GMarkerGoogleType.orange:
-            case GMarkerGoogleType.orange_dot:
-            case GMarkerGoogleType.pink:
-            case GMarkerGoogleType.pink_dot:
-            case GMarkerGoogleType.purple:
-            case GMarkerGoogleType.purple_dot:
-            case GMarkerGoogleType.red:
-            case GMarkerGoogleType.red_dot:
-            {
-               Offset = new Point(-Size.Width / 2 + 1, -Size.Height + 1);
+				case GMarkerGoogleType.Blue:
+				case GMarkerGoogleType.BlueDot:
+				case GMarkerGoogleType.Green:
+				case GMarkerGoogleType.GreenDot:
+				case GMarkerGoogleType.Yellow:
+				case GMarkerGoogleType.YellowDot:
+				case GMarkerGoogleType.Lightblue:
+				case GMarkerGoogleType.LightblueDot:
+				case GMarkerGoogleType.Orange:
+				case GMarkerGoogleType.OrangeDot:
+				case GMarkerGoogleType.Pink:
+				case GMarkerGoogleType.PinkDot:
+				case GMarkerGoogleType.Purple:
+				case GMarkerGoogleType.PurpleDot:
+				case GMarkerGoogleType.Red:
+				case GMarkerGoogleType.RedDot:
+				{
+					Offset = new Point(-Size.Width/2 + 1, -Size.Height + 1);
 
-               if(msmarker_shadow == null)
-               {
-                  msmarker_shadow = Resources.msmarker_shadow;
-               }
-               BitmapShadow = msmarker_shadow;
-            }
-            break;
+					if (_msmarkerShadow == null)
+					{
+						_msmarkerShadow = Resources.msmarker_shadow;
+					}
+					_bitmapShadow = _msmarkerShadow;
+				}
+					break;
 
-            case GMarkerGoogleType.black_small:
-            case GMarkerGoogleType.blue_small:
-            case GMarkerGoogleType.brown_small:
-            case GMarkerGoogleType.gray_small:
-            case GMarkerGoogleType.green_small:
-            case GMarkerGoogleType.yellow_small:
-            case GMarkerGoogleType.orange_small:
-            case GMarkerGoogleType.purple_small:
-            case GMarkerGoogleType.red_small:
-            case GMarkerGoogleType.white_small:
-            {
-               Offset = new Point(-Size.Width / 2, -Size.Height + 1);
+				case GMarkerGoogleType.BlackSmall:
+				case GMarkerGoogleType.BlueSmall:
+				case GMarkerGoogleType.BrownSmall:
+				case GMarkerGoogleType.GraySmall:
+				case GMarkerGoogleType.GreenSmall:
+				case GMarkerGoogleType.YellowSmall:
+				case GMarkerGoogleType.OrangeSmall:
+				case GMarkerGoogleType.PurpleSmall:
+				case GMarkerGoogleType.RedSmall:
+				case GMarkerGoogleType.WhiteSmall:
+				{
+					Offset = new Point(-Size.Width/2, -Size.Height + 1);
 
-               if(shadow_small == null)
-               {
-                  shadow_small = Resources.shadow_small;
-               }
-               BitmapShadow = shadow_small;
-            }
-            break;
+					if (_shadowSmall == null)
+					{
+						_shadowSmall = Resources.shadow_small;
+					}
+					_bitmapShadow = _shadowSmall;
+				}
+					break;
 
-            case GMarkerGoogleType.green_big_go:
-            case GMarkerGoogleType.yellow_big_pause:
-            case GMarkerGoogleType.red_big_stop:
-            {
-               Offset = new Point(-Size.Width / 2, -Size.Height + 1);
-               if(msmarker_shadow == null)
-               {
-                  msmarker_shadow = Resources.msmarker_shadow;
-               }
-               BitmapShadow = msmarker_shadow;
-            }
-            break;
+				case GMarkerGoogleType.GreenBigGo:
+				case GMarkerGoogleType.YellowBigPause:
+				case GMarkerGoogleType.RedBigStop:
+				{
+					Offset = new Point(-Size.Width/2, -Size.Height + 1);
+					if (_msmarkerShadow == null)
+					{
+						_msmarkerShadow = Resources.msmarker_shadow;
+					}
+					_bitmapShadow = _msmarkerShadow;
+				}
+					break;
 
-            case GMarkerGoogleType.blue_pushpin:
-            case GMarkerGoogleType.green_pushpin:
-            case GMarkerGoogleType.yellow_pushpin:
-            case GMarkerGoogleType.lightblue_pushpin:
-            case GMarkerGoogleType.pink_pushpin:
-            case GMarkerGoogleType.purple_pushpin:
-            case GMarkerGoogleType.red_pushpin:
-            {
-               Offset = new Point(-9, -Size.Height + 1);
+				case GMarkerGoogleType.BluePushpin:
+				case GMarkerGoogleType.GreenPushpin:
+				case GMarkerGoogleType.YellowPushpin:
+				case GMarkerGoogleType.LightbluePushpin:
+				case GMarkerGoogleType.PinkPushpin:
+				case GMarkerGoogleType.PurplePushpin:
+				case GMarkerGoogleType.RedPushpin:
+				{
+					Offset = new Point(-9, -Size.Height + 1);
 
-               if(pushpin_shadow == null)
-               {
-                  pushpin_shadow = Resources.pushpin_shadow;
-               }
-               BitmapShadow = pushpin_shadow;
-            }
-            break;
-         }
-      }
+					if (_pushpinShadow == null)
+					{
+						_pushpinShadow = Resources.pushpin_shadow;
+					}
+					_bitmapShadow = _pushpinShadow;
+				}
+					break;
+			}
+		}
 
-      /// <summary>
-      /// marker using manual bitmap, NonSerialized
-      /// </summary>
-      /// <param name="p"></param>
-      /// <param name="Bitmap"></param>
-      public GMarkerGoogle(PointLatLng p, Bitmap Bitmap)
-         : base(p)
-      {
-         this.Bitmap = Bitmap;
-         Size = new System.Drawing.Size(Bitmap.Width, Bitmap.Height);
-         Offset = new Point(-Size.Width / 2, -Size.Height);
-      }
+		/// <summary>
+		/// marker using manual bitmap, NonSerialized
+		/// </summary>
+		/// <param name="p"></param>
+		/// <param name="bitmap"></param>
+		public GMarkerGoogle(PointLatLng p, Bitmap bitmap)
+			: base(p)
+		{
+			_bitmap = bitmap;
+			Size = new Size(bitmap.Width, bitmap.Height);
+			Offset = new Point(-Size.Width/2, -Size.Height);
+		}
 
-       private static readonly Dictionary<string, Bitmap> iconCache = new Dictionary<string, Bitmap>();
+		private static readonly Dictionary<string, Bitmap> IconCache = new Dictionary<string, Bitmap>();
 
-      internal static Bitmap GetIcon(string name)
-      {
-         Bitmap ret;
-         if(!iconCache.TryGetValue(name, out ret))
-         {
-            ret = Resources.ResourceManager.GetObject(name, Resources.Culture) as Bitmap;
-            iconCache.Add(name, ret);
-         }
-         return ret;
-      }
+		internal static Bitmap GetIcon(string name)
+		{
+			Bitmap ret;
+			if (!IconCache.TryGetValue(name, out ret))
+			{
+				ret = Resources.ResourceManager.GetObject(name, Resources.Culture) as Bitmap;
+				IconCache.Add(name, ret);
+			}
+			return ret;
+		}
 
 
-      public override void OnRender(Graphics g)
-      {
+		public override void OnRender(Graphics g)
+		{
 #if !PocketPC
-            if(BitmapShadow != null)
-            {
-               g.DrawImage(BitmapShadow, LocalPosition.X, LocalPosition.Y, BitmapShadow.Width, BitmapShadow.Height);
-            }                
-            g.DrawImage(Bitmap, LocalPosition.X, LocalPosition.Y, Size.Width, Size.Height);
+			if (_bitmapShadow != null)
+			{
+				g.DrawImage(_bitmapShadow, LocalPosition.X, LocalPosition.Y, _bitmapShadow.Width, _bitmapShadow.Height);
+			}
+			g.DrawImage(_bitmap, LocalPosition.X, LocalPosition.Y, Size.Width, Size.Height);
 
-            //g.DrawString(LocalPosition.ToString(), SystemFonts.DefaultFont, Brushes.Red, LocalPosition);
+			//g.DrawString(LocalPosition.ToString(), SystemFonts.DefaultFont, Brushes.Red, LocalPosition);
 #else
          if(BitmapShadow != null)
          {
@@ -226,55 +227,55 @@ namespace GMap.NET.WindowsForms.Markers
          }
          DrawImageUnscaled(g, Bitmap, LocalPosition.X, LocalPosition.Y);
 #endif
-      }
+		}
 
-      public override void Dispose()
-      {
-         if(Bitmap != null)
-         {
-            if(!iconCache.ContainsValue(Bitmap))
-            {
-               Bitmap.Dispose();
-               Bitmap = null;
-            }
-         }
+		public override void Dispose()
+		{
+			if (_bitmap != null)
+			{
+				if (!IconCache.ContainsValue(_bitmap))
+				{
+					_bitmap.Dispose();
+					_bitmap = null;
+				}
+			}
 
-         base.Dispose();
-      }
+			base.Dispose();
+		}
 
 #if !PocketPC
 
-      #region ISerializable Members
+		#region ISerializable Members
 
-      void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-      {
-         info.AddValue("type", this.Type);
-         //info.AddValue("Bearing", this.Bearing);
+		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue("type", Type);
+			//info.AddValue("Bearing", this.Bearing);
 
-         base.GetObjectData(info, context);
-      }
+			base.GetObjectData(info, context);
+		}
 
-      protected GMarkerGoogle(SerializationInfo info, StreamingContext context)
-         : base(info, context)
-      {
-         this.Type = Extensions.GetStruct<GMarkerGoogleType>(info, "type", GMarkerGoogleType.none);
-         //this.Bearing = Extensions.GetStruct<float>(info, "Bearing", null);
-      }
+		protected GMarkerGoogle(SerializationInfo info, StreamingContext context)
+			: base(info, context)
+		{
+			Type = Extensions.GetStruct(info, "type", GMarkerGoogleType.None);
+			//this.Bearing = Extensions.GetStruct<float>(info, "Bearing", null);
+		}
 
-      #endregion
+		#endregion
 
-      #region IDeserializationCallback Members
+		#region IDeserializationCallback Members
 
-      public void OnDeserialization(object sender)
-      {
-         if(Type != GMarkerGoogleType.none)
-         {
-            LoadBitmap();
-         }
-      }
+		public void OnDeserialization(object sender)
+		{
+			if (Type != GMarkerGoogleType.None)
+			{
+				LoadBitmap();
+			}
+		}
 
-      #endregion
+		#endregion
 
 #endif
-   }
+	}
 }

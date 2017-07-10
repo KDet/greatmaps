@@ -1,9 +1,9 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
-
-   /// <summary>
+	/// <summary>
    /// YahooHybridMap provider
    /// </summary>
    public class YahooHybridMapProvider : YahooMapProviderBase
@@ -23,40 +23,40 @@ namespace GMap.NET.MapProviders
 
       #region GMapProvider Members
 
-       private readonly Guid id = new Guid("A084E0DB-F9A6-45C1-BC2F-791E1F4E958E");
+       private readonly Guid _id = new Guid("A084E0DB-F9A6-45C1-BC2F-791E1F4E958E");
       public override Guid Id
       {
          get
          {
-            return id;
+            return _id;
          }
       }
 
-       private readonly string name = "YahooHybridMap";
+       private readonly string _name = "YahooHybridMap";
       public override string Name
       {
          get
          {
-            return name;
+            return _name;
          }
       }
 
-       private GMapProvider[] overlays;
+       private GMapProvider[] _overlays;
       public override GMapProvider[] Overlays
       {
          get
          {
-            if(overlays == null)
+            if(_overlays == null)
             {
-               overlays = new GMapProvider[] { YahooSatelliteMapProvider.Instance, this };
+               _overlays = new GMapProvider[] { YahooSatelliteMapProvider.Instance, this };
             }
-            return overlays;
+            return _overlays;
          }
       }
 
       public override PureImage GetTileImage(GPoint pos, int zoom)
       {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+         var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
          return GetTileImageUsingHttp(url);
       }

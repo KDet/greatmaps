@@ -1,60 +1,57 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
+	/// <summary>
+	/// ArcGIS_World_Street_Map provider, http://server.arcgisonline.com
+	/// </summary>
+	public class ArcGIS_World_Street_MapProvider : ArcGISMapMercatorProviderBase
+	{
+		public static readonly ArcGIS_World_Street_MapProvider Instance;
 
-   /// <summary>
-   /// ArcGIS_World_Street_Map provider, http://server.arcgisonline.com
-   /// </summary>
-   public class ArcGIS_World_Street_MapProvider : ArcGISMapMercatorProviderBase
-   {
-      public static readonly ArcGIS_World_Street_MapProvider Instance;
+		private ArcGIS_World_Street_MapProvider()
+		{
+		}
 
-       private ArcGIS_World_Street_MapProvider()
-      {
-      }
+		static ArcGIS_World_Street_MapProvider()
+		{
+			Instance = new ArcGIS_World_Street_MapProvider();
+		}
 
-      static ArcGIS_World_Street_MapProvider()
-      {
-         Instance = new ArcGIS_World_Street_MapProvider();
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("E1FACDF6-E535-4D69-A49F-12B623A467A9");
 
-       private readonly Guid id = new Guid("E1FACDF6-E535-4D69-A49F-12B623A467A9");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "ArcGIS_World_Street_Map";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "ArcGIS_World_Street_Map";
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		public override string Name
+		{
+			get { return name; }
+		}
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
-      #endregion
+			return GetTileImageUsingHttp(url);
+		}
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         // http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/0/0/0jpg
+		#endregion
 
-         return string.Format(UrlFormat, zoom, pos.Y, pos.X);
-      }
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			// http://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/0/0/0jpg
 
-       private static readonly string UrlFormat = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{0}/{1}/{2}";
-   }
+			return string.Format(UrlFormat, zoom, pos.Y, pos.X);
+		}
+
+		private static readonly string UrlFormat =
+			"http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{0}/{1}/{2}";
+	}
 }

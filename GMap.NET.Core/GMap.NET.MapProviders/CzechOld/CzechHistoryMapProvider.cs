@@ -1,76 +1,73 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
+	/// <summary>
+	/// CzechHistoryMap provider, http://www.mapy.cz/
+	/// </summary>
+	public class CzechHistoryMapProviderOld : CzechMapProviderBaseOld
+	{
+		public static readonly CzechHistoryMapProviderOld Instance;
 
-   /// <summary>
-   /// CzechHistoryMap provider, http://www.mapy.cz/
-   /// </summary>
-   public class CzechHistoryMapProviderOld : CzechMapProviderBaseOld
-   {
-      public static readonly CzechHistoryMapProviderOld Instance;
+		private CzechHistoryMapProviderOld()
+		{
+		}
 
-       private CzechHistoryMapProviderOld()
-      {
-      }
+		static CzechHistoryMapProviderOld()
+		{
+			Instance = new CzechHistoryMapProviderOld();
+		}
 
-      static CzechHistoryMapProviderOld()
-      {
-         Instance = new CzechHistoryMapProviderOld();
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("C666AAF4-9D27-418F-97CB-7F0D8CC44544");
 
-       private readonly Guid id = new Guid("C666AAF4-9D27-418F-97CB-7F0D8CC44544");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "CzechHistoryOldMap";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "CzechHistoryOldMap";
 
-       private GMapProvider[] overlays;
-      public override GMapProvider[] Overlays
-      {
-         get
-         {
-            if(overlays == null)
-            {
-               overlays = new GMapProvider[] { this, CzechHybridMapProviderOld.Instance };
-            }
-            return overlays;
-         }
-      }
+		public override string Name
+		{
+			get { return name; }
+		}
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		private GMapProvider[] overlays;
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override GMapProvider[] Overlays
+		{
+			get
+			{
+				if (overlays == null)
+				{
+					overlays = new GMapProvider[] {this, CzechHybridMapProviderOld.Instance};
+				}
+				return overlays;
+			}
+		}
 
-      #endregion
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         // http://m4.mapserver.mapy.cz/army2/9_7d00000_8080000
+			return GetTileImageUsingHttp(url);
+		}
 
-         long xx = pos.X << (28 - zoom);
-         long yy = ((((long)Math.Pow(2.0, (double)zoom)) - 1) - pos.Y) << (28 - zoom);
+		#endregion
 
-         return string.Format(UrlFormat, GetServerNum(pos, 3) + 1, zoom, xx, yy);
-      }
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			// http://m4.mapserver.mapy.cz/army2/9_7d00000_8080000
 
-       private static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/army2/{1}_{2:x7}_{3:x7}";
-   }
+			var xx = pos.X << (28 - zoom);
+			var yy = ((((long) Math.Pow(2.0, zoom)) - 1) - pos.Y) << (28 - zoom);
+
+			return string.Format(UrlFormat, GetServerNum(pos, 3) + 1, zoom, xx, yy);
+		}
+
+		private static readonly string UrlFormat = "http://m{0}.mapserver.mapy.cz/army2/{1}_{2:x7}_{3:x7}";
+	}
 }

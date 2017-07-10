@@ -1,22 +1,22 @@
 ﻿
+using System;
+using System.Drawing;
+using System.Runtime.Serialization;
+using System.Windows.Forms;
+using GMap.NET.WindowsForms.ToolTips;
+
 namespace GMap.NET.WindowsForms
 {
-   using System;
-   using System.Drawing;
-   using System.Runtime.Serialization;
-   using System.Windows.Forms;
-   using GMap.NET.WindowsForms.ToolTips;
-
-   /// <summary>
-   /// GMap.NET marker
-   /// </summary>
-   [Serializable]
+	/// <summary>
+	/// GMap.NET marker
+	/// </summary>
+	[Serializable]
 #if !PocketPC
-   public abstract class GMapMarker : ISerializable, IDisposable
+	public abstract class GMapMarker : ISerializable, IDisposable
 #else
    public class GMapMarker: IDisposable
 #endif
-   {
+	{
 #if PocketPC
       static readonly System.Drawing.Imaging.ImageAttributes attr = new System.Drawing.Imaging.ImageAttributes();
 
@@ -25,238 +25,206 @@ namespace GMap.NET.WindowsForms
          attr.SetColorKey(Color.White, Color.White);
       }
 #endif
-       private GMapOverlay overlay;
-      public GMapOverlay Overlay
-      {
-         get
-         {
-            return overlay;
-         }
-         internal set
-         {
-            overlay = value;
-         }
-      }
+		private GMapOverlay _overlay;
 
-      private PointLatLng position;
-      public PointLatLng Position
-      {
-         get
-         {
-            return position;
-         }
-         set
-         {
-            if(position != value)
-            {
-               position = value;
+		public GMapOverlay Overlay
+		{
+			get { return _overlay; }
+			internal set { _overlay = value; }
+		}
 
-               if(IsVisible)
-               {
-                  if(Overlay != null && Overlay.Control != null)
-                  {
-                     Overlay.Control.UpdateMarkerLocalPosition(this);
-                  }
-               }
-            }
-         }
-      }
+		private PointLatLng _position;
 
-      public object Tag;
+		public PointLatLng Position
+		{
+			get { return _position; }
+			set
+			{
+				if (_position != value)
+				{
+					_position = value;
 
-       private Point offset;
-      public Point Offset
-      {
-         get
-         {
-            return offset;
-         }
-         set
-         {
-            if(offset != value)
-            {
-               offset = value;
+					if (IsVisible)
+					{
+						if (Overlay != null && Overlay.Control != null)
+						{
+							Overlay.Control.UpdateMarkerLocalPosition(this);
+						}
+					}
+				}
+			}
+		}
 
-               if(IsVisible)
-               {
-                  if(Overlay != null && Overlay.Control != null)
-                  {
-                     Overlay.Control.UpdateMarkerLocalPosition(this);
-                  }
-               }
-            }
-         }
-      }
+		public object Tag;
 
-       private Rectangle area;
+		private Point _offset;
 
-      /// <summary>
-      /// marker position in local coordinates, internal only, do not set it manualy
-      /// </summary>
-      public Point LocalPosition
-      {
-         get
-         {
-            return area.Location;
-         }
-         set
-         {
-            if(area.Location != value)
-            {
-               area.Location = value;
-               {
-                  if(Overlay != null && Overlay.Control != null)
-                  {
-                     if(!Overlay.Control.HoldInvalidation)
-                     {
-                         Overlay.Control.Invalidate();
-                     }
-                  }
-               }
-            }
-         }
-      }
+		public Point Offset
+		{
+			get { return _offset; }
+			set
+			{
+				if (_offset != value)
+				{
+					_offset = value;
 
-      /// <summary>
-      /// ToolTip position in local coordinates
-      /// </summary>
-      public Point ToolTipPosition
-      {
-         get
-         {
-            Point ret = area.Location;
-            ret.Offset(-Offset.X, -Offset.Y);
-            return ret;
-         }
-      }
+					if (IsVisible)
+					{
+						if (Overlay != null && Overlay.Control != null)
+						{
+							Overlay.Control.UpdateMarkerLocalPosition(this);
+						}
+					}
+				}
+			}
+		}
 
-      public Size Size
-      {
-         get
-         {
-            return area.Size;
-         }
-         set
-         {
-            area.Size = value;
-         }
-      }
+		private Rectangle _area;
 
-      public Rectangle LocalArea
-      {
-         get
-         {
-            return area;
-         }
-      }
+		/// <summary>
+		/// marker position in local coordinates, internal only, do not set it manualy
+		/// </summary>
+		public Point LocalPosition
+		{
+			get { return _area.Location; }
+			set
+			{
+				if (_area.Location != value)
+				{
+					_area.Location = value;
+					{
+						if (Overlay != null && Overlay.Control != null)
+						{
+							if (!Overlay.Control.HoldInvalidation)
+							{
+								Overlay.Control.Invalidate();
+							}
+						}
+					}
+				}
+			}
+		}
 
-      public GMapToolTip ToolTip;
+		/// <summary>
+		/// ToolTip position in local coordinates
+		/// </summary>
+		public Point ToolTipPosition
+		{
+			get
+			{
+				var ret = _area.Location;
+				ret.Offset(-Offset.X, -Offset.Y);
+				return ret;
+			}
+		}
 
-      public MarkerTooltipMode ToolTipMode = MarkerTooltipMode.OnMouseOver;
+		public Size Size
+		{
+			get { return _area.Size; }
+			set { _area.Size = value; }
+		}
 
-       private string toolTipText;
-      public string ToolTipText
-      {
-         get
-         {
-            return toolTipText;
-         }
+		public Rectangle LocalArea
+		{
+			get { return _area; }
+		}
 
-         set
-         {
-            if(ToolTip == null && !string.IsNullOrEmpty(value))
-            {
+		public GMapToolTip ToolTip;
+
+		public MarkerTooltipMode ToolTipMode = MarkerTooltipMode.OnMouseOver;
+
+		private string _toolTipText;
+
+		public string ToolTipText
+		{
+			get { return _toolTipText; }
+
+			set
+			{
+				if (ToolTip == null && !string.IsNullOrEmpty(value))
+				{
 #if !PocketPC
-               ToolTip = new GMapRoundedToolTip(this);
+					ToolTip = new GMapRoundedToolTip(this);
 #else
                ToolTip = new GMapToolTip(this);
 #endif
-            }
-            toolTipText = value;
-         }
-      }
+				}
+				_toolTipText = value;
+			}
+		}
 
-      private bool visible = true;
+		private bool _visible = true;
 
-      /// <summary>
-      /// is marker visible
-      /// </summary>
-      public bool IsVisible
-      {
-         get
-         {
-            return visible;
-         }
-         set
-         {
-            if(value != visible)
-            {
-               visible = value;
+		/// <summary>
+		/// is marker visible
+		/// </summary>
+		public bool IsVisible
+		{
+			get { return _visible; }
+			set
+			{
+				if (value != _visible)
+				{
+					_visible = value;
 
-               if(Overlay != null && Overlay.Control != null)
-               {
-                  if(visible)
-                  {
-                     Overlay.Control.UpdateMarkerLocalPosition(this);
-                  }
-                  else
-                  {
-                      if (Overlay.Control.IsMouseOverMarker)
-                      {
-                          Overlay.Control.IsMouseOverMarker = false;
+					if (Overlay != null && Overlay.Control != null)
+					{
+						if (_visible)
+						{
+							Overlay.Control.UpdateMarkerLocalPosition(this);
+						}
+						else
+						{
+							if (Overlay.Control.IsMouseOverMarker)
+							{
+								Overlay.Control.IsMouseOverMarker = false;
 #if !PocketPC
-                          Overlay.Control.RestoreCursorOnLeave();
+								Overlay.Control.RestoreCursorOnLeave();
 #endif
-                      }
-                  }
+							}
+						}
 
-                  {
-                     if(!Overlay.Control.HoldInvalidation)
-                     {
-                         Overlay.Control.Invalidate();
-                     }
-                  }
-               }
-            }
-         }
-      }
+						{
+							if (!Overlay.Control.HoldInvalidation)
+							{
+								Overlay.Control.Invalidate();
+							}
+						}
+					}
+				}
+			}
+		}
 
-      /// <summary>
-      /// if true, marker will be rendered even if it's outside current view
-      /// </summary>
-      public bool DisableRegionCheck = false;
+		/// <summary>
+		/// if true, marker will be rendered even if it's outside current view
+		/// </summary>
+		public bool DisableRegionCheck;
 
-      /// <summary>
-      /// can maker receive input
-      /// </summary>
-      public bool IsHitTestVisible = true;
+		/// <summary>
+		/// can maker receive input
+		/// </summary>
+		public bool IsHitTestVisible = true;
 
-      private bool isMouseOver = false;
+		private bool _isMouseOver;
 
-      /// <summary>
-      /// is mouse over marker
-      /// </summary>
-      public bool IsMouseOver
-      {
-         get
-         {
-            return isMouseOver;
-         }
-         internal set
-         {
-            isMouseOver = value;
-         }
-      }
+		/// <summary>
+		/// is mouse over marker
+		/// </summary>
+		public bool IsMouseOver
+		{
+			get { return _isMouseOver; }
+			internal set { _isMouseOver = value; }
+		}
 
-      public GMapMarker(PointLatLng pos)
-      {
-         this.Position = pos;
-      }
+		public GMapMarker(PointLatLng pos)
+		{
+			Position = pos;
+		}
 
-      public virtual void OnRender(Graphics g)
-      {
-         //
-      }
+		public virtual void OnRender(Graphics g)
+		{
+			//
+		}
 
 #if PocketPC
       protected void DrawImageUnscaled(Graphics g, Bitmap inBmp, int x, int y)
@@ -266,90 +234,94 @@ namespace GMap.NET.WindowsForms
 #endif
 
 #if !PocketPC
-      #region ISerializable Members
 
-      /// <summary>
-      /// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
-      /// </summary>
-      /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
-      /// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>) for this serialization.</param>
-      /// <exception cref="T:System.Security.SecurityException">
-      /// The caller does not have the required permission.
-      /// </exception>
-      public void GetObjectData(SerializationInfo info, StreamingContext context)
-      {
-         info.AddValue("Position", this.Position);
-         info.AddValue("Tag", this.Tag);
-         info.AddValue("Offset", this.Offset);
-         info.AddValue("Area", this.area);
-         info.AddValue("ToolTip", this.ToolTip);
-         info.AddValue("ToolTipMode", this.ToolTipMode);
-         info.AddValue("ToolTipText", this.ToolTipText);
-         info.AddValue("Visible", this.IsVisible);
-         info.AddValue("DisableregionCheck", this.DisableRegionCheck);
-         info.AddValue("IsHitTestVisible", this.IsHitTestVisible);
-      }
+		#region ISerializable Members
 
-      /// <summary>
-      /// Initializes a new instance of the <see cref="GMapMarker"/> class.
-      /// </summary>
-      /// <param name="info">The info.</param>
-      /// <param name="context">The context.</param>
-      protected GMapMarker(SerializationInfo info, StreamingContext context)
-      {
-         this.Position = Extensions.GetStruct<PointLatLng>(info, "Position", PointLatLng.Empty);
-         this.Tag = Extensions.GetValue<object>(info, "Tag", null);
-         this.Offset = Extensions.GetStruct<Point>(info, "Offset", Point.Empty);
-         this.area = Extensions.GetStruct<Rectangle>(info, "Area", Rectangle.Empty);
-         
-         this.ToolTip = Extensions.GetValue<GMapToolTip>(info, "ToolTip", null);
-         if (this.ToolTip != null) this.ToolTip.Marker = this;
+		/// <summary>
+		/// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+		/// </summary>
+		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+		/// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>) for this serialization.</param>
+		/// <exception cref="T:System.Security.SecurityException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.AddValue("Position", Position);
+			info.AddValue("Tag", Tag);
+			info.AddValue("Offset", Offset);
+			info.AddValue("Area", _area);
+			info.AddValue("ToolTip", ToolTip);
+			info.AddValue("ToolTipMode", ToolTipMode);
+			info.AddValue("ToolTipText", ToolTipText);
+			info.AddValue("Visible", IsVisible);
+			info.AddValue("DisableregionCheck", DisableRegionCheck);
+			info.AddValue("IsHitTestVisible", IsHitTestVisible);
+		}
 
-         this.ToolTipMode = Extensions.GetStruct<MarkerTooltipMode>(info, "ToolTipMode", MarkerTooltipMode.OnMouseOver);
-         this.ToolTipText = info.GetString("ToolTipText");
-         this.IsVisible = info.GetBoolean("Visible");
-         this.DisableRegionCheck = info.GetBoolean("DisableregionCheck");
-         this.IsHitTestVisible = info.GetBoolean("IsHitTestVisible");
-      }
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GMapMarker"/> class.
+		/// </summary>
+		/// <param name="info">The info.</param>
+		/// <param name="context">The context.</param>
+		protected GMapMarker(SerializationInfo info, StreamingContext context)
+		{
+			Position = Extensions.GetStruct(info, "Position", PointLatLng.Empty);
+			Tag = Extensions.GetValue<object>(info, "Tag", null);
+			Offset = Extensions.GetStruct(info, "Offset", Point.Empty);
+			_area = Extensions.GetStruct(info, "Area", Rectangle.Empty);
 
-      #endregion
+			ToolTip = Extensions.GetValue<GMapToolTip>(info, "ToolTip", null);
+			if (ToolTip != null) ToolTip.Marker = this;
+
+			ToolTipMode = Extensions.GetStruct(info, "ToolTipMode", MarkerTooltipMode.OnMouseOver);
+			ToolTipText = info.GetString("ToolTipText");
+			IsVisible = info.GetBoolean("Visible");
+			DisableRegionCheck = info.GetBoolean("DisableregionCheck");
+			IsHitTestVisible = info.GetBoolean("IsHitTestVisible");
+		}
+
+		#endregion
+
 #endif
 
-      #region IDisposable Members
+		#region IDisposable Members
 
-       private bool disposed = false;
+		private bool _disposed;
 
-      public virtual void Dispose()
-      {
-         if(!disposed)
-         {
-            disposed = true;
+		public virtual void Dispose()
+		{
+			if (!_disposed)
+			{
+				_disposed = true;
 
-            Tag = null;
+				Tag = null;
 
-            if(ToolTip != null)
-            {
-               toolTipText = null;
-               ToolTip.Dispose();
-               ToolTip = null;
-            }
-         }
-      }
+				if (ToolTip != null)
+				{
+					_toolTipText = null;
+					ToolTip.Dispose();
+					ToolTip = null;
+				}
+			}
+		}
 
-      #endregion
-   }
+		#endregion
+	}
 
-   public delegate void MarkerClick(GMapMarker item, MouseEventArgs e);
-   public delegate void MarkerEnter(GMapMarker item);
-   public delegate void MarkerLeave(GMapMarker item);
+	public delegate void MarkerClick(GMapMarker item, MouseEventArgs e);
 
-   /// <summary>
-   /// modeof tooltip
-   /// </summary>
-   public enum MarkerTooltipMode
-   {
-      OnMouseOver,
-      Never,
-      Always,
-   }
+	public delegate void MarkerEnter(GMapMarker item);
+
+	public delegate void MarkerLeave(GMapMarker item);
+
+	/// <summary>
+	/// modeof tooltip
+	/// </summary>
+	public enum MarkerTooltipMode
+	{
+		OnMouseOver,
+		Never,
+		Always
+	}
 }

@@ -1,67 +1,61 @@
 ﻿
+using System;
+using GMap.NET.Projections;
+
 namespace GMap.NET.MapProviders
 {
-    using System;
-    using GMap.NET.Projections;
+	public class LithuaniaTOP50 : GMapProvider
+	{
+		public static readonly LithuaniaTOP50 Instance;
 
-    public class LithuaniaTOP50 : GMapProvider
-    {
-        public static readonly LithuaniaTOP50 Instance;
+		private LithuaniaTOP50()
+		{
+			MaxZoom = 15;
+		}
 
-        private LithuaniaTOP50()
-        {
-            MaxZoom = 15;
-        }
+		static LithuaniaTOP50()
+		{
+			Instance = new LithuaniaTOP50();
+		}
 
-        static LithuaniaTOP50()
-        {
-            Instance = new LithuaniaTOP50();
-        }
+		#region GMapProvider Members
 
-        #region GMapProvider Members
+		private Guid id = new Guid("2920B1AF-6D57-4895-9A21-D5837CBF1049");
 
-        private Guid id = new Guid("2920B1AF-6D57-4895-9A21-D5837CBF1049");
-        public override Guid Id
-        {
-            get
-            {
-                return id;
-            }
-        }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-        public override string Name
-        {
-            get
-            {
-                return "LithuaniaTOP50";
-            }
-        }
+		public override string Name
+		{
+			get { return "LithuaniaTOP50"; }
+		}
 
-        public override PureProjection Projection
-        {
-            get
-            {
-                return MercatorProjection.Instance;
-            }
-        }
+		public override PureProjection Projection
+		{
+			get { return MercatorProjection.Instance; }
+		}
 
-        private GMapProvider[] overlays;
-        public override GMapProvider[] Overlays
-        {
-            get
-            {
-                if (overlays == null)
-                {
-                    overlays = new GMapProvider[] { this };
-                }
-                return overlays;
-            }
-        }
+		private GMapProvider[] overlays;
 
-        public override PureImage GetTileImage(GPoint pos, int zoom)
-        {
-            return null;
-        }
-        #endregion
-    }
+		public override GMapProvider[] Overlays
+		{
+			get
+			{
+				if (overlays == null)
+				{
+					overlays = new GMapProvider[] {this};
+				}
+				return overlays;
+			}
+		}
+
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			return null;
+		}
+
+		#endregion
+	}
 }

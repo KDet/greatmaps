@@ -1,72 +1,69 @@
 ﻿
+using System;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
+	/// <summary>
+	/// OpenSeaMapHybrid provider - http://openseamap.org
+	/// </summary>
+	public class OpenSeaMapHybridProvider : OpenStreetMapProviderBase
+	{
+		public static readonly OpenSeaMapHybridProvider Instance;
 
-   /// <summary>
-   /// OpenSeaMapHybrid provider - http://openseamap.org
-   /// </summary>
-   public class OpenSeaMapHybridProvider : OpenStreetMapProviderBase
-   {
-      public static readonly OpenSeaMapHybridProvider Instance;
+		private OpenSeaMapHybridProvider()
+		{
+			RefererUrl = "http://openseamap.org/";
+		}
 
-       private OpenSeaMapHybridProvider()
-      {
-         RefererUrl = "http://openseamap.org/";
-      }
+		static OpenSeaMapHybridProvider()
+		{
+			Instance = new OpenSeaMapHybridProvider();
+		}
 
-      static OpenSeaMapHybridProvider()
-      {
-         Instance = new OpenSeaMapHybridProvider();
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("FAACDE73-4B90-4AE6-BB4A-ADE4F3545592");
 
-       private readonly Guid id = new Guid("FAACDE73-4B90-4AE6-BB4A-ADE4F3545592");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "OpenSeaMapHybrid";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "OpenSeaMapHybrid";
 
-       private GMapProvider[] overlays;
-      public override GMapProvider[] Overlays
-      {
-         get
-         {
-            if(overlays == null)
-            {
-               overlays = new GMapProvider[] { OpenStreetMapProvider.Instance, this };
-            }
-            return overlays;
-         }
-      }
+		public override string Name
+		{
+			get { return name; }
+		}
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, string.Empty);
+		private GMapProvider[] overlays;
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override GMapProvider[] Overlays
+		{
+			get
+			{
+				if (overlays == null)
+				{
+					overlays = new GMapProvider[] {OpenStreetMapProvider.Instance, this};
+				}
+				return overlays;
+			}
+		}
 
-      #endregion
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, string.Empty);
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         return string.Format(UrlFormat, zoom, pos.X, pos.Y);
-      }
+			return GetTileImageUsingHttp(url);
+		}
 
-       private static readonly string UrlFormat = "http://tiles.openseamap.org/seamark/{0}/{1}/{2}.png";
-   }
+		#endregion
+
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			return string.Format(UrlFormat, zoom, pos.X, pos.Y);
+		}
+
+		private static readonly string UrlFormat = "http://tiles.openseamap.org/seamark/{0}/{1}/{2}.png";
+	}
 }

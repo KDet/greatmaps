@@ -1,70 +1,64 @@
 ﻿
+using System;
+using GMap.NET.Projections;
+
 namespace GMap.NET.MapProviders
 {
-   using System;
-   using GMap.NET.Projections;
+	/// <summary>
+	/// LithuaniaReliefMap provider, http://www.maps.lt/map/
+	/// </summary>
+	public class LithuaniaReliefMapProvider : LithuaniaMapProviderBase
+	{
+		public static readonly LithuaniaReliefMapProvider Instance;
 
-   /// <summary>
-   /// LithuaniaReliefMap provider, http://www.maps.lt/map/
-   /// </summary>
-   public class LithuaniaReliefMapProvider : LithuaniaMapProviderBase
-   {
-      public static readonly LithuaniaReliefMapProvider Instance;
+		private LithuaniaReliefMapProvider()
+		{
 
-       private LithuaniaReliefMapProvider()
-      {
+		}
 
-      }
+		static LithuaniaReliefMapProvider()
+		{
+			Instance = new LithuaniaReliefMapProvider();
+		}
 
-      static LithuaniaReliefMapProvider()
-      {
-         Instance = new LithuaniaReliefMapProvider();
-      }
+		#region GMapProvider Members
 
-      #region GMapProvider Members
+		private readonly Guid id = new Guid("85F89205-1062-4F10-B536-90CD8B2F1B7D");
 
-       private readonly Guid id = new Guid("85F89205-1062-4F10-B536-90CD8B2F1B7D");
-      public override Guid Id
-      {
-         get
-         {
-            return id;
-         }
-      }
+		public override Guid Id
+		{
+			get { return id; }
+		}
 
-       private readonly string name = "LithuaniaReliefMap";
-      public override string Name
-      {
-         get
-         {
-            return name;
-         }
-      }
+		private readonly string name = "LithuaniaReliefMap";
 
-      public override PureProjection Projection
-      {
-         get
-         {
-            return LKS94rProjection.Instance;
-         }
-      }
+		public override string Name
+		{
+			get { return name; }
+		}
 
-      public override PureImage GetTileImage(GPoint pos, int zoom)
-      {
-         string url = MakeTileImageUrl(pos, zoom, LanguageStr);
+		public override PureProjection Projection
+		{
+			get { return LKS94rProjection.Instance; }
+		}
 
-         return GetTileImageUsingHttp(url);
-      }
+		public override PureImage GetTileImage(GPoint pos, int zoom)
+		{
+			var url = MakeTileImageUrl(pos, zoom, LanguageStr);
 
-      #endregion
+			return GetTileImageUsingHttp(url);
+		}
 
-       private string MakeTileImageUrl(GPoint pos, int zoom, string language)
-      {
-         // http://dc5.maps.lt/cache/mapslt_relief_vector/map/_alllayers/L09/R00001892/C000020df.jpg
+		#endregion
 
-         return string.Format(UrlFormat, zoom, pos.Y, pos.X);
-      }
+		private string MakeTileImageUrl(GPoint pos, int zoom, string language)
+		{
+			// http://dc5.maps.lt/cache/mapslt_relief_vector/map/_alllayers/L09/R00001892/C000020df.jpg
 
-       private static readonly string UrlFormat = "http://dc5.maps.lt/cache/mapslt_relief_vector/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.png";
-   }
+			return string.Format(UrlFormat, zoom, pos.Y, pos.X);
+		}
+
+		private static readonly string UrlFormat =
+			"http://dc5.maps.lt/cache/mapslt_relief_vector/map/_alllayers/L{0:00}/R{1:x8}/C{2:x8}.png";
+	}
 }
