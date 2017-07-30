@@ -18,8 +18,8 @@ namespace GMap.NET
 
 		public PointLatLng(double lat, double lng)
 		{
-			this._lat = lat;
-			this._lng = lng;
+			_lat = lat;
+			_lng = lng;
 			_notEmpty = true;
 		}
 

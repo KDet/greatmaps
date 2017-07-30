@@ -11,25 +11,25 @@ namespace GMap.NET
 	{
 		public static readonly GRect Empty = new GRect();
 
-		private long x;
-		private long y;
-		private long width;
-		private long height;
+		private long _x;
+		private long _y;
+		private long _width;
+		private long _height;
 
 		public GRect(long x, long y, long width, long height)
 		{
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
+			_x = x;
+			_y = y;
+			_width = width;
+			_height = height;
 		}
 
 		public GRect(GPoint location, GSize size)
 		{
-			x = location.X;
-			y = location.Y;
-			width = size.Width;
-			height = size.Height;
+			_x = location.X;
+			_y = location.Y;
+			_width = size.Width;
+			_height = size.Height;
 		}
 
 		public static GRect FromLTRB(int left, int top, int right, int bottom)
@@ -77,26 +77,26 @@ namespace GMap.NET
 
 		public long X
 		{
-			get { return x; }
-			set { x = value; }
+			get { return _x; }
+			set { _x = value; }
 		}
 
 		public long Y
 		{
-			get { return y; }
-			set { y = value; }
+			get { return _y; }
+			set { _y = value; }
 		}
 
 		public long Width
 		{
-			get { return width; }
-			set { width = value; }
+			get { return _width; }
+			set { _width = value; }
 		}
 
 		public long Height
 		{
-			get { return height; }
-			set { height = value; }
+			get { return _height; }
+			set { _height = value; }
 		}
 
 		public long Left
@@ -121,7 +121,7 @@ namespace GMap.NET
 
 		public bool IsEmpty
 		{
-			get { return height == 0 && width == 0 && x == 0 && y == 0; }
+			get { return _height == 0 && _width == 0 && _x == 0 && _y == 0; }
 		}
 
 		public override bool Equals(object obj)

@@ -307,18 +307,18 @@ namespace GMap.NET
 		}
 	}
 
-	internal class GMapMarkerTile : GMapMarker
+	public class GMapMarkerTile : GMapMarker
 	{
 		private static Brush _fill = new SolidBrush(Color.FromArgb(155, Color.Blue));
 
 		public GMapMarkerTile(PointLatLng p, int size) : base(p)
 		{
-			Size = new Size(size, size);
+			Size = new SizeF(size, size);
 		}
 
 		public override void OnRender(Graphics g)
 		{
-			g.FillRectangle(_fill, new Rectangle(LocalPosition.X, LocalPosition.Y, Size.Width, Size.Height));
+			g.FillRectangle(_fill, new RectangleF(LocalPosition.X, LocalPosition.Y, Size.Width, Size.Height));
 		}
 	}
 }

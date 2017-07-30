@@ -1,18 +1,16 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.Serialization;
-using System.Windows.Forms.Properties;
 
-namespace GMap.NET.WindowsForms.Markers
-{
 #if !PocketPC
 
 #else
    using GMap.NET.WindowsMobile.Properties;
 #endif
 
+namespace GMap.NET.WindowsForms.Markers
+{
 	public enum GMarkerGoogleType
 	{
 		None = 0,
@@ -64,18 +62,22 @@ namespace GMap.NET.WindowsForms.Markers
 	{
 		private Bitmap _bitmap;
 		private Bitmap _bitmapShadow;
+		private readonly GMarkerGoogleType _type;
 
 		private static Bitmap _arrowshadow;
 		private static Bitmap _msmarkerShadow;
 		private static Bitmap _shadowSmall;
 		private static Bitmap _pushpinShadow;
 
-		public readonly GMarkerGoogleType Type;
+		public GMarkerGoogleType Type
+		{
+			get { return _type; }
+		}
 
 		public GMarkerGoogle(PointLatLng p, GMarkerGoogleType type)
 			: base(p)
 		{
-			Type = type;
+			_type = type;
 
 			if (type != GMarkerGoogleType.None)
 			{
@@ -86,17 +88,17 @@ namespace GMap.NET.WindowsForms.Markers
 		private void LoadBitmap()
 		{
 			_bitmap = GetIcon(Type.ToString());
-			Size = new Size(_bitmap.Width, _bitmap.Height);
+			Size = new SizeF(_bitmap.Width, _bitmap.Height);
 
 			switch (Type)
 			{
 				case GMarkerGoogleType.Arrow:
 				{
-					Offset = new Point(-11, -Size.Height);
+					Offset = new PointF(-11, -Size.Height);
 
 					if (_arrowshadow == null)
 					{
-						_arrowshadow = Resources.arrowshadow;
+						// arrowshadow = Resources.arrowshadow;
 					}
 					_bitmapShadow = _arrowshadow;
 				}
@@ -119,11 +121,11 @@ namespace GMap.NET.WindowsForms.Markers
 				case GMarkerGoogleType.Red:
 				case GMarkerGoogleType.RedDot:
 				{
-					Offset = new Point(-Size.Width/2 + 1, -Size.Height + 1);
+					Offset = new PointF(-Size.Width/2 + 1, -Size.Height + 1);
 
 					if (_msmarkerShadow == null)
 					{
-						_msmarkerShadow = Resources.msmarker_shadow;
+						// _msmarkerShadow = Resources.msmarker_shadow;
 					}
 					_bitmapShadow = _msmarkerShadow;
 				}
@@ -140,11 +142,11 @@ namespace GMap.NET.WindowsForms.Markers
 				case GMarkerGoogleType.RedSmall:
 				case GMarkerGoogleType.WhiteSmall:
 				{
-					Offset = new Point(-Size.Width/2, -Size.Height + 1);
+					Offset = new PointF(-Size.Width/2, -Size.Height + 1);
 
 					if (_shadowSmall == null)
 					{
-						_shadowSmall = Resources.shadow_small;
+						// _msmarkerShadow = Resources.shadow_small;
 					}
 					_bitmapShadow = _shadowSmall;
 				}
@@ -154,10 +156,10 @@ namespace GMap.NET.WindowsForms.Markers
 				case GMarkerGoogleType.YellowBigPause:
 				case GMarkerGoogleType.RedBigStop:
 				{
-					Offset = new Point(-Size.Width/2, -Size.Height + 1);
+					Offset = new PointF(-Size.Width/2, -Size.Height + 1);
 					if (_msmarkerShadow == null)
 					{
-						_msmarkerShadow = Resources.msmarker_shadow;
+						//_msmarkerShadow = Resources.msmarker_shadow;
 					}
 					_bitmapShadow = _msmarkerShadow;
 				}
@@ -171,11 +173,11 @@ namespace GMap.NET.WindowsForms.Markers
 				case GMarkerGoogleType.PurplePushpin:
 				case GMarkerGoogleType.RedPushpin:
 				{
-					Offset = new Point(-9, -Size.Height + 1);
+					Offset = new PointF(-9, -Size.Height + 1);
 
 					if (_pushpinShadow == null)
 					{
-						_pushpinShadow = Resources.pushpin_shadow;
+						//_pushpinShadow = Resources.pushpin_shadow;
 					}
 					_bitmapShadow = _pushpinShadow;
 				}
@@ -192,8 +194,8 @@ namespace GMap.NET.WindowsForms.Markers
 			: base(p)
 		{
 			_bitmap = bitmap;
-			Size = new Size(bitmap.Width, bitmap.Height);
-			Offset = new Point(-Size.Width/2, -Size.Height);
+			Size = new SizeF(bitmap.Width, bitmap.Height);
+			Offset = new PointF(-Size.Width/2, -Size.Height);
 		}
 
 		private static readonly Dictionary<string, Bitmap> IconCache = new Dictionary<string, Bitmap>();
@@ -203,7 +205,7 @@ namespace GMap.NET.WindowsForms.Markers
 			Bitmap ret;
 			if (!IconCache.TryGetValue(name, out ret))
 			{
-				ret = Resources.ResourceManager.GetObject(name, Resources.Culture) as Bitmap;
+				ret = null; //Resources.ResourceManager.GetObject(name, Resources.Culture) as Bitmap;
 				IconCache.Add(name, ret);
 			}
 			return ret;
@@ -258,7 +260,7 @@ namespace GMap.NET.WindowsForms.Markers
 		protected GMarkerGoogle(SerializationInfo info, StreamingContext context)
 			: base(info, context)
 		{
-			Type = Extensions.GetStruct(info, "type", GMarkerGoogleType.None);
+			_type = Extensions.GetStruct(info, "type", GMarkerGoogleType.None);
 			//this.Bearing = Extensions.GetStruct<float>(info, "Bearing", null);
 		}
 

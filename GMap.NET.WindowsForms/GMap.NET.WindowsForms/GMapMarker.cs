@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Drawing;
 using System.Runtime.Serialization;
 using System.Windows.Forms;
@@ -7,6 +6,22 @@ using GMap.NET.WindowsForms.ToolTips;
 
 namespace GMap.NET.WindowsForms
 {
+	public delegate void MarkerClick(GMapMarker item, MouseEventArgs e);
+
+	public delegate void MarkerEnter(GMapMarker item);
+
+	public delegate void MarkerLeave(GMapMarker item);
+
+	/// <summary>
+	/// Mode of tooltip
+	/// </summary>
+	public enum MarkerTooltipMode
+	{
+		OnMouseOver,
+		Never,
+		Always
+	}
+
 	/// <summary>
 	/// GMap.NET marker
 	/// </summary>
@@ -25,15 +40,24 @@ namespace GMap.NET.WindowsForms
          attr.SetColorKey(Color.White, Color.White);
       }
 #endif
-		private GMapOverlay _overlay;
+		private PointLatLng _position;
+		private PointF _offset;
+		private RectangleF _area;
+		private bool _isMouseOver;
+		private bool _disposed;
+		private bool _isHitTestVisible = true;
+
+		protected string _toolTipText;
+		protected GMapOverlay _overlay;
+		protected MarkerTooltipMode _toolTipMode = MarkerTooltipMode.OnMouseOver;
+		protected bool Visible = true;
+		protected GMapToolTip _toolTip;
 
 		public GMapOverlay Overlay
 		{
 			get { return _overlay; }
 			internal set { _overlay = value; }
 		}
-
-		private PointLatLng _position;
 
 		public PointLatLng Position
 		{
@@ -43,23 +67,16 @@ namespace GMap.NET.WindowsForms
 				if (_position != value)
 				{
 					_position = value;
-
 					if (IsVisible)
-					{
 						if (Overlay != null && Overlay.Control != null)
-						{
 							Overlay.Control.UpdateMarkerLocalPosition(this);
-						}
-					}
 				}
 			}
 		}
 
-		public object Tag;
+		public object Tag { get; set; }
 
-		private Point _offset;
-
-		public Point Offset
+		public PointF Offset
 		{
 			get { return _offset; }
 			set
@@ -67,24 +84,17 @@ namespace GMap.NET.WindowsForms
 				if (_offset != value)
 				{
 					_offset = value;
-
 					if (IsVisible)
-					{
 						if (Overlay != null && Overlay.Control != null)
-						{
 							Overlay.Control.UpdateMarkerLocalPosition(this);
-						}
-					}
 				}
 			}
 		}
 
-		private Rectangle _area;
-
 		/// <summary>
-		/// marker position in local coordinates, internal only, do not set it manualy
+		/// Marker position in local coordinates, internal only, do not set it manualy
 		/// </summary>
-		public Point LocalPosition
+		public PointF LocalPosition
 		{
 			get { return _area.Location; }
 			set
@@ -92,15 +102,9 @@ namespace GMap.NET.WindowsForms
 				if (_area.Location != value)
 				{
 					_area.Location = value;
-					{
-						if (Overlay != null && Overlay.Control != null)
-						{
-							if (!Overlay.Control.HoldInvalidation)
-							{
-								Overlay.Control.Invalidate();
-							}
-						}
-					}
+					if (Overlay != null && Overlay.Control != null)
+						if (!Overlay.Control.HoldInvalidation)
+							Overlay.Control.Invalidate();
 				}
 			}
 		}
@@ -108,7 +112,7 @@ namespace GMap.NET.WindowsForms
 		/// <summary>
 		/// ToolTip position in local coordinates
 		/// </summary>
-		public Point ToolTipPosition
+		public PointF ToolTipPosition
 		{
 			get
 			{
@@ -118,61 +122,59 @@ namespace GMap.NET.WindowsForms
 			}
 		}
 
-		public Size Size
+		public SizeF Size
 		{
 			get { return _area.Size; }
 			set { _area.Size = value; }
 		}
 
-		public Rectangle LocalArea
+		public RectangleF LocalArea
 		{
 			get { return _area; }
 		}
 
-		public GMapToolTip ToolTip;
+		public virtual GMapToolTip ToolTip
+		{
+			get { return _toolTip; }
+		}
 
-		public MarkerTooltipMode ToolTipMode = MarkerTooltipMode.OnMouseOver;
+		public MarkerTooltipMode ToolTipMode
+		{
+			get { return _toolTipMode; }
+		}
 
-		private string _toolTipText;
-
-		public string ToolTipText
+		public virtual string ToolTipText
 		{
 			get { return _toolTipText; }
-
 			set
 			{
 				if (ToolTip == null && !string.IsNullOrEmpty(value))
 				{
 #if !PocketPC
-					ToolTip = new GMapRoundedToolTip(this);
+					_toolTip = new GMapRoundedToolTip(this);
 #else
-               ToolTip = new GMapToolTip(this);
+					_toolTip = new GMapToolTip(this);
 #endif
 				}
 				_toolTipText = value;
 			}
 		}
 
-		private bool _visible = true;
-
 		/// <summary>
-		/// is marker visible
+		/// Is marker visible
 		/// </summary>
 		public bool IsVisible
 		{
-			get { return _visible; }
+			get { return Visible; }
 			set
 			{
-				if (value != _visible)
+				if (value != Visible)
 				{
-					_visible = value;
-
+					Visible = value;
 					if (Overlay != null && Overlay.Control != null)
 					{
-						if (_visible)
-						{
+						if (Visible)
 							Overlay.Control.UpdateMarkerLocalPosition(this);
-						}
 						else
 						{
 							if (Overlay.Control.IsMouseOverMarker)
@@ -183,12 +185,9 @@ namespace GMap.NET.WindowsForms
 #endif
 							}
 						}
-
 						{
 							if (!Overlay.Control.HoldInvalidation)
-							{
 								Overlay.Control.Invalidate();
-							}
 						}
 					}
 				}
@@ -196,19 +195,21 @@ namespace GMap.NET.WindowsForms
 		}
 
 		/// <summary>
-		/// if true, marker will be rendered even if it's outside current view
+		/// If true, marker will be rendered even if it's outside current view
 		/// </summary>
-		public bool DisableRegionCheck;
+		public bool DisableRegionCheck { get; set; }
 
 		/// <summary>
 		/// can maker receive input
 		/// </summary>
-		public bool IsHitTestVisible = true;
-
-		private bool _isMouseOver;
+		public bool IsHitTestVisible
+		{
+			get { return _isHitTestVisible; }
+			set { _isHitTestVisible = value; }
+		}
 
 		/// <summary>
-		/// is mouse over marker
+		/// Is mouse over marker
 		/// </summary>
 		public bool IsMouseOver
 		{
@@ -216,7 +217,7 @@ namespace GMap.NET.WindowsForms
 			internal set { _isMouseOver = value; }
 		}
 
-		public GMapMarker(PointLatLng pos)
+		protected GMapMarker(PointLatLng pos)
 		{
 			Position = pos;
 		}
@@ -226,13 +227,27 @@ namespace GMap.NET.WindowsForms
 			//
 		}
 
-#if PocketPC
-      protected void DrawImageUnscaled(Graphics g, Bitmap inBmp, int x, int y)
-      {
-         g.DrawImage(inBmp, new Rectangle(x, y, inBmp.Width, inBmp.Height), 0, 0, inBmp.Width, inBmp.Height, GraphicsUnit.Pixel, attr);
-      }
-#endif
+		public virtual void Dispose()
+		{
+			if (!_disposed)
+			{
+				_disposed = true;
+				Tag = null;
+				if (ToolTip != null)
+				{
+					_toolTipText = null;
+					ToolTip.Dispose();
+					_toolTip = null;
+				}
+			}
+		}
 
+#if PocketPC
+		protected void DrawImageUnscaled(Graphics g, Bitmap inBmp, int x, int y)
+		{
+			g.DrawImage(inBmp, new Rectangle(x, y, inBmp.Width, inBmp.Height), 0, 0, inBmp.Width, inBmp.Height, GraphicsUnit.Pixel, attr);
+		}
+#endif
 #if !PocketPC
 
 		#region ISerializable Members
@@ -271,10 +286,10 @@ namespace GMap.NET.WindowsForms
 			Offset = Extensions.GetStruct(info, "Offset", Point.Empty);
 			_area = Extensions.GetStruct(info, "Area", Rectangle.Empty);
 
-			ToolTip = Extensions.GetValue<GMapToolTip>(info, "ToolTip", null);
+			_toolTip = Extensions.GetValue<GMapToolTip>(info, "ToolTip", null);
 			if (ToolTip != null) ToolTip.Marker = this;
 
-			ToolTipMode = Extensions.GetStruct(info, "ToolTipMode", MarkerTooltipMode.OnMouseOver);
+			_toolTipMode = Extensions.GetStruct(info, "ToolTipMode", MarkerTooltipMode.OnMouseOver);
 			ToolTipText = info.GetString("ToolTipText");
 			IsVisible = info.GetBoolean("Visible");
 			DisableRegionCheck = info.GetBoolean("DisableregionCheck");
@@ -284,44 +299,5 @@ namespace GMap.NET.WindowsForms
 		#endregion
 
 #endif
-
-		#region IDisposable Members
-
-		private bool _disposed;
-
-		public virtual void Dispose()
-		{
-			if (!_disposed)
-			{
-				_disposed = true;
-
-				Tag = null;
-
-				if (ToolTip != null)
-				{
-					_toolTipText = null;
-					ToolTip.Dispose();
-					ToolTip = null;
-				}
-			}
-		}
-
-		#endregion
-	}
-
-	public delegate void MarkerClick(GMapMarker item, MouseEventArgs e);
-
-	public delegate void MarkerEnter(GMapMarker item);
-
-	public delegate void MarkerLeave(GMapMarker item);
-
-	/// <summary>
-	/// modeof tooltip
-	/// </summary>
-	public enum MarkerTooltipMode
-	{
-		OnMouseOver,
-		Never,
-		Always
 	}
 }

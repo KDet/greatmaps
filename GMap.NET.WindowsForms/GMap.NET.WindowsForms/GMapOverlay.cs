@@ -1,6 +1,7 @@
-﻿
-using System;
+﻿using System;
+using System.Collections.Specialized;
 using System.Drawing;
+using System.Linq;
 using System.Runtime.Serialization;
 using GMap.NET.ObjectModel;
 
@@ -16,99 +17,19 @@ namespace GMap.NET.WindowsForms
    public class GMapOverlay: IDisposable
 #endif
 	{
-		private bool _isVisibile = true;
+		private bool _isVisible = true;
+		private bool _disposed;
+		protected GMapControl _control;
+		private readonly GMapMarker[] _deserializedMarkerArray;
+		private readonly GMapRoute[] _deserializedRouteArray;
+		private readonly GMapPolygon[] _deserializedPolygonArray;
+		private readonly ObservableCollectionThreadSafe<GMapRoute> _routes = new ObservableCollectionThreadSafe<GMapRoute>();
 
-		/// <summary>
-		/// is overlay visible
-		/// </summary>
-		public bool IsVisibile
-		{
-			get { return _isVisibile; }
-			set
-			{
-				if (value != _isVisibile)
-				{
-					_isVisibile = value;
+		private readonly ObservableCollectionThreadSafe<GMapMarker> _markers =
+			new ObservableCollectionThreadSafe<GMapMarker>();
 
-					if (Control != null)
-					{
-						if (_isVisibile)
-						{
-							Control.HoldInvalidation = true;
-							{
-								ForceUpdate();
-							}
-							Control.Refresh();
-						}
-						else
-						{
-							if (Control.IsMouseOverMarker)
-							{
-								Control.IsMouseOverMarker = false;
-							}
-
-							if (Control.IsMouseOverPolygon)
-							{
-								Control.IsMouseOverPolygon = false;
-							}
-
-							if (Control.IsMouseOverRoute)
-							{
-								Control.IsMouseOverRoute = false;
-							}
-#if !PocketPC
-							Control.RestoreCursorOnLeave();
-#endif
-
-							if (!Control.HoldInvalidation)
-							{
-								Control.Invalidate();
-							}
-						}
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// overlay Id
-		/// </summary>
-		public string Id;
-
-		/// <summary>
-		/// list of markers, should be thread safe
-		/// </summary>
-		public readonly ObservableCollectionThreadSafe<GMapMarker> Markers = new ObservableCollectionThreadSafe<GMapMarker>();
-
-		/// <summary>
-		/// list of routes, should be thread safe
-		/// </summary>
-		public readonly ObservableCollectionThreadSafe<GMapRoute> Routes = new ObservableCollectionThreadSafe<GMapRoute>();
-
-		/// <summary>
-		/// list of polygons, should be thread safe
-		/// </summary>
-		public readonly ObservableCollectionThreadSafe<GMapPolygon> Polygons =
+		private readonly ObservableCollectionThreadSafe<GMapPolygon> _polygons =
 			new ObservableCollectionThreadSafe<GMapPolygon>();
-
-		private GMapControl _control;
-
-		public GMapControl Control
-		{
-			get { return _control; }
-			internal set { _control = value; }
-		}
-
-		public GMapOverlay()
-		{
-			CreateEvents();
-		}
-
-		public GMapOverlay(string id)
-		{
-			Id = id;
-			CreateEvents();
-		}
 
 		private void CreateEvents()
 		{
@@ -124,65 +45,59 @@ namespace GMap.NET.WindowsForms
 			Polygons.CollectionChanged -= Polygons_CollectionChanged;
 		}
 
-		public void Clear()
-		{
-			Markers.Clear();
-			Routes.Clear();
-			Polygons.Clear();
-		}
-
 		private void Polygons_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			OnPolygonsCollectionChanged(e);
+		}
+
+		private void Routes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			OnRoutesCollectionChanged(e);
+		}
+		private void Markers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			OnMarkersCollectionChanged(e);
+		}
+
+		protected virtual void OnMarkersCollectionChanged(NotifyCollectionChangedEventArgs e)
+		{
 			if (e.NewItems != null)
-			{
-				foreach (GMapPolygon obj in e.NewItems)
-				{
+				foreach (GMapMarker obj in e.NewItems)
 					if (obj != null)
 					{
 						obj.Overlay = this;
 						if (Control != null)
-						{
-							Control.UpdatePolygonLocalPosition(obj);
-						}
+							Control.UpdateMarkerLocalPosition(obj);
 					}
-				}
-			}
 
 			if (Control != null)
 			{
 				if (e.Action == NotifyCollectionChangedAction.Remove || e.Action == NotifyCollectionChangedAction.Reset)
 				{
-					if (Control.IsMouseOverPolygon)
+					if (Control.IsMouseOverMarker)
 					{
-						Control.IsMouseOverPolygon = false;
+						Control.IsMouseOverMarker = false;
 #if !PocketPC
 						Control.RestoreCursorOnLeave();
 #endif
 					}
 				}
-
 				if (!Control.HoldInvalidation)
-				{
 					Control.Invalidate();
-				}
 			}
 		}
 
-		private void Routes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		protected virtual void OnRoutesCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			if (e.NewItems != null)
 			{
 				foreach (GMapRoute obj in e.NewItems)
-				{
 					if (obj != null)
 					{
 						obj.Overlay = this;
 						if (Control != null)
-						{
 							Control.UpdateRouteLocalPosition(obj);
-						}
 					}
-				}
 			}
 
 			if (Control != null)
@@ -199,25 +114,21 @@ namespace GMap.NET.WindowsForms
 				}
 
 				if (!Control.HoldInvalidation)
-				{
 					Control.Invalidate();
-				}
 			}
 		}
 
-		private void Markers_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		protected virtual void OnPolygonsCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
 			if (e.NewItems != null)
 			{
-				foreach (GMapMarker obj in e.NewItems)
+				foreach (GMapPolygon obj in e.NewItems)
 				{
 					if (obj != null)
 					{
 						obj.Overlay = this;
 						if (Control != null)
-						{
-							Control.UpdateMarkerLocalPosition(obj);
-						}
+							Control.UpdatePolygonLocalPosition(obj);
 					}
 				}
 			}
@@ -226,9 +137,9 @@ namespace GMap.NET.WindowsForms
 			{
 				if (e.Action == NotifyCollectionChangedAction.Remove || e.Action == NotifyCollectionChangedAction.Reset)
 				{
-					if (Control.IsMouseOverMarker)
+					if (Control.IsMouseOverPolygon)
 					{
-						Control.IsMouseOverMarker = false;
+						Control.IsMouseOverPolygon = false;
 #if !PocketPC
 						Control.RestoreCursorOnLeave();
 #endif
@@ -275,6 +186,17 @@ namespace GMap.NET.WindowsForms
 			}
 		}
 
+		public GMapOverlay()
+		{
+			CreateEvents();
+		}
+
+		public GMapOverlay(string id)
+		{
+			Id = id;
+			CreateEvents();
+		}
+
 		/// <summary>
 		/// renders objects/routes/polygons
 		/// </summary>
@@ -284,55 +206,128 @@ namespace GMap.NET.WindowsForms
 			if (Control != null)
 			{
 				if (Control.RoutesEnabled)
-				{
-					foreach (var r in Routes)
-					{
-						if (r.IsVisible)
-						{
-							r.OnRender(g);
-						}
-					}
-				}
-
+					foreach (var r in Routes.Where(r => r.IsVisible))
+						r.OnRender(g);
 				if (Control.PolygonsEnabled)
-				{
-					foreach (var r in Polygons)
-					{
-						if (r.IsVisible)
-						{
-							r.OnRender(g);
-						}
-					}
-				}
+					foreach (var r in Polygons.Where(r => r.IsVisible))
+						r.OnRender(g);
 
 				if (Control.MarkersEnabled)
 				{
 					// markers
-					foreach (var m in Markers)
-					{
-						//if(m.IsVisible && (m.DisableRegionCheck || Control.Core.currentRegion.Contains(m.LocalPosition.X, m.LocalPosition.Y)))
-						if (m.IsVisible || m.DisableRegionCheck)
-						{
-							m.OnRender(g);
-						}
-					}
+					//if(m.IsVisible && (m.DisableRegionCheck || Control.Core.currentRegion.Contains(m.LocalPosition.X, m.LocalPosition.Y)))
+					foreach (var m in Markers.Where(m => m.IsVisible || m.DisableRegionCheck))
+						m.OnRender(g);
 
 					// tooltips above
-					foreach (var m in Markers)
+					//if(m.ToolTip != null && m.IsVisible && Control.Core.currentRegion.Contains(m.LocalPosition.X, m.LocalPosition.Y))
+					foreach (var m in Markers.Where(m => m.ToolTip != null && m.IsVisible)
+						.Where(m => !string.IsNullOrEmpty(m.ToolTipText) &&
+						            (m.ToolTipMode == MarkerTooltipMode.Always ||
+						             (m.ToolTipMode == MarkerTooltipMode.OnMouseOver && m.IsMouseOver))))
+						m.ToolTip.OnRender(g);
+				}
+			}
+		}
+
+		public void Dispose()
+		{
+			if (!_disposed)
+			{
+				_disposed = true;
+				ClearEvents();
+				foreach (var m in Markers)
+					m.Dispose();
+				foreach (var r in Routes)
+					r.Dispose();
+				foreach (var p in Polygons)
+					p.Dispose();
+				Clear();
+			}
+		}
+
+		public void Clear()
+		{
+			Markers.Clear();
+			Routes.Clear();
+			Polygons.Clear();
+		}
+
+		/// <summary>
+		/// Is overlay visible
+		/// </summary>
+		public bool IsVisible
+		{
+			get { return _isVisible; }
+			set
+			{
+				if (value != _isVisible)
+				{
+					_isVisible = value;
+
+					if (Control != null)
 					{
-						//if(m.ToolTip != null && m.IsVisible && Control.Core.currentRegion.Contains(m.LocalPosition.X, m.LocalPosition.Y))
-						if (m.ToolTip != null && m.IsVisible)
+						if (_isVisible)
 						{
-							if (!string.IsNullOrEmpty(m.ToolTipText) &&
-							    (m.ToolTipMode == MarkerTooltipMode.Always ||
-							     (m.ToolTipMode == MarkerTooltipMode.OnMouseOver && m.IsMouseOver)))
+							Control.HoldInvalidation = true;
 							{
-								m.ToolTip.OnRender(g);
+								ForceUpdate();
 							}
+							Control.Refresh();
+						}
+						else
+						{
+							if (Control.IsMouseOverMarker)
+								Control.IsMouseOverMarker = false;
+							if (Control.IsMouseOverPolygon)
+								Control.IsMouseOverPolygon = false;
+							if (Control.IsMouseOverRoute)
+								Control.IsMouseOverRoute = false;
+#if !PocketPC
+							Control.RestoreCursorOnLeave();
+#endif
+
+							if (!Control.HoldInvalidation)
+								Control.Invalidate();
 						}
 					}
 				}
 			}
+		}
+
+		/// <summary>
+		/// Overlay Id
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// list of markers, should be thread safe
+		/// </summary>
+		public ObservableCollectionThreadSafe<GMapMarker> Markers
+		{
+			get { return _markers; }
+		}
+
+		/// <summary>
+		/// list of routes, should be thread safe
+		/// </summary>
+		public ObservableCollectionThreadSafe<GMapRoute> Routes
+		{
+			get { return _routes; }
+		}
+
+		/// <summary>
+		/// list of polygons, should be thread safe
+		/// </summary>
+		public ObservableCollectionThreadSafe<GMapPolygon> Polygons
+		{
+			get { return _polygons; }
+		}
+
+		public GMapControl Control
+		{
+			get { return _control; }
+			internal set { _control = value; }
 		}
 
 #if !PocketPC
@@ -350,7 +345,7 @@ namespace GMap.NET.WindowsForms
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			info.AddValue("Id", Id);
-			info.AddValue("IsVisible", IsVisibile);
+			info.AddValue("IsVisible", IsVisible);
 
 			var markerArray = new GMapMarker[Markers.Count];
 			Markers.CopyTo(markerArray, 0);
@@ -365,10 +360,6 @@ namespace GMap.NET.WindowsForms
 			info.AddValue("Polygons", polygonArray);
 		}
 
-		private GMapMarker[] _deserializedMarkerArray;
-		private GMapRoute[] _deserializedRouteArray;
-		private GMapPolygon[] _deserializedPolygonArray;
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="GMapOverlay"/> class.
 		/// </summary>
@@ -377,12 +368,10 @@ namespace GMap.NET.WindowsForms
 		protected GMapOverlay(SerializationInfo info, StreamingContext context)
 		{
 			Id = info.GetString("Id");
-			IsVisibile = info.GetBoolean("IsVisible");
-
+			IsVisible = info.GetBoolean("IsVisible");
 			_deserializedMarkerArray = Extensions.GetValue(info, "Markers", new GMapMarker[0]);
 			_deserializedRouteArray = Extensions.GetValue(info, "Routes", new GMapRoute[0]);
 			_deserializedPolygonArray = Extensions.GetValue(info, "Polygons", new GMapPolygon[0]);
-
 			CreateEvents();
 		}
 
@@ -402,14 +391,12 @@ namespace GMap.NET.WindowsForms
 				marker.Overlay = this;
 				Markers.Add(marker);
 			}
-
 			// Populate Routes
 			foreach (var route in _deserializedRouteArray)
 			{
 				route.Overlay = this;
 				Routes.Add(route);
 			}
-
 			// Populate Polygons
 			foreach (var polygon in _deserializedPolygonArray)
 			{
@@ -421,38 +408,5 @@ namespace GMap.NET.WindowsForms
 		#endregion
 
 #endif
-
-		#region IDisposable Members
-
-		private bool _disposed;
-
-		public void Dispose()
-		{
-			if (!_disposed)
-			{
-				_disposed = true;
-
-				ClearEvents();
-
-				foreach (var m in Markers)
-				{
-					m.Dispose();
-				}
-
-				foreach (var r in Routes)
-				{
-					r.Dispose();
-				}
-
-				foreach (var p in Polygons)
-				{
-					p.Dispose();
-				}
-
-				Clear();
-			}
-		}
-
-		#endregion
 	}
 }

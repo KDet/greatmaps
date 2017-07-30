@@ -17,10 +17,10 @@ namespace GMap.NET
 
 		public RectLatLng(double lat, double lng, double widthLng, double heightLat)
 		{
-			this._lng = lng;
-			this._lat = lat;
-			this._widthLng = widthLng;
-			this._heightLat = heightLat;
+			_lng = lng;
+			_lat = lat;
+			_widthLng = widthLng;
+			_heightLat = heightLat;
 			_notEmpty = true;
 		}
 

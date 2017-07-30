@@ -51,7 +51,7 @@ namespace GMap.NET.CacheProviders
 
 				var dllDir = appDataDir + "DllCache" + Path.DirectorySeparatorChar;
 				var dll = dllDir + "SQLite_v103_NET" + Environment.Version.Major + "_" + (IntPtr.Size == 8 ? "x64" : "x86") +
-				          Path.DirectorySeparatorChar + "System.Data.SQLite.DLL";
+						  Path.DirectorySeparatorChar + "System.Data.SQLite.DLL";
 				if (!File.Exists(dll))
 				{
 					var dir = Path.GetDirectoryName(dll);
@@ -74,7 +74,7 @@ namespace GMap.NET.CacheProviders
 							{
 								using (var exctDll = new MemoryStream())
 								{
-									var tmp = new byte[1024*256];
+									var tmp = new byte[1024 * 256];
 									var r = 0;
 									while ((r = gs.Read(tmp, 0, tmp.Length)) > 0)
 									{
@@ -97,7 +97,7 @@ namespace GMap.NET.CacheProviders
 							{
 								using (var exctDll = new MemoryStream())
 								{
-									var tmp = new byte[1024*256];
+									var tmp = new byte[1024 * 256];
 									var r = 0;
 									while ((r = gs.Read(tmp, 0, tmp.Length)) > 0)
 									{
@@ -127,7 +127,7 @@ namespace GMap.NET.CacheProviders
 			if (++ping == 1)
 			{
 				Trace.WriteLine("SQLiteVersion: " + SQLiteConnection.SQLiteVersion + " | " + SQLiteConnection.SQLiteSourceId + " | " +
-				                SQLiteConnection.DefineConstants);
+								SQLiteConnection.DefineConstants);
 			}
 		}
 #endif
@@ -260,7 +260,7 @@ namespace GMap.NET.CacheProviders
 				var pageSize = BitConverter.ToUInt16(pageSizeBytes, 0);
 				var freePages = BitConverter.ToUInt32(freePagesBytes, 0);
 
-				var freeMB = (pageSize*freePages)/(1024.0*1024.0);
+				var freeMB = (pageSize * freePages) / (1024.0 * 1024.0);
 
 #if !PocketPC
 				var addSizeMB = 32;
@@ -370,7 +370,7 @@ namespace GMap.NET.CacheProviders
 									cmd.Transaction = tr;
 									cmd.CommandText =
 										string.Format("create table large (a); insert into large values (zeroblob({0})); drop table large;",
-											addSizeInMBytes*1024*1024);
+											addSizeInMBytes * 1024 * 1024);
 									cmd.ExecuteNonQuery();
 								}
 								tr.Commit();
@@ -759,7 +759,7 @@ namespace GMap.NET.CacheProviders
 						cn.Close();
 					}
 
-					if (Interlocked.Increment(ref preAllocationPing)%22 == 0)
+					if (Interlocked.Increment(ref preAllocationPing) % 22 == 0)
 					{
 						CheckPreAllocation();
 					}

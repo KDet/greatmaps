@@ -1,16 +1,12 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Windows.Forms;
 
 namespace GMap.NET.ObjectModel
 {
-	public class ObservableCollectionThreadSafe<T> : ObservableCollection<T>
+	public class ObservableCollectionThreadSafe<T> : ObservableRangeCollection<T>
 	{
 		private NotifyCollectionChangedEventHandler _collectionChanged;
-
-		public override event NotifyCollectionChangedEventHandler CollectionChanged
-		{
-			add { _collectionChanged += value; }
-			remove { _collectionChanged -= value; }
-		}
 
 		protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
@@ -46,12 +42,26 @@ namespace GMap.NET.ObjectModel
                   }
                   else // Execute handler as is 
                   {
-                     collectionChanged(this, e);
+                     _collectionChanged(this, e);
                   }
 #endif
 					}
 				}
 			}
+		}
+
+		public ObservableCollectionThreadSafe(): base()
+		{			
+		}
+		public ObservableCollectionThreadSafe(IEnumerable<T> collection)
+			: base(collection)
+		{
+		}
+
+		public override event NotifyCollectionChangedEventHandler CollectionChanged
+		{
+			add { _collectionChanged += value; }
+			remove { _collectionChanged -= value; }
 		}
 	}
 }

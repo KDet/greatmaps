@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.Serialization;
@@ -16,7 +15,33 @@ namespace GMap.NET.WindowsForms
    public class GMapToolTip: IDisposable
 #endif
 	{
-		private GMapMarker _marker;
+		public static readonly StringFormat DefaultFormat = new StringFormat();
+#if !PocketPC
+		public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 14, FontStyle.Bold, GraphicsUnit.Pixel);
+#else
+		public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 6, FontStyle.Bold);
+#endif
+#if !PocketPC
+		public static readonly Pen DefaultStroke = new Pen(Color.FromArgb(140, Color.MidnightBlue));
+#else
+      public static readonly Pen DefaultStroke = new Pen(Color.MidnightBlue);
+#endif
+#if !PocketPC
+		public static readonly Brush DefaultFill = new SolidBrush(Color.FromArgb(222, Color.AliceBlue));
+#else
+		public static readonly Brush DefaultFill = new System.Drawing.SolidBrush(Color.AliceBlue);
+#endif
+		public static readonly Brush DefaultForeground = new SolidBrush(Color.Navy);
+
+		[NonSerialized] private readonly StringFormat _format = DefaultFormat;
+		[NonSerialized] private Font _font = DefaultFont;
+		[NonSerialized] private Pen _stroke = DefaultStroke;
+		[NonSerialized] private Brush _fill = DefaultFill;
+		[NonSerialized] private Brush _foreground = DefaultForeground;
+		private Size _textPadding = new Size(10, 10);
+		private bool _disposed;
+
+		protected GMapMarker _marker;
 
 		public GMapMarker Marker
 		{
@@ -24,69 +49,62 @@ namespace GMap.NET.WindowsForms
 			internal set { _marker = value; }
 		}
 
-		public Point Offset;
+		public Point Offset { get; set; }
 
-		public static readonly StringFormat DefaultFormat = new StringFormat();
+		public StringFormat Format
+		{
+			get { return _format; }
+		}
 
-		/// <summary>
-		/// string format
-		/// </summary>
-		[NonSerialized] public readonly StringFormat Format = DefaultFormat;
-
-#if !PocketPC
-		public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 14, FontStyle.Bold, GraphicsUnit.Pixel);
-#else
-      public static readonly Font DefaultFont = new Font(FontFamily.GenericSansSerif, 6, FontStyle.Bold);
-#endif
+		public Font Font
+		{
+			get { return _font; }
+			set { _font = value; }
+		}
 
 		/// <summary>
-		/// font
-		/// </summary>
-		[NonSerialized] public Font Font = DefaultFont;
-
-#if !PocketPC
-		public static readonly Pen DefaultStroke = new Pen(Color.FromArgb(140, Color.MidnightBlue));
-#else
-      public static readonly Pen DefaultStroke = new Pen(Color.MidnightBlue);
-#endif
+		/// Specifies how the outline is painted
+		/// </summary>		
+		public Pen Stroke
+		{
+			get { return _stroke; }
+			set { _stroke = value; }
+		}
 
 		/// <summary>
-		/// specifies how the outline is painted
-		/// </summary>
-		[NonSerialized] public Pen Stroke = DefaultStroke;
-
-#if !PocketPC
-		public static readonly Brush DefaultFill = new SolidBrush(Color.FromArgb(222, Color.AliceBlue));
-#else
-      public static readonly Brush DefaultFill = new System.Drawing.SolidBrush(Color.AliceBlue);
-#endif
+		/// Background color
+		/// </summary>	
+		public Brush Fill
+		{
+			get { return _fill; }
+			set { _fill = value; }
+		}
 
 		/// <summary>
-		/// background color
+		/// Text foreground
 		/// </summary>
-		[NonSerialized] public Brush Fill = DefaultFill;
-
-		public static readonly Brush DefaultForeground = new SolidBrush(Color.Navy);
-
-		/// <summary>
-		/// text foreground
-		/// </summary>
-		[NonSerialized] public Brush Foreground = DefaultForeground;
+		public Brush Foreground
+		{
+			get { return _foreground; }
+			set { _foreground = value; }
+		}
 
 		/// <summary>
-		/// text padding
+		/// Text padding
 		/// </summary>
-		public Size TextPadding = new Size(10, 10);
+		public Size TextPadding
+		{
+			get { return _textPadding; }
+			set { _textPadding = value; }
+		}
 
 		static GMapToolTip()
 		{
 			DefaultStroke.Width = 2;
-
 #if !PocketPC
 			DefaultStroke.LineJoin = LineJoin.Round;
 			DefaultStroke.StartCap = LineCap.RoundAnchor;
 #endif
-
 #if !PocketPC
 			DefaultFormat.LineAlignment = StringAlignment.Center;
 #endif
@@ -102,20 +120,22 @@ namespace GMap.NET.WindowsForms
 		public virtual void OnRender(Graphics g)
 		{
 			var st = g.MeasureString(Marker.ToolTipText, Font).ToSize();
-			var rect = new Rectangle(Marker.ToolTipPosition.X, Marker.ToolTipPosition.Y - st.Height, st.Width + TextPadding.Width,
-				st.Height + TextPadding.Height);
+			var rect = new RectangleF(Marker.ToolTipPosition.X, Marker.ToolTipPosition.Y - st.Height,
+				st.Width + TextPadding.Width, st.Height + TextPadding.Height);
 			rect.Offset(Offset.X, Offset.Y);
-
 			g.DrawLine(Stroke, Marker.ToolTipPosition.X, Marker.ToolTipPosition.Y, rect.X, rect.Y + rect.Height/2);
-
 			g.FillRectangle(Fill, rect);
-			g.DrawRectangle(Stroke, rect);
-
+			g.DrawRectangle(Stroke, rect.X, rect.Y, rect.Width, rect.Height);
 #if PocketPC
-         rect.Offset(0, (rect.Height - st.Height) / 2);
+			rect.Offset(0, (rect.Height - st.Height) / 2);
 #endif
-
 			g.DrawString(Marker.ToolTipText, Font, Foreground, rect, Format);
+		}
+
+		public void Dispose()
+		{
+			if (!_disposed)
+				_disposed = true;
 		}
 
 #if !PocketPC
@@ -150,19 +170,5 @@ namespace GMap.NET.WindowsForms
 		#endregion
 
 #endif
-
-		#region IDisposable Members
-
-		private bool _disposed;
-
-		public void Dispose()
-		{
-			if (!_disposed)
-			{
-				_disposed = true;
-			}
-		}
-
-		#endregion
 	}
 }
