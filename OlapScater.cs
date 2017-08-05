@@ -127,10 +127,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		#endregion
 		#region Constants
 		/// <summary>
-		/// Підпис значень осі, коли всі значення рівні null.
-		/// </summary>
-		private const string AXIS_NULL_CAPTION = @"NULL";
-		/// <summary>
 		/// Мінімальна відстань між лініями сітки
 		/// </summary>
 		private const int DIST_BTWN_LINES = 50;
@@ -159,18 +155,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// </summary>
 		private const float ITEM_HINT_VISIBLE_TIME = 3.5f;
 		/// <summary>
-		/// Maximum relative error of values shown on coordinate axes from exact values in logarithmic scale.
-		/// </summary>
-		private const double MAX_DEVIATION_FROM_EXACT_VALUE = 0.01;
-		/// <summary>
-		/// Мінімальна кількість символів <c>SPACE</c> які мають вміститися між кожною парою сусідніх підписів на осях
-		/// </summary>
-		private const float MIN_SPACES_BTWN_COORD_LABELS = 2f;
-		/// <summary>
-		/// Символ, ширину в пікселях якого беруть за одиницю відстані між сусідніми підписами на осях
-		/// </summary>
-		private const string SPACE = " ";
-		/// <summary>
 		/// Ширина в пікселях лінії що сполучає два сусідніх "кружка" в шляху елементу
 		/// </summary>
 		private const float WAY_LINE_WIDTH = 3;
@@ -179,10 +163,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// Brush яким буде зафарбовано фон скеттер діаграми
 		/// </summary>
 		private static readonly Brush BRUSH_BACK = new SolidBrush(Color.White);
-		/// <summary>
-		/// Brush яким буде відмальовано підписи на осях
-		/// </summary>
-		private static readonly Brush BRUSH_COORD_LABELS = new SolidBrush(Color.Black);
 		/// <summary>
 		/// Brush яким буде відмальовано текст що сповіщає що недостатньо елементів "натягано"
 		/// </summary>
@@ -196,20 +176,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// </summary>
 		private static readonly Brush BRUSH_STR_BACK = new SolidBrush(Color.FromArgb(75, Color.Black));
 		/// <summary>
-		/// Масив кроків для підписів осей.
-		/// Кожних два сусідні підписи на осі будуть по значенню відрізнятися рівно на COORD_GRADUATE[X]*Math.Pow(10, Y),
-		///		де X та Y залежать від даних та значень інших констант.
-		/// </summary>
-		private readonly int[] COORD_GRADUATE = new int[3] { 1, 2, 5 };
-		/// <summary>
-		/// При підсвітці поточного елементу - колір крайніх точок обідка що прилягають до краю елементу
-		/// </summary>
-		private static readonly Color COLOR_HIGHLIGHT_DARK = Color.Black;
-		/// <summary>
-		/// При підсвітці поточного елементу - колір крайніх точок обідка що розміщені якнайдалі від краю елементу
-		/// </summary>
-		private static readonly Color COLOR_HIGHLIGHT_SURROUND = Color.Transparent;
-		/// <summary>
 		/// Колір лінії якою перекреслюється "кружок" у випадку якщо одна з мір для нього інтерпольована
 		/// </summary>
 		private static readonly Color COLOR_INTERPOLATED_LINE = Color.Black;
@@ -218,21 +184,9 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// </summary>
 		private static readonly Font FONT_BACK = FontUtils.FontCreate("Verdana", 50);
 		/// <summary>
-		/// Шрифт яким буде підписано координатну сітку
-		/// </summary>
-		private static readonly Font FONT_COORDINATES = FontUtils.FontCreate("Verdana", 8);
-		/// <summary>
 		/// Шрифт яким буде написано користувачу повідомлення про те що дані погані або не все втягнуто
 		/// </summary>
 		private static readonly Font FONT_LABEL_TEXT = FontUtils.FontCreate(@"Tahoma", 8.25f);
-		/// <summary>
-		/// Мінімальна відстань в пікселях між двома сусідніми підписами координатної сітки на одній з осей
-		/// </summary>
-		private readonly float MIN_DIST_BTWN_COORD_LABELS;
-		/// <summary>
-		/// Pen яким буде намальовано лінії координатної сітки
-		/// </summary>
-		private static readonly Pen PEN_COORD_LINE = Pens.LightGray;
 		/// <summary>
 		/// Pen яким перекреслюється "кружок" у випадку якщо одна з мір для нього інтерпольована
 		/// </summary>
@@ -639,15 +593,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			}
 			Tracer.ExitMethod("OlapScatter.DataSet()");
 		}
-		/// <summary>
-		/// Встановлюємо потрібну якість відмальовки для <paramref name="aGraphics"/>
-		/// </summary>
-		private static void DefaultQualitySet(Graphics aGraphics)
-		{
-			aGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-			aGraphics.CompositingQuality = CompositingQuality.HighQuality;
-			aGraphics.SmoothingMode = SmoothingMode.AntiAlias;
-		}
 		private void EventActionRaise(MemberItem[] aData, object aAction, object aState)
 		{
 			if (Events[_EventAction] != null)
@@ -925,45 +870,47 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <summary>
 		/// Підсвічує елемент <paramref name="aItem"/> відмальовуючи його разом з підсвіткою по <paramref name="aGraphics"/>
 		/// </summary>
-		private void ItemHighlight(Graphics aGraphics, OSDI aItem)
+		private static void ItemHighlight(Graphics aGraphics, OSDI aItem)
 		{
-			//var marker = _markerDataItem[aItem];
-			//marker.IsHighlighted = true;
-			//marker.OnRender(aGraphics);
-			if (!aItem.CanShow)
-				return;
-			float radius = aItem.Size / 2;
-			RectangleF bounds = new RectangleF(aItem.X - radius, aItem.Y - radius, aItem.Size, aItem.Size);
-			float itemSizePercent = bounds.Width / (bounds.Width + 2 * ITEM_HIGHLIGHT_WIDTH);
-			float tmp = (bounds.Width / itemSizePercent) - bounds.Width;
-			RectangleF highlightBounds = bounds;
-			highlightBounds.Inflate(tmp / 2, tmp / 2);
-			using (GraphicsPath circle = new GraphicsPath())
-			{
-				circle.AddEllipse(bounds);
-				Region oldClip = aGraphics.Clip;
-				aGraphics.IntersectClip(_itemsArea);
-				using (Region commonClip = aGraphics.Clip)
-				{
-					using (Region circleClip = new Region(circle))
-						aGraphics.ExcludeClip(circleClip);
-					using (GraphicsPath pth = new GraphicsPath())
-					{
-						pth.AddEllipse(highlightBounds);
-						using (PathGradientBrush pgb = new PathGradientBrush(pth))
-						{
-							pgb.CenterColor = COLOR_HIGHLIGHT_DARK;
-							pgb.SurroundColors = new Color[] { COLOR_HIGHLIGHT_SURROUND };
-							pgb.FocusScales = new PointF(itemSizePercent, itemSizePercent);
-							pgb.CenterPoint = new PointF(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
-							aGraphics.FillEllipse(pgb, highlightBounds);
-						}
-					}
-					aGraphics.Clip = commonClip;
-					ItemDraw(aGraphics, aItem);
-				}
-				aGraphics.Clip = oldClip;
-			}
+			var marker = (OlapMapCircleMarker) aItem.Tag;
+			marker.IsVisible = aItem.CanShow;
+			marker.IsHighlighted = true;
+			marker.OnRender(aGraphics);
+
+			//if (!aItem.CanShow)
+			//	return;
+			//float radius = aItem.Size / 2;
+			//RectangleF bounds = new RectangleF(aItem.X - radius, aItem.Y - radius, aItem.Size, aItem.Size);
+			//float itemSizePercent = bounds.Width / (bounds.Width + 2 * ITEM_HIGHLIGHT_WIDTH);
+			//float tmp = (bounds.Width / itemSizePercent) - bounds.Width;
+			//RectangleF highlightBounds = bounds;
+			//highlightBounds.Inflate(tmp / 2, tmp / 2);
+			//using (GraphicsPath circle = new GraphicsPath())
+			//{
+			//	circle.AddEllipse(bounds);
+			//	Region oldClip = aGraphics.Clip;
+			//	aGraphics.IntersectClip(_itemsArea);
+			//	using (Region commonClip = aGraphics.Clip)
+			//	{
+			//		using (Region circleClip = new Region(circle))
+			//			aGraphics.ExcludeClip(circleClip);
+			//		using (GraphicsPath pth = new GraphicsPath())
+			//		{
+			//			pth.AddEllipse(highlightBounds);
+			//			using (PathGradientBrush pgb = new PathGradientBrush(pth))
+			//			{
+			//				pgb.CenterColor = COLOR_HIGHLIGHT_DARK;
+			//				pgb.SurroundColors = new Color[] { COLOR_HIGHLIGHT_SURROUND };
+			//				pgb.FocusScales = new PointF(itemSizePercent, itemSizePercent);
+			//				pgb.CenterPoint = new PointF(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
+			//				aGraphics.FillEllipse(pgb, highlightBounds);
+			//			}
+			//		}
+			//		aGraphics.Clip = commonClip;
+			//		ItemDraw(aGraphics, aItem);
+			//	}
+			//	aGraphics.Clip = oldClip;
+			//}
 		}
 		/// <summary>
 		/// Створює новий хінт для елементу з ID == <paramref name="aItemID"/>
@@ -972,24 +919,30 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		private void ItemHint_Create(int aItemID, bool aWithHighlight)
 		{
 			int page = _Data.CurrentPage;
-			AdvancedHint hint = _Data.ItemHintGet(aItemID);
-			if (hint == null)
-			{
-				hint = _Data.ItemHintCreate(aItemID, this);
-				hint.ShowPointer = false;
-				hint.LocationChanged += ItemHint_EventLocationChanged;
-				hint.MouseEnter += ItemHint_EventMouseEnter;
-				hint.MouseLeave += ItemHint_EventMouseLeave;
-				hint.EventDragEnd += ItemHint_EventDragEnd;
-				hint.EventDragStart += ItemHint_EventDragStart;
-				hint.EventClose += ItemHint_EventClose;
-				hint.MouseUp += ItemHint_EventMouseUp;
-			}
-			hint.ID = aItemID;
+			//AdvancedHint hint = _Data.ItemHintGet(aItemID);
+			//if (hint == null)
+			//{
+			//	hint = _Data.ItemHintCreate(aItemID, this);
+			//	hint.ShowPointer = false;
+			//	hint.LocationChanged += ItemHint_EventLocationChanged;
+			//	hint.MouseEnter += ItemHint_EventMouseEnter;
+			//	hint.MouseLeave += ItemHint_EventMouseLeave;
+			//	hint.EventDragEnd += ItemHint_EventDragEnd;
+			//	hint.EventDragStart += ItemHint_EventDragStart;
+			//	hint.EventClose += ItemHint_EventClose;
+			//	hint.MouseUp += ItemHint_EventMouseUp;
+			//}
+			//hint.ID = aItemID;
+			//hint.CanDrag = true;
+			//hint.CanShow = _Data.ShowHints;
+			var hint = ItemHintGet(aItemID);
 			hint.CanDrag = true;
-			hint.CanShow = _Data.ShowHints;
-			_hints[OSDI.MEASURES_COUNT].HintHide();
-			OSDI item = _Data.Pages[page][aItemID];
+			var item = _Data.Pages[page][aItemID];
+			//var marker = (OlapMapCircleMarker)item.Tag;
+			////var tooltip = new OlapMapToolTip(marker, () => ItemHintGet(aItemID));
+			//marker.ToolTipText = HintConstruct(new CI(_Data.CurrentPage, aItemID), true, true);
+			//marker.OlapToolTip.Show(aWithHighlight);
+			_hints[OSDI.MEASURES_COUNT].HintHide();			
 			ItemHintBestPositionSet(hint, item, HintConstruct(new CI(page, aItemID), true, true));
 			if (item.CanShow)
 			{
@@ -1180,12 +1133,10 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <param name="aGraphics">Graphics використовуючи який потрібно малювати</param>
 		private void ItemsDraw(Graphics aGraphics)
 		{
-			//_markersLayer.Markers.Clear();
-			int i, j, op, a, pos = _Data.CurrentPage;
-			float x, y, s, diagPoint, radius, coef = _CurrentPage - pos;
-			Color c;
-			OSDI p, n;
-			bool interpolated;
+			_markersLayer.Markers.Clear();
+			int j;
+			int pos = _Data.CurrentPage;
+			float coef = _CurrentPage - pos;
 #if DEBUG
 			int drawedItems = 0;
 #endif
@@ -1201,6 +1152,8 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			for (j = 0; j < _Data.ItemsCount + _groupHighlightIndixes.Count; ++j)
 			{
 				//Визначаємо номер елементу
+				int i;
+				int op;
 				if (j < _Data.ItemsCount)
 				{
 					i = j;
@@ -1214,7 +1167,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 					op = _Data.PaintOrder[i];
 				}
 				//визначаємо прозорість елементу
-				a = _Data.ItemOpacityGet(op);
+				var a = _Data.ItemOpacityGet(op);
 				if (_groupHighlightIndixes.Contains(op))
 					if (j < _Data.ItemsCount)
 						continue;
@@ -1233,6 +1186,11 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 						HintHide(_Data.ItemHintGet(op));
 					continue;
 				}
+				bool interpolated;
+				float x;
+				float s;
+				float y;
+				Color c;
 				if (coef == 0)  //якщо для поточної позиції дані присутні (ми не між двох сторінок)
 				{
 					interpolated = _Data.Pages[pos][op].IsInterpolated;
@@ -1244,8 +1202,8 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				}
 				else    //відмальовка відбувається для позиції що знаходитьсь між двох сторінок
 				{
-					p = _Data.Pages[pos][op];
-					n = _Data.Pages[pos + 1][op];
+					var p = _Data.Pages[pos][op];
+					var n = _Data.Pages[pos + 1][op];
 					if (!n.CanShow)
 					{
 						if (i >= _Data.SelectedItemsStart)
@@ -1253,18 +1211,10 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 						continue;
 					}
 					interpolated = p.IsInterpolated | n.IsInterpolated;
-					//x = p.X.Interpolate(n.X, coef);
-					//y = p.Y.Interpolate(n.Y, coef);
-					//s = p.Size.Interpolate(n.Size, coef);
-					//c = p.Color.Interpolate(n.Color, coef, a);
-					x = p.X + (n.X - p.X) * coef;
-					y = p.Y + (n.Y - p.Y) * coef;
-					s = p.Size + (n.Size - p.Size) * coef;
-					int cr, cg, cb;
-					cr = (int)(p.Color.R + (n.Color.R - p.Color.R) * coef);
-					cg = (int)(p.Color.G + (n.Color.G - p.Color.G) * coef);
-					cb = (int)(p.Color.B + (n.Color.B - p.Color.B) * coef);
-					c = Color.FromArgb(a, cr, cg, cb);
+					x = p.X.Interpolate(n.X, coef);
+					y = p.Y.Interpolate(n.Y, coef);
+					s = p.Size.Interpolate(n.Size, coef);
+					c = p.Color.Interpolate(n.Color, coef, a);					
 				}
 #if DEBUG
 				++drawedItems;
@@ -1272,52 +1222,61 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				if (i >= _Data.SelectedItemsStart)  //якщо елемент належить до вибірки
 					SelectedItemDraw(aGraphics, op, x, y, s);
 				//малюємо елемент на сторінці
-				radius = s / 2;
+				var radius = s / 2;
 				// Додаткова перевірка, щоб уникнути OverflowException
 				if (aGraphics.ClipBounds.Contains(x, y) && Math.Abs(s) <= 1000000f)
 				{
-					//var item = _Data.Pages[pos][op];
-					//var marker = new OlapMapCircleMarker(new PointLatLng(item.Latitude, item.Longitude), () => ItemHintGet(op));
-					//item.Tag = marker;
+					var item = _Data.Pages[pos][op];
+					var marker = new OlapMapCircleMarker(new PointLatLng(item.Latitude, item.Longitude), () => ItemHintGet(op));
+					item.Tag = marker;
 
-					//marker.PageID = pos;
-					//marker.ItemID = op;
-					//marker.IsVisible = item.CanShow;
-					//marker.Size = new SizeF(s, s);
-					//marker.BorderAlpha = a;
-					//marker.MarkerColor = c;
-					//marker.IsInterpolated = interpolated;
-					//marker.IsHighlighted = false;
-					//marker.Position = FromLocalToLatLng((int)x, (int)y);
+					marker.PageID = pos;
+					marker.ItemID = op;
+					marker.IsVisible = item.CanShow;
+					marker.Size = new SizeF(s, s);
+					marker.BorderAlpha = a;
+					marker.MarkerColor = c;
+					marker.IsInterpolated = interpolated;
+					marker.IsHighlighted = false;
 
-					//_markersLayer.Markers.Add(marker);
+					marker.Position = FromLocalToLatLng((int)x, (int)y);
 
-					using (SolidBrush brush = new SolidBrush(c))
-						aGraphics.FillEllipse(brush, x - radius, y - radius, s, s);
-					if (interpolated)
-					{
-						diagPoint = (float)Math.Sqrt(1f / 2) * radius;
-						Pen pen = null;
-						try
-						{
-							aGraphics.DrawLine(a == 255 ? PEN_INTERPOLATED_LINE : pen = new Pen(Color.FromArgb(a, COLOR_INTERPOLATED_LINE)), x - diagPoint, y + diagPoint, x + diagPoint, y - diagPoint);
-						}
-						finally
-						{
-							if (pen != null)
-								pen.Dispose();
-						}
-					}
-					Pen itemPen = null;
-					try
-					{
-						aGraphics.DrawEllipse(a == 255 ? PEN_ITEM_LINE : itemPen = new Pen(Color.FromArgb(a, PEN_ITEM_LINE.Color)), x - radius, y - radius, s, s);
-					}
-					finally
-					{
-						if (itemPen != null)
-							itemPen.Dispose();
-					}
+					_markersLayer.Markers.Add(marker);
+
+					//if (!aItem.CanShow)
+					//	return;
+					//float radius = aItem.Size / 2;
+					//RectangleF bounds = new RectangleF(aItem.X - radius, aItem.Y - radius, aItem.Size, aItem.Size);
+					//float itemSizePercent = bounds.Width / (bounds.Width + 2 * ITEM_HIGHLIGHT_WIDTH);
+					//float tmp = (bounds.Width / itemSizePercent) - bounds.Width;
+					//RectangleF highlightBounds = bounds;
+					//highlightBounds.Inflate(tmp / 2, tmp / 2);
+					//using (GraphicsPath circle = new GraphicsPath())
+					//{
+					//	circle.AddEllipse(bounds);
+					//	Region oldClip = aGraphics.Clip;
+					//	aGraphics.IntersectClip(_itemsArea);
+					//	using (Region commonClip = aGraphics.Clip)
+					//	{
+					//		using (Region circleClip = new Region(circle))
+					//			aGraphics.ExcludeClip(circleClip);
+					//		using (GraphicsPath pth = new GraphicsPath())
+					//		{
+					//			pth.AddEllipse(highlightBounds);
+					//			using (PathGradientBrush pgb = new PathGradientBrush(pth))
+					//			{
+					//				pgb.CenterColor = COLOR_HIGHLIGHT_DARK;
+					//				pgb.SurroundColors = new Color[] { COLOR_HIGHLIGHT_SURROUND };
+					//				pgb.FocusScales = new PointF(itemSizePercent, itemSizePercent);
+					//				pgb.CenterPoint = new PointF(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
+					//				aGraphics.FillEllipse(pgb, highlightBounds);
+					//			}
+					//		}
+					//		aGraphics.Clip = commonClip;
+					//		ItemDraw(aGraphics, aItem);
+					//	}
+					//	aGraphics.Clip = oldClip;
+					//}
 				}
 			}
 			//OnPaintOverlays(aGraphics);
@@ -1380,35 +1339,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <returns>Повертає відформатоване значення <paramref name="aValue"/> відносно параметрів <paramref name="aDigitsAfterPoint"/> і <paramref name="aMeasure"/>.</returns>
 		private string MeasureValueToString(double aValue, int aDigitsAfterPoint, OlapMeasureObjectBase aMeasure)
 		{
-			FormatSettings format = FormattingUtils.FormatSettingsGet(MeasuresFormatRules, aMeasure.ID);
-			if (format != null
-				&& (format.FormatType == FormatType.ftDate && format.DateCategory != FormatDateCategory.fdcDefault
-				   || format.FormatType == FormatType.ftNumber && format.NumberCategory != FormatNumberCategory.fcDefault))
-				return format.Format((decimal)aValue);
-			//if no custom format has been specified
-			OlapMeasureFormat measureFormat = aMeasure.MeasureFormat;
-			switch (measureFormat)
-			{
-				case OlapMeasureFormat.mfPercent:
-					aValue *= 100;
-					aDigitsAfterPoint = Math.Max(0, aDigitsAfterPoint - 2);
-					break;
-			}
-			double pow = Math.Pow(10, aDigitsAfterPoint + 1);
-			if ((aValue * pow) % pow < 1)
-			{
-				aValue = Math.Round(aValue, aDigitsAfterPoint);
-				aDigitsAfterPoint = 0;
-			}
-			string str = aDigitsAfterPoint == 0 ? aValue.ToString()
-							: aValue.ToString(string.Format("0.{0}", new string('0', aDigitsAfterPoint)));
-			switch (measureFormat)
-			{
-				case OlapMeasureFormat.mfPercent:
-					return string.Format("{0}%", str);
-				default:
-					return str;
-			}
+			return MeasuresFormatRules.MeasureValueToString(aValue, aDigitsAfterPoint, aMeasure);
 		}
 		/// <summary>
 		/// Оновлює мінімальний розмір скеттер контрола.
@@ -1449,154 +1380,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		private void CoordinatesDraw(Graphics aGraphics, int aWidth, int aHeight)
 		{
 			Tracer.EnterMethod("OlapScatter.CoordinatesDraw()");
-			int i;
-			Array.Sort(COORD_GRADUATE); //assume that coordinates steps are sorted
-			if (COORD_GRADUATE[0] < 1)
-				throw new ExceptionFramework("Coordinates steps must be natural numbers", ExceptionKind.ekDeveloper);
-			if (COORD_GRADUATE[COORD_GRADUATE.Length - 1] >= 10)
-				throw new ExceptionFramework("Each coordinate step must be less than 10", ExceptionKind.ekDeveloper);
-			SizeF maxSize;
-			var clipRect = new Rectangle(YSLICE_DELTA, 0, aWidth - YSLICE_DELTA - 1, aHeight - XSLICE_DELTA);
-			//Draw X axis
-			var coords = _XLogarithmicScale 
-					   ? LogarithmicCoordinatesPrecalculate(aGraphics, aWidth, _Data.Min.MX.NumericValue, _Data.Max.MX.NumericValue, YSLICE_DELTA, out maxSize, _xCoef, _Data.Measures[0])
-					   : LinearCoordinatesPrecalculate(aGraphics, aWidth, _Data.Min.MX.NumericValue, _Data.Max.MX.NumericValue, YSLICE_DELTA, out maxSize, _xCoef, _Data.Measures[0]);
-			if (coords != null)
-			{
-				int printEvery = 1; //якщо підписи занадто довгі, то потрібно підписувати кожну "printEvery" позначку для того щоб підписи не наклалися
-				if (coords.Count > 1)
-					printEvery = (int)Math.Ceiling((maxSize.Width + MIN_DIST_BTWN_COORD_LABELS / 2) / (coords[1].Second - coords[0].Second));
-				float x1, x2;
-				//проходимось по всіх позначках на осі
-				for (i = 0; i < coords.Count; ++i)
-				{
-					aGraphics.DrawLine(PEN_COORD_LINE, coords[i].Second, 0, coords[i].Second, aHeight - XSLICE_DELTA);
-					if (_Data.XAxisExists)
-					{
-						if (i % printEvery == 0)    //якщо потрібно підписати позначку
-						{
-							x1 = coords[i].Second - coords[i].Third.Width / 2;  //абсциса початку підпису
-							x2 = x1 + coords[i].Third.Width;                    //абсциса кінця підпису
-							if (i == 0 && x1 < clipRect.X)  //якщо це перший підпис і він не вміщається
-							{
-								//пробуєм зсунути вправо
-								x2 += clipRect.X - x1;
-								x1 = clipRect.X;
-								int nextLabel = i + printEvery;
-								if (nextLabel < coords.Count
-									&& coords[nextLabel].Second - coords[nextLabel].Third.Width / 2 < x2 + MIN_DIST_BTWN_COORD_LABELS)  //якщо після зміщення на потрібну кількість пікселів надпис налазить на наступний
-									continue;
-							}
-							else if (x2 > clipRect.Right)   //якщо надпис вилазить за межі контрола
-							{
-								//пробуєм зсунути вліво
-								x1 -= x2 - clipRect.Right;
-								int prevLabel = i - printEvery;
-								if (prevLabel >= 0
-									&& coords[prevLabel].Second + coords[prevLabel].Third.Width / 2 > x1 - MIN_DIST_BTWN_COORD_LABELS)  //якщо після зсуву на потрібну кількість пікселів надпис налазить на попередній
-									continue;
-							}
-							//малюємо підпис
-							aGraphics.DrawString(coords[i].First, FONT_COORDINATES, BRUSH_COORD_LABELS, x1, aHeight - XSLICE_DELTA);
-						}
-					}
-					else if (i == coords.Count / 2)
-					{
-						x1 = coords[i].Second - aGraphics.MeasureString(AXIS_NULL_CAPTION, FONT_COORDINATES).Width / 2; //абсциса початку підпису
-																														//малюємо підпис
-						aGraphics.DrawString(AXIS_NULL_CAPTION, FONT_COORDINATES, BRUSH_COORD_LABELS, x1, aHeight - XSLICE_DELTA);
-					}
-				}
-			}
-			//draw Y axis
-			coords = _YLogarithmicScale
-				? LogarithmicCoordinatesPrecalculate(aGraphics, aHeight, _Data.Min.MY.NumericValue, _Data.Max.MY.NumericValue, XSLICE_DELTA, out maxSize, _yCoef, _Data.Measures[1])
-				: LinearCoordinatesPrecalculate(aGraphics, aHeight, _Data.Min.MY.NumericValue, _Data.Max.MY.NumericValue, XSLICE_DELTA, out maxSize, _yCoef, _Data.Measures[1]);
-			float h = FONT_COORDINATES.GetHeight() / 2;
-			//перевіряємо чи потрібно писати мітки горизонтально чи вертикально
-			if (_yAxisLabelsVertical != YSLICE_DELTA < maxSize.Width - FONT_COORDINATES.Size / 4)
-			{
-				_yAxisLabelsVertical = !_yAxisLabelsVertical;
-				HintBoundsUpdate();
-			}
-			if (coords != null)
-			{
-				int printEvery = 1; //якщо підписи занадто довгі, то потрібно підписувати кожну "printEvery" позначку для того щоб підписи не наклалися
-				if (coords.Count > 1)
-					printEvery = (int)Math.Ceiling((maxSize.Width + MIN_DIST_BTWN_COORD_LABELS / 2) / (coords[1].Second - coords[0].Second));
-				float y1, y2;
-				for (i = 0; i < coords.Count; ++i)
-				{
-					coords[i].Second = aHeight - coords[i].Second;
-					aGraphics.DrawLine(PEN_COORD_LINE, YSLICE_DELTA, coords[i].Second, aWidth, coords[i].Second);
-					if (_Data.YAxisExists)
-					{
-						if (i % printEvery == 0)    //якщо потрібно підписаи позначку
-						{
-							float mid = (_yAxisLabelsVertical ? coords[i].Third.Width : coords[i].Third.Height) / 2;
-							y1 = coords[i].Second + mid;
-							y2 = y1 - mid * 2;
-							if (y1 > clipRect.Bottom)   //якщо надпис "вилазить" за нижню межу
-							{
-								//зміщаємо надпис вверх
-								y2 -= y1 - clipRect.Bottom;
-								y1 = clipRect.Bottom;
-								int nextLabel = i + printEvery;
-								if (nextLabel < coords.Count && coords[nextLabel].Second + mid > y2 + MIN_DIST_BTWN_COORD_LABELS)   //якщо після зміщення надпис перекриється з іншим
-									continue;
-							}
-							else if (y2 < clipRect.Y)   //якщо надпис "вилазить" за верхню межу
-							{
-								//зміщаємо надпис вниз
-								y1 += clipRect.Y - y2;
-								y2 = clipRect.Y;
-								int prevLabel = i - printEvery;
-								if (prevLabel >= 0 && coords[prevLabel].Second - mid < y1 + MIN_DIST_BTWN_COORD_LABELS) //якщо після зміщення надпис перекриється з іншим
-									continue;
-							}
-							//пишемо надпис
-							if (_yAxisLabelsVertical)   //якщо надписи потрібно писати вертикально
-							{
-								//змінюємо матрицю трансформації так, щоб написати надпис горизонтально а він став вертикально в потрібному місці
-								Matrix m = new Matrix();
-								m.RotateAt(-90, new PointF(YSLICE_DELTA - h, (y1 + y2) / 2));
-								aGraphics.Transform = m;
-								aGraphics.DrawString(coords[i].First, FONT_COORDINATES, BRUSH_COORD_LABELS
-													 , YSLICE_DELTA - h - coords[i].Third.Width / 2
-													 , (y1 + y2) / 2 - h);
-								aGraphics.Transform = new Matrix();
-							}
-							else    //якщо надписи потрібно малювати горизонтально
-								aGraphics.DrawString(coords[i].First, FONT_COORDINATES, BRUSH_COORD_LABELS
-													 , YSLICE_DELTA - coords[i].Third.Width
-													 , (y1 + y2) / 2 - h);
-
-						}
-					}
-					else if (i == coords.Count / 2)
-					{
-						SizeF size = aGraphics.MeasureString(AXIS_NULL_CAPTION, FONT_COORDINATES);
-						float width = size.Width,
-							  height = size.Height,
-							  mid = (_yAxisLabelsVertical ? width : height) / 2;
-						y1 = coords[i].Second + mid;
-						y2 = y1 - mid * 2;
-						if (_yAxisLabelsVertical)
-						{
-							//змінюємо матрицю трансформації так, щоб написати надпис горизонтально а він став вертикально в потрібному місці
-							Matrix m = new Matrix();
-							m.RotateAt(-90, new PointF(YSLICE_DELTA - h, (y1 + y2) / 2));
-							aGraphics.Transform = m;
-							aGraphics.DrawString(AXIS_NULL_CAPTION, FONT_COORDINATES, BRUSH_COORD_LABELS, YSLICE_DELTA - h - mid, (y1 + y2) / 2 - h);
-							aGraphics.Transform = new Matrix();
-						}
-						else    //якщо надписи потрібно малювати горизонтально
-							aGraphics.DrawString(AXIS_NULL_CAPTION, FONT_COORDINATES, BRUSH_COORD_LABELS, YSLICE_DELTA - width, (y1 + y2) / 2 - h);
-					}
-				}
-			}
-			//малюємо чорний обмежуючий прямокутник
-			aGraphics.DrawRectangle(Pens.Black, clipRect);
+			aGraphics.CoordinatesDraw(aWidth, aHeight, MeasuresFormatRules, _Data, _XLogarithmicScale, _YLogarithmicScale, _xCoef, _yCoef, ref _yAxisLabelsVertical, HintBoundsUpdate);
 			Tracer.ExitMethod("OlapScatter.CoordinatesDraw()");
 		}
 		/// <summary>
@@ -1609,176 +1393,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		private static void LineItemHintToItemDraw(Graphics aGraphics, AdvancedHint aHint, float aItemPointX, float aItemPointY)
 		{
 			aGraphics.DrawLine(Pens.Black, aItemPointX, aItemPointY, aHint.Left + aHint.Width / 2, aHint.Top + aHint.Height / 2);
-		}
-		/// <summary>
-		/// Обчислює для з якого значення потрібно починати підписи та з яким кроком, а також в який точках їх ставити.
-		/// </summary>
-		/// <param name="aGraphics">Graphics використовуючи який потрібно малювати</param>
-		/// <param name="aWidth">Ширина або висота контрола (в залежності від осі для якої обчислюємо координати)</param>
-		/// <param name="aMinM">Мінімальне значення міри яке потрібно відобразити</param>
-		/// <param name="aMaxM">Максимальне значення міри яке потрібно відобразити</param>
-		/// <param name="aSliceDelta">Відстань від осі до прилягаючого краю контрола (відстань на підписи)</param>
-		/// <param name="aMaxSize">Розмір найбільшого з підписів в пікселях</param>
-		/// <param name="aCoef">Відношення між кількістю точок на осі і різницею макс. та мін. значення мір</param>
-		/// <param name="aMeasure">Міра що лежить на осі (потрібна для форматування)</param>
-		/// <returns>Повертає список триплетів кожен з який представляє один підпис на осі. Значення триплету означають:
-		/// перший елемент - відформатоване значення міри
-		/// другий елемент - точка на осі до якої це значення відноситься
-		/// третій елемент - розмір підпису значення міри в пікселях
-		/// </returns>
-		private List<Triplet<string, int, SizeF>> LinearCoordinatesPrecalculate(Graphics aGraphics, int aWidth, double aMinM, double aMaxM, int aSliceDelta
-																			  , out SizeF aMaxSize, double aCoef, OlapMeasureObjectBase aMeasure)
-		{
-			decimal diffValue = (decimal)(aMaxM - aMinM);
-			decimal maxCount = Math.Max(aWidth / DIST_BTWN_LINES, 1);   //максимальна к-ть позначок
-			decimal b = diffValue / maxCount;
-			int i, currentPow, pow10 = int.MaxValue, coordGrad = 1;
-			//знаходимо крок підписів так, щоб їх було якомога більше, але так щоб не частіше ніж кожних DIST_BTWN_LINES пікселів
-			for (i = 0; i < COORD_GRADUATE.Length; ++i)
-			{
-				currentPow = (int)Math.Ceiling(Math.Log10((double)(b / COORD_GRADUATE[i])));
-				if (currentPow < pow10 && (COORD_GRADUATE[i] * Math.Pow(10, currentPow)) * aCoef > DIST_BTWN_LINES)
-				{
-					pow10 = currentPow;
-					coordGrad = COORD_GRADUATE[i];
-				}
-			}
-			aMaxSize = new SizeF(-1, -1);
-			if (pow10 == int.MaxValue)  //якщо крок знайти не вдалося
-				return null;
-			int gradPow = pow10;
-			double gradStep = coordGrad * Math.Pow(10, gradPow);    //крок підпису
-																	//знаходимо значення з якого потрібно починати робити підписи
-			double currentTotalValue = aMinM;
-			int currentPos = (int)(aSliceDelta + DIST_TO_BOUND + (currentTotalValue - aMinM) * aCoef);
-			if (currentPos > aSliceDelta)
-				currentTotalValue -= (currentPos - aSliceDelta + 1) / aCoef;
-			currentTotalValue = currentTotalValue - (currentTotalValue % gradStep);
-			//створюємо та заповнюємо колекцію підписами
-			List<Triplet<string, int, SizeF>> coords = new List<Triplet<string, int, SizeF>>();
-			SizeF size;
-			currentPos = (int)(aSliceDelta + DIST_TO_BOUND + (currentTotalValue - aMinM) * aCoef);  //позиція в пікселях початкового підпису
-			while (currentPos < aWidth)
-			{
-				if (currentPos > aSliceDelta)   //якщо мітка за своєю координатою в пікселях більша за мінімальну можливу
-				{
-					int digitsAfterPoint;
-					string textToPaint = MeasureValueToString(MostPrettyValueNearCurrentGet(currentTotalValue, out digitsAfterPoint), gradPow < 0 ? -gradPow : 0, aMeasure);    //форматоване значення підпису
-					size = aGraphics.MeasureString(textToPaint, FONT_COORDINATES);  //взнаємо розмір підпису в пікселях
-					coords.Add(new Triplet<string, int, SizeF>(textToPaint, currentPos, size)); //додаємо новий підпис в колекцію
-																								//перевірки щоб знайти максимальний розмір підпису зі всіх доданих
-					if (aMaxSize.Width < size.Width)
-						aMaxSize.Width = size.Width;
-					if (aMaxSize.Height < size.Height)
-						aMaxSize.Height = size.Height;
-				}
-				//рухаємося до наступного підпису
-				currentTotalValue += gradStep;
-				currentPos = (int)(aSliceDelta + DIST_TO_BOUND + (currentTotalValue - aMinM) * aCoef);
-			}
-			return coords;
-		}
-		/// <summary>
-		/// Обчислює з якого значення потрібно починати підписи та з яким кроком, а також в яких точках їх ставити для логарифмічної шкали.
-		/// </summary>
-		/// <param name="aGraphics">Graphics використовуючи який потрібно малювати</param>
-		/// <param name="aWidth">Ширина або висота контрола (в залежності від осі для якої обчислюємо координати)</param>
-		/// <param name="aMinM">Мінімальне значення міри яке потрібно відобразити</param>
-		/// <param name="aMaxM">Максимальне значення міри яке потрібно відобразити</param>
-		/// <param name="aSliceDelta">Відстань від осі до прилягаючого краю контрола (відстань на підписи)</param>
-		/// <param name="aMaxSize">Розмір найбільшого з підписів в пікселях</param>
-		/// <param name="aCoef">Відношення між кількістю точок на осі і різницею макс. та мін. значення мір</param>
-		/// <param name="aMeasure">Міра що лежить на осі (потрібна для форматування)</param>
-		/// <returns>Повертає список триплетів кожен з який представляє один підпис на осі. Значення триплету означають:
-		/// перший елемент - відформатоване значення міри
-		/// другий елемент - точка на осі до якої це значення відноситься
-		/// третій елемент - розмір підпису значення міри в пікселях
-		/// </returns>
-		private List<Triplet<string, int, SizeF>> LogarithmicCoordinatesPrecalculate(Graphics aGraphics, int aWidth, double aMinM, double aMaxM, int aSliceDelta
-																			  , out SizeF aMaxSize, double aCoef, OlapMeasureObjectBase aMeasure)
-		{
-			aMaxSize = new SizeF(-1, -1);
-			if (aMinM <= 0 && aMaxM >= 0)
-				return null;
-			// знаходимо кількість відрізків на рисунку (дійсне число)
-			double marksCount = (aWidth - 2d * DIST_TO_BOUND - aSliceDelta) / DIST_BTWN_LINES;
-			// знаходимо коефіцієнт геометричної прогресії
-			double valueStep = Math.Pow(aMaxM / aMinM, 1d / marksCount);
-			// знаходимо крок координатної сітки
-			double coordinateStep = (aMaxM - aMinM) / marksCount;
-			//знаходимо значення з якого потрібно починати робити підписи
-			double currentTotalValue = Math.Pow(valueStep, -DIST_TO_BOUND / coordinateStep / aCoef) * aMinM;
-			//створюємо та заповнюємо колекцію підписами
-			List<Triplet<string, int, SizeF>> coords = new List<Triplet<string, int, SizeF>>();
-			SizeF size;
-			int currentPos = (int)(aSliceDelta + DIST_TO_BOUND + Math.Log(currentTotalValue / aMinM, valueStep) * coordinateStep * aCoef);  //позиція в пікселях початкового підпису
-			while (currentPos < aWidth)
-			{
-				if (currentPos > aSliceDelta)   //якщо мітка за своєю координатою в пікселях більша за мінімальну можливу
-				{
-					int digitsAfterPoint;
-					string textToPaint = MeasureValueToString(MostPrettyValueNearCurrentGet(currentTotalValue, out digitsAfterPoint), digitsAfterPoint >= 0 ? digitsAfterPoint : 0, aMeasure);  //форматоване значення підпису
-					size = aGraphics.MeasureString(textToPaint, FONT_COORDINATES);  //взнаємо розмір підпису в пікселях
-					coords.Add(new Triplet<string, int, SizeF>(textToPaint, currentPos, size)); //додаємо новий підпис в колекцію
-																								//перевірки щоб знайти максимальний розмір підпису зі всіх доданих
-					if (aMaxSize.Width < size.Width)
-						aMaxSize.Width = size.Width;
-					if (aMaxSize.Height < size.Height)
-						aMaxSize.Height = size.Height;
-				}
-				//рухаємося до наступного підпису
-				currentTotalValue *= valueStep;
-				currentPos = (int)(aSliceDelta + DIST_TO_BOUND + Math.Log(currentTotalValue / aMinM, valueStep) * coordinateStep * aCoef);
-			}
-			return coords;
-		}
-		/// <summary>
-		/// Returns the value which has the smallest number of valuable digits (digits not including 
-		/// trailing zeroes and leading zeroes after decimal point) and has a relative deviation from 
-		/// exact value <paramref name="aValue"/> not more than MAX_DEVIATION_FROM_EXACT_VALUE.
-		/// </summary>
-		/// <param name="aDigitsAfterPoint">The number of digits after the decimal point the resulting 
-		/// number should be rounded to</param>
-		/// <returns></returns>
-		private static double MostPrettyValueNearCurrentGet(double aValue, out int aDigitsAfterPoint)
-		{
-			int sign = Math.Sign(aValue);
-			double value = sign < 0 ? -aValue : aValue,
-				   left = value * (1 - MAX_DEVIATION_FROM_EXACT_VALUE),
-				   right = value * (1 + MAX_DEVIATION_FROM_EXACT_VALUE),
-				   st10 = 1,
-				   number = 0,
-				   rem = value;
-			aDigitsAfterPoint = 0;
-			while (st10 * 10 <= value)
-			{
-				st10 *= 10;
-				--aDigitsAfterPoint;
-			}
-			while (st10 > value)
-			{
-				st10 /= 10;
-				++aDigitsAfterPoint;
-			}
-			for (int i = 0; i < 50; ++i)
-			{
-				double digit = Math.Floor(rem / st10);
-				number += digit * st10;
-				rem -= digit * st10;
-				double lower = number,
-					   upper = number + st10;
-				if (lower >= left && lower <= right)
-					if (upper >= left && upper <= right)
-						return Math.Abs(value - lower) < Math.Abs(value - upper) ? lower * sign : upper * sign;
-					else
-						return lower * sign;
-				else
-					if (upper >= left && upper <= right)
-					return upper * sign;
-				st10 /= 10;
-				++aDigitsAfterPoint;
-			}
-			return aValue;
 		}
 		private void OlapScatter_EventBoundsUpdate(object aSender, EventArgs aEventArgs)
 		{
@@ -2059,7 +1673,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			Tracer.Write(TraceLevel.Info, "OlapScatter.Redraw(Graphics, Rectangle, bool, bool)", string.Format("Parameters: aArea={0}, aCoordRedraw={1}, aPrinting={2}", aArea.ToString(), aCoordRedraw.ToString(), aPrinting.ToString()));
 			_itemsArea = new Rectangle(YSLICE_DELTA + 1, 1, aArea.Width - YSLICE_DELTA - 2, aArea.Height - XSLICE_DELTA - 1);   //обмежуючий елементи прямокутник
 			GraphicsContainer cont = null;
-			DefaultQualitySet(aGraphics);
+			aGraphics.HighQualitySet();
 			if (aPrinting)  //якщо відмальовка відбувається для друку
 				cont = aGraphics.BeginContainer();  //починаємо новий контейнер (для того щоб якщо нові трансформації будуть робитися з aGraphics, то щоб вони додавалися до попередніх(що були до початку контейнера) а не перетирали їх)
 			else    //якщо ми малюємо по бітмапу де тільки є скеттер діаграма
@@ -2113,7 +1727,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 					CoordinatesDraw(g, aArea.Width, aArea.Height);
 				}
 				//draw items
-				DefaultQualitySet(aGraphics);
+				aGraphics.HighQualitySet();
 				if (!aPrinting)
 					_cachedCoord.Draw(aGraphics);
 				if (_CurrentPage >= 0)
@@ -2739,7 +2353,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		}
 		protected AdvancedBarButtonItem MenuItemGet(object aAction, string aResourceID, ActionImage aImage, bool aAddAction)
 		{
-			AdvancedBarButtonItem result = BarManagerHolder.AdvancedBarButtonItemCreate();
+			var result = BarManagerHolder.AdvancedBarButtonItemCreate();
 			result.ResourceID = aResourceID;
 			if (aImage != ActionImage.aiUnknown)
 				result.Glyph = _ActionImages[(int)aImage];
@@ -2762,36 +2376,36 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			if (!DrawArea.Contains(x, y))
 				return;
 			_mouseAt = MAC.macOlapScatter;
-			CI currItemIndex = CI.Default;
+			CI curentItemIndex = CI.Default;
 			if (_Data != null && (_Data.Min.MX.ValueType & MVT.mvtNumber) != MVT.mvtNotSet
 				&& (_Data.Min.MY.ValueType & MVT.mvtNumber) != MVT.mvtNotSet)
 			{
 				double minDist = double.MaxValue;
-				double dist;
-				int op, i, j, sp, currentPage = _Data.CurrentPage;
-				OSDI item;
+				int currentPage = _Data.CurrentPage;
 				//зі всіх елементів над якими мишка знаходимо той до центру якого найближче
-				for (i = 0; i < _Data.ItemsCount; ++i)
+				for (int i = 0; i < _Data.ItemsCount; ++i)
 				{
-					op = _Data.PaintOrder[i];
-					sp = i >= _Data.SelectedItemsStart ? _Data.ItemSelectionStart[op] : currentPage;
+					var op = _Data.PaintOrder[i];
+					var sp = i >= _Data.SelectedItemsStart ? _Data.ItemSelectionStart[op] : currentPage;
 					if (sp != -1)
-						for (j = sp; j < currentPage + 1; ++j)
+					{
+						for (int j = sp; j < currentPage + 1; ++j)
 						{
-							item = _Data.Pages[j][op];
+							var item = _Data.Pages[j][op];
 							if (item != null && _Data.Pages[sp][op].CanShow)
 							{
-								dist = Math.Sqrt((item.X - x) * (item.X - x) + (item.Y - y) * (item.Y - y));
+								var dist = Math.Sqrt((item.X - x) * (item.X - x) + (item.Y - y) * (item.Y - y));
 								if (dist < item.Size / 2 && dist < minDist)
 								{
 									minDist = dist;
-									currItemIndex = new CI(j, op);
+									curentItemIndex = new CI(j, op);
 								}
 							}
 						}
+					}
 				}
 			}
-			CurrentItem = currItemIndex;
+			CurrentItem = curentItemIndex;
 			base.OnMouseMove(aMouseEventArgs);
 		}
 		protected override void OnMouseLeave(EventArgs aEventArgs)
@@ -2830,12 +2444,12 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			}
 			if (_CurrentItem != CI.Default) //якщо є поточний елемент
 			{
-				DefaultQualitySet(aEventArgs.Graphics);
+				aEventArgs.Graphics.HighQualitySet();
 				ItemHighlight(aEventArgs.Graphics, _Data.Pages[_CurrentItem.PageID][_CurrentItem.ItemID]);
 			}
 			if (_highlightedItem != CI.Default) //якщо є елемент шляхуякий потрібно підсвітити
 			{
-				DefaultQualitySet(aEventArgs.Graphics);
+				aEventArgs.Graphics.HighQualitySet();
 				ItemHighlight(aEventArgs.Graphics, _Data.Pages[_highlightedItem.PageID][_highlightedItem.ItemID]);
 			}
 			Tracer.ExitMethod("OlapScatter.OnPaint()");
@@ -2902,7 +2516,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			SetStyle(ControlStyles.UserPaint, true);
 			//обчислюємо мінімальну відстань між підписами для осей в залежності від шрифта
-			MIN_DIST_BTWN_COORD_LABELS = CreateGraphics().MeasureString(SPACE, FONT_COORDINATES).Width * MIN_SPACES_BTWN_COORD_LABELS;
+			//CreateGraphics().MeasureString(SPACE, FONT_COORDINATES).Width * MIN_SPACES_BTWN_COORD_LABELS;
 			//для друку
 			_PrintData.BeginPrint += PrintData_BeginPrint;
 			_PrintData.PrintPage += PrintData_PrintPage;
@@ -3302,26 +2916,26 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		}
 		#endregion
 
-		//public AdvancedHint ItemHintGet(int aItemID)
-		//{
-		//	var hint = _Data.ItemHintGet(aItemID);
-		//	if (hint == null)
-		//	{
-		//		hint = _Data.ItemHintCreate(aItemID, this);
-		//		hint.ShowPointer = false;
-		//		hint.LocationChanged += ItemHint_EventLocationChanged;
-		//		hint.MouseEnter += ItemHint_EventMouseEnter;
-		//		hint.MouseLeave += ItemHint_EventMouseLeave;
-		//		hint.EventDragEnd += ItemHint_EventDragEnd;
-		//		hint.EventDragStart += ItemHint_EventDragStart;
-		//		hint.EventClose += ItemHint_EventClose;
-		//		hint.MouseUp += ItemHint_EventMouseUp;
-		//	}
-		//	hint.ID = aItemID;
-		//	//hint.CanDrag = true;
-		//	hint.CanShow = _Data.ShowHints;
-		//	hint.HintArea = DrawArea;
-		//	return hint;
-		//}
+		public AdvancedHint ItemHintGet(int aItemID)
+		{
+			var hint = _Data.ItemHintGet(aItemID);
+			if (hint == null)
+			{
+				hint = _Data.ItemHintCreate(aItemID, this);
+				hint.ShowPointer = false;
+				hint.LocationChanged += ItemHint_EventLocationChanged;
+				hint.MouseEnter += ItemHint_EventMouseEnter;
+				hint.MouseLeave += ItemHint_EventMouseLeave;
+				hint.EventDragEnd += ItemHint_EventDragEnd;
+				hint.EventDragStart += ItemHint_EventDragStart;
+				hint.EventClose += ItemHint_EventClose;
+				hint.MouseUp += ItemHint_EventMouseUp;
+			}
+			hint.ID = aItemID;
+			//hint.CanDrag = true;
+			hint.CanShow = _Data.ShowHints;
+			hint.HintArea = DrawArea;
+			return hint;
+		}
 	}
 }
