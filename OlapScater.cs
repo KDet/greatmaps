@@ -28,6 +28,9 @@ using OlapFramework.Olap.Metadata;
 using OSDI = OlapFramework.Data.OlapScatterDataItem;
 using MVT = OlapFramework.Data.MeasureValueType;
 using System.ComponentModel;
+using GMap.NET;
+using GMap.NET.MapProviders;
+using GMap.NET.WindowsForms;
 using OlapFormsFramework.Windows.Forms.Grid.Printing;
 using SIST = OlapFormsFramework.Windows.Forms.Grid.Scatter.ScatterItemSelectionType;
 using CUtils = OlapFormsFramework.Utils.ControlUtils;
@@ -35,7 +38,7 @@ using FormatType = OlapFormsFramework.Windows.Forms.Grid.Formatting.FormatType;
 
 namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 {
-	public class OlapScatter : OlapControlBase, IActionListener
+	public class OlapScatter : GMapControl, IActionListener
 	{
 		protected enum ActionImage { aiUnknown = -1, aiDrillthrough, aiSaveNRP, aiExportPNG, aiExportPDF, aiPrint, aiFormat, aiHighlight }
 		/// <summary>
@@ -251,6 +254,8 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// </summary>
 		private static readonly StringFormat STR_FORMAT_LABEL;
 		#endregion
+
+		private readonly OlapMapOverlay _markersLayer = new OlapMapOverlay("markers");
 
 		private static readonly Images _ActionImages;
 		private readonly ActionCollection _Actions;
@@ -628,7 +633,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				{
 					op = _Data.PaintOrder[i];
 					if (_Data.ItemHintGet(op) == null)  //якщо для відмічених елементів нема хінта
-						ItemHint_Create(op, false);
+					ItemHint_Create(op, false);
 				}
 				MoreThenOneMemberOnLevelCalculate(_Data);
 			}
@@ -763,6 +768,12 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			aHint.Visible = false;
 			aHint.Highlighted = false;
 		}
+		//private void HintHide(int aItemID, int aPage)
+		//{
+		//	OSDI item = _Data.Pages[aPage][aItemID];
+		//	var marker = (OlapMapCircleMarker)item.Tag;
+		//	marker?.OlapToolTip?.HintHide();
+		//}
 		/// <summary>
 		/// Оновлює видимість хінта для елементу в залежності від того чи вибраний елемент чи ні
 		/// </summary>
@@ -772,7 +783,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			if ((_Data.ItemSelectionGet(aID) & SIST.sistAsItem) == 0)
 			{
 				if (_Data.ItemHintGet(aID) != null && _Data.ItemHintGet(aID).Visible)
-					HintHide(_Data.ItemHintGet(aID));
+				HintHide(_Data.ItemHintGet(aID));
 			}
 			else
 			{
@@ -898,6 +909,9 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// </summary>
 		private void ItemDraw(Graphics aGraphics, OSDI aItem)
 		{
+			//var marker = _markerDataItem[aItem];//new OlapMapCircleMarker(new PointLatLng(), aItem);
+			//marker.SetDebugPosition(aItem.X, aItem.Y);
+			//marker.OnRender(aGraphics);
 			float radius = aItem.Size / 2;
 			using (SolidBrush brush = new SolidBrush(aItem.Color))
 				aGraphics.FillEllipse(brush, aItem.X - radius, aItem.Y - radius, aItem.Size, aItem.Size);
@@ -913,6 +927,9 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// </summary>
 		private void ItemHighlight(Graphics aGraphics, OSDI aItem)
 		{
+			//var marker = _markerDataItem[aItem];
+			//marker.IsHighlighted = true;
+			//marker.OnRender(aGraphics);
 			if (!aItem.CanShow)
 				return;
 			float radius = aItem.Size / 2;
@@ -981,6 +998,42 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			}
 			hint.HintShow(false);
 		}
+		//private void ItemHint_Create(int aItemID, bool aWithHighlight)
+		//{
+		//	OSDI item = _Data.Pages[_Data.CurrentPage][aItemID];
+		//	var marker = (OlapMapCircleMarker)item.Tag;
+
+		//	//var tooltip = new OlapMapToolTip(marker, () => ItemHintGet(aItemID));
+		//	marker.ToolTipText = HintConstruct(new CI(_Data.CurrentPage, aItemID), true, true);
+		//	marker.OlapToolTip.Show(aWithHighlight);
+
+		//	int page = _Data.CurrentPage;
+		//	AdvancedHint hint = _Data.ItemHintGet(aItemID);
+		//	if (hint == null)
+		//	{
+		//		hint = _Data.ItemHintCreate(aItemID, this);
+		//		hint.ShowPointer = false;
+		//		hint.LocationChanged += ItemHint_EventLocationChanged;
+		//		hint.MouseEnter += ItemHint_EventMouseEnter;
+		//		hint.MouseLeave += ItemHint_EventMouseLeave;
+		//		hint.EventDragEnd += ItemHint_EventDragEnd;
+		//		hint.EventDragStart += ItemHint_EventDragStart;
+		//		hint.EventClose += ItemHint_EventClose;
+		//		hint.MouseUp += ItemHint_EventMouseUp;
+		//	}
+		//	hint.ID = aItemID;
+		//	hint.CanDrag = true;
+		//	hint.CanShow = _Data.ShowHints;
+		//	_hints[OSDI.MEASURES_COUNT].HintHide();
+		//	OSDI item = _Data.Pages[page][aItemID];
+		//	ItemHintBestPositionSet(hint, item, HintConstruct(new CI(page, aItemID), true, true));
+		//	if (item.CanShow)
+		//	{
+		//		hint.HighlightColor = item.Color;
+		//		hint.Highlighted = aWithHighlight;
+		//	}
+		//	hint.HintShow(false);
+		//}
 		/// <summary>
 		/// Відмальовує скеттер сторінку при переміщенні хінта
 		/// </summary>
@@ -988,7 +1041,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <param name="aInvalidRect">Регіон що змінився внаслідок переміщення</param>
 		private void ItemHintDraggingRedraw(CI aItem, out Rectangle aInvalidRect)
 		{
-			Graphics graphics = _bufferedPage.BufferedGraphics;
+			Graphics graphics = _bufferedPage.BufferedGraphics; //CreateGraphics();//
 			OSDI item = _Data.Pages[aItem.PageID][aItem.ItemID];
 			AdvancedHint hint = _Data.ItemHintGet(aItem.ItemID);
 			//calculate Rectangle which must be redrawn
@@ -1077,7 +1130,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			if (aHint.Visible)
 				aHint.HintHide();
 			ItemHintPositionSet(aHint, aItem.X, aItem.Y, aItem.Size);
-			Rectangle hintArea = HintArea;
+			Rectangle hintArea = DrawArea;
 			aHint.HintArea = hintArea;
 			aHint.HintPosition = HintPosition.hpTop;
 			aHint.TextOrientation = HintTextOrientation.htoHorizontal;
@@ -1127,6 +1180,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <param name="aGraphics">Graphics використовуючи який потрібно малювати</param>
 		private void ItemsDraw(Graphics aGraphics)
 		{
+			//_markersLayer.Markers.Clear();
 			int i, j, op, a, pos = _Data.CurrentPage;
 			float x, y, s, diagPoint, radius, coef = _CurrentPage - pos;
 			Color c;
@@ -1199,6 +1253,10 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 						continue;
 					}
 					interpolated = p.IsInterpolated | n.IsInterpolated;
+					//x = p.X.Interpolate(n.X, coef);
+					//y = p.Y.Interpolate(n.Y, coef);
+					//s = p.Size.Interpolate(n.Size, coef);
+					//c = p.Color.Interpolate(n.Color, coef, a);
 					x = p.X + (n.X - p.X) * coef;
 					y = p.Y + (n.Y - p.Y) * coef;
 					s = p.Size + (n.Size - p.Size) * coef;
@@ -1218,6 +1276,22 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				// Додаткова перевірка, щоб уникнути OverflowException
 				if (aGraphics.ClipBounds.Contains(x, y) && Math.Abs(s) <= 1000000f)
 				{
+					//var item = _Data.Pages[pos][op];
+					//var marker = new OlapMapCircleMarker(new PointLatLng(item.Latitude, item.Longitude), () => ItemHintGet(op));
+					//item.Tag = marker;
+
+					//marker.PageID = pos;
+					//marker.ItemID = op;
+					//marker.IsVisible = item.CanShow;
+					//marker.Size = new SizeF(s, s);
+					//marker.BorderAlpha = a;
+					//marker.MarkerColor = c;
+					//marker.IsInterpolated = interpolated;
+					//marker.IsHighlighted = false;
+					//marker.Position = FromLocalToLatLng((int)x, (int)y);
+
+					//_markersLayer.Markers.Add(marker);
+
 					using (SolidBrush brush = new SolidBrush(c))
 						aGraphics.FillEllipse(brush, x - radius, y - radius, s, s);
 					if (interpolated)
@@ -1246,6 +1320,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 					}
 				}
 			}
+			//OnPaintOverlays(aGraphics);
 #if DEBUG
 			using (var font = FontUtils.FontCreate("Verdana", 8))
 			using (var brush = new SolidBrush(Color.FromArgb(100, Color.Black)))
@@ -1381,11 +1456,11 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			if (COORD_GRADUATE[COORD_GRADUATE.Length - 1] >= 10)
 				throw new ExceptionFramework("Each coordinate step must be less than 10", ExceptionKind.ekDeveloper);
 			SizeF maxSize;
-			Rectangle clipRect = new Rectangle(YSLICE_DELTA, 0, aWidth - YSLICE_DELTA - 1, aHeight - XSLICE_DELTA);
+			var clipRect = new Rectangle(YSLICE_DELTA, 0, aWidth - YSLICE_DELTA - 1, aHeight - XSLICE_DELTA);
 			//Draw X axis
-			List<Triplet<string, int, SizeF>> coords = _XLogarithmicScale
-														   ? LogarithmicCoordinatesPrecalculate(aGraphics, aWidth, _Data.Min.MX.NumericValue, _Data.Max.MX.NumericValue, YSLICE_DELTA, out maxSize, _xCoef, _Data.Measures[0])
-														: LinearCoordinatesPrecalculate(aGraphics, aWidth, _Data.Min.MX.NumericValue, _Data.Max.MX.NumericValue, YSLICE_DELTA, out maxSize, _xCoef, _Data.Measures[0]);
+			var coords = _XLogarithmicScale 
+					   ? LogarithmicCoordinatesPrecalculate(aGraphics, aWidth, _Data.Min.MX.NumericValue, _Data.Max.MX.NumericValue, YSLICE_DELTA, out maxSize, _xCoef, _Data.Measures[0])
+					   : LinearCoordinatesPrecalculate(aGraphics, aWidth, _Data.Min.MX.NumericValue, _Data.Max.MX.NumericValue, YSLICE_DELTA, out maxSize, _xCoef, _Data.Measures[0]);
 			if (coords != null)
 			{
 				int printEvery = 1; //якщо підписи занадто довгі, то потрібно підписувати кожну "printEvery" позначку для того щоб підписи не наклалися
@@ -1955,6 +2030,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 					_bufferedPage = new CachedBmp(rect.Width, rect.Height, graphics);
 			}
 			Redraw(_bufferedPage.BufferedGraphics, rect, aCoordRedraw, false);
+			//Redraw(CreateGraphics(), rect, aCoordRedraw, false);
 			Refresh();  //негайне оновлення контрола
 			Tracer.ExitMethod("OlapScatter.Redraw(bool)");
 		}
@@ -1967,6 +2043,18 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <param name="aPrinting">Визначає чи відмальовка відбувається для друку</param>
 		private void Redraw(Graphics aGraphics, Rectangle aArea, bool aCoordRedraw, bool aPrinting)
 		{
+			//Tracer.EnterMethod("OlapScatter.Redraw(Graphics, Rectangle, bool, bool)");
+			//Tracer.Write(TraceLevel.Info, "OlapScatter.Redraw(Graphics, Rectangle, bool, bool)", string.Format("Parameters: aArea={0}, aCoordRedraw={1}, aPrinting={2}", aArea.ToString(), aCoordRedraw.ToString(), aPrinting.ToString()));
+			//var itemsArea = DrawArea;//new Rectangle(YSLICE_DELTA + 1, 1, aArea.Width - YSLICE_DELTA - 2, aArea.Height - XSLICE_DELTA - 1);	//обмежуючий елементи прямокутник
+			//GraphicsContainer cont = null;
+			//aGraphics.HighQualitySet();
+			//if (aPrinting)  //якщо відмальовка відбувається для друку
+			//	cont = aGraphics.BeginContainer();  //починаємо новий контейнер (для того щоб якщо нові трансформації будуть робитися з aGraphics, то щоб вони додавалися до попередніх(що були до початку контейнера) а не перетирали їх)
+			//										//else	//якщо ми малюємо по бітмапу де тільки є скеттер діаграма
+			//										//aGraphics.Clear(SkinBackColorGet());	//очищаємо бітмап кольором фону
+			//										//замальовуємо та обводимо контуром прямокутник в якому будуть знаходитись елементи
+			//										//aGraphics.FillRectangle(BRUSH_BACK, itemsArea);
+			//aGraphics.DrawRectangle(PEN_ITEM_AREA_BORDER, new Rectangle(itemsArea.Left - 1, itemsArea.Top - 1, itemsArea.Width + 1, itemsArea.Height + 1));
 			Tracer.EnterMethod("OlapScatter.Redraw(Graphics, Rectangle, bool, bool)");
 			Tracer.Write(TraceLevel.Info, "OlapScatter.Redraw(Graphics, Rectangle, bool, bool)", string.Format("Parameters: aArea={0}, aCoordRedraw={1}, aPrinting={2}", aArea.ToString(), aCoordRedraw.ToString(), aPrinting.ToString()));
 			_itemsArea = new Rectangle(YSLICE_DELTA + 1, 1, aArea.Width - YSLICE_DELTA - 2, aArea.Height - XSLICE_DELTA - 1);   //обмежуючий елементи прямокутник
@@ -2041,6 +2129,45 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			else  //якщо на осі абсцис або ординат немає жодного елементу з числовим значенням
 				aGraphics.DrawString(StringGet(OlapScatter_BadResults), FONT_LABEL_TEXT, BRUSH_LABEL_FORE_SPECIAL, aArea, STR_FORMAT_LABEL);
 		}
+		//{
+		//	if ((_Data.Min.MX.ValueType & MVT.mvtNumber) != MVT.mvtNotSet
+		//		&& (_Data.Min.MY.ValueType & MVT.mvtNumber) != MVT.mvtNotSet
+		//		)   //якщо на обох осях є хоча б по одному елементу що має числове значення для відповідних мір
+		//	{
+		//		var itemsArea = DrawArea;
+		//		if (aCoordRedraw)   //якщо потрібно перемалювати координатну сітку
+		//		{
+		//			DataPrecalculate(ref aData, aArea.Width, aArea.Height);
+		//			//coordinates redraw
+		//			if (_cachedCoord == null || _cachedCoord.Size != aArea.Size)    //якщо CachedBmp не було створено для кешування відмальовки сітки або його розміри нам не підходять
+		//			{
+		//				if (_cachedCoord != null)
+		//					_cachedCoord.Dispose();
+		//				_cachedCoord = new CachedBmp(aArea.Width, aArea.Height, aGraphics);
+		//			}
+		//			Graphics g = aPrinting ? aGraphics : _cachedCoord.BufferedGraphics; //якщо відмальовка для друку то результати не кешуємо
+		//																				//if (!aPrinting)
+		//																				//	g.Clear(SkinBackColorGet());
+		//																				//g.FillRectangle(BRUSH_BACK, itemsArea);
+		//			CoordinatesDraw(g, aArea.Width, aArea.Height);
+		//		}
+		//		//draw items
+		//		aGraphics.HighQualitySet();
+		//		if (!aPrinting)
+		//			_cachedCoord.Draw(aGraphics);
+		//		if (_CurrentPage >= 0)
+		//		{
+		//			if (_Data.PagesPresent)
+		//				aGraphics.DrawString(_Data.PagesMemberItems[_Data.CurrentPage].Caption, FONT_BACK, BRUSH_STR_BACK, itemsArea, STR_FORMAT_BACK);
+		//			Region oldClip = aGraphics.Clip;
+		//			aGraphics.Clip = new Region(itemsArea);
+		//			ItemsDraw(aGraphics);
+		//			aGraphics.Clip = oldClip;
+		//		}
+		//	}
+		//	else  //якщо на осі абсцис або ординат немає жодного елементу з числовим значенням
+		//		aGraphics.DrawString(StringGet(OlapScatter_BadResults), FONT_LABEL_TEXT, BRUSH_LABEL_FORE_SPECIAL, aArea, STR_FORMAT_LABEL);
+		//}
 		/// <summary>
 		/// Відмальовує на скеттер діаграмі один виділений елемент разом з його шляхом і якщо потрібно лінією до хінта.
 		/// </summary>
@@ -2160,6 +2287,156 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				}
 			}
 		}
+		//{
+		//	if (_Data.ItemSelectionStart[aItemID] == -1)
+		//	{
+		//		AdvancedHint hint = _Data.ItemHintGet(aItemID);
+		//		//var itemTets = _Data.Pages[_Data.CurrentPage][aItemID];
+		//		//var marker = _markerDataItem[itemTets];
+		//		if (hint != null)
+		//			HintHide(hint);
+		//		return;
+		//	}
+		//	int i;
+		//	float diagPoint, radius;
+		//	OSDI item;
+		//	float x1, x2, y1, y2, s;
+		//	x1 = aLastX;
+		//	y1 = aLastY;
+		//	s = aLastSize;
+		//	if (_Data.ShowHints)    //якщо хінт над елементом є
+		//	{
+		//		//знаходимо елемент до якого прив'язаний "хінт"
+		//		CI hintItem = new CI(_Data.CurrentPage, aItemID);   //вважаємо що хінт прив'язаний до елемента на поточній сторінці
+		//															//хінт прив'язаний до першого елементу шляху
+		//		hintItem.PageID = _Data.ItemSelectionStart[aItemID];
+		//		var item = _Data.Pages[hintItem.PageID][aItemID];
+		//		var marker = (OlapMapCircleMarker)item.Tag;
+		//		//OlapMapCircleMarker marker;
+		//		////if (!_markerDataItem.TryGetValue(item, out marker))
+		//		//{
+		//		//	marker = new OlapMapCircleMarker(new PointLatLng(item.Latitude, item.Longitude), () => ItemHintGet(aItemID), item);
+		//		//	marker.PageID = _Data.ItemSelectionStart[aItemID];
+		//		//	marker.ItemID = aItemID ;
+		//		//	marker.Position = FromLocalToLatLng((int)item.X, (int)item.Y);
+		//		//	_markersLayer.Markers.Add(marker);
+		//		//	//_markerDataItem[item] = marker;
+		//		//}
+		//		if (_Data.ShowTrails)   //якщо елемент має шлях
+		//		{
+		//			////хінт прив'язаний до першого елементу шляху
+		//			//hintItem.PageID = _Data.ItemSelectionStart[aItemID];
+		//			//item = _Data.Pages[hintItem.PageID][aItemID];
+		//			x1 = item.X;
+		//			y1 = item.Y;
+		//			s = item.Size;
+		//		}
+		//		var tooltip = marker.OlapToolTip;
+		//		AdvancedHint hint = _Data.ItemHintGet(aItemID);
+		//		if (_Data.Pages[_Data.CurrentPage][aItemID].CanShow || _Data.ItemSelectionStart[aItemID] < _Data.CurrentPage)   //якщо елемент видимий на даній сторінці або елемент має шлях
+		//		{
+		//			if (!_itemHintRelocating && !_Data.ItemHintGet(aItemID).IsDragging)
+		//			{
+		//				//change hint location
+		//				_itemHintRelocating = true;
+		//				//TODO zatu4ka null reference !
+		//				//if(tooltip == null)
+		//				//ItemHint_Create(aItemID, false);
+		//				tooltip.CanDrag = !_isPlaying;
+		//				marker.ToolTipText = HintConstruct(hintItem, true, true);
+		//				tooltip.Show(false);
+
+
+		//				//hint.Visible = true;
+		//				//hint.Caption = HintConstruct(hintItem, true, true);
+		//				//hint.CanDrag = !_isPlaying;
+		//				ItemHintPositionSet(hint, x1, y1, s);
+		//				_itemHintRelocating = false;
+		//				//hint.Update();	//immediatly repaint
+		//				tooltip.OnRender(aGraphics);
+		//			}
+		//			//draw line from hint to circle
+		//			if (!ReferenceEquals(_draggedHint, _Data.ItemHintGet(aItemID)))
+		//				LineItemHintToItemDraw(aGraphics, _Data.ItemHintGet(aItemID), x1, y1);
+		//		}
+		//		else    //якщо елементу до якого прив'язаний хінт на даній сторінці немає
+		//			HintHide(aItemID, _Data.CurrentPage);
+		//		//HintHide(hint);
+		//	}
+		//	if (_Data.ShowTrails)   //якщо потрібно відмалювати шлях
+		//	{
+		//		//малюємо лінії зі стрілочками між елементами
+		//		int i;
+		//		using (Pen pen = new Pen(Color.Transparent, WAY_LINE_WIDTH))
+		//			for (i = _Data.ItemSelectionStart[aItemID]; i < _CurrentPage; ++i)
+		//			{
+		//				if (i + 1 < _Data.PagesCount && !_Data.Pages[i + 1][aItemID].CanShow) //якщо наступний елемент шляху невидимий
+		//					break;
+		//				//заповнюємо в (x1; y1) координати центру поточного кружка, а в (x2; y2) - наступного
+		//				x1 = _Data.Pages[i][aItemID].X;
+		//				y1 = _Data.Pages[i][aItemID].Y;
+		//				float x2;
+		//				float y2;
+		//				if (i + 1 < _CurrentPage)
+		//				{
+		//					x2 = _Data.Pages[i + 1][aItemID].X;
+		//					y2 = _Data.Pages[i + 1][aItemID].Y;
+		//					s = _Data.Pages[i + 1][aItemID].Size;
+		//				}
+		//				else
+		//				{
+		//					x2 = aLastX;
+		//					y2 = aLastY;
+		//					s = aLastSize;
+		//				}
+		//				var d = (float)Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+		//				if (d > 0) //якщо центри не співпадають
+		//				{
+		//					//вираховуємо точку на другому кружку куди потрібно показати стрілкою
+		//					var r = s / 2;
+		//					var y = r * (y2 - y1) / d;
+		//					var x = r * (x2 - x1) / d;
+		//					x2 -= x;
+		//					y2 -= y;
+		//					pen.Color = ItemHintHighlightColorGet(_Data.Pages[i][aItemID]);
+		//					if (Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) < WAY_LINE_WIDTH)
+		//						pen.EndCap = LineCap.Flat;
+		//					else if (!SystemUtils.IsUnderWine)
+		//						pen.CustomEndCap = new AdjustableArrowCap(WAY_LINE_WIDTH, WAY_LINE_WIDTH, true);
+		//					else
+		//						pen.EndCap = LineCap.Flat;
+		//					aGraphics.DrawLine(pen, x1, y1, x2, y2);
+		//				}
+		//			}
+		//		//відмальовуємо всі "кружки" крім останнього
+		//		for (i = _Data.ItemSelectionStart[aItemID]; i < _CurrentPage; ++i)
+		//		{
+		//			var item = _Data.Pages[i][aItemID];
+		//			if (!item.CanShow)
+		//				break;
+
+		//			var marker = new OlapMapCircleMarker(new PointLatLng(item.Latitude, item.Longitude), () => ItemHintGet(aItemID), item);
+		//			item.Tag = marker;
+
+		//			marker.PageID = i;
+		//			marker.ItemID = aItemID;
+		//			marker.IsVisible = item.CanShow;
+		//			marker.Position = FromLocalToLatLng((int)item.X, (int)item.Y);
+		//			_markersLayer.Markers.Add(marker);
+		//			//marker.OnRender(aGraphics);
+
+		//			//radius = item.Size / 2;
+		//			//using (Brush brush = new SolidBrush(item.Color))
+		//			//	aGraphics.FillEllipse(brush, item.X - radius, item.Y - radius, item.Size, item.Size);
+		//			//if (item.IsInterpolated)
+		//			//{
+		//			//	diagPoint = (float)Math.Sqrt(1f / 2) * radius;
+		//			//	aGraphics.DrawLine(PEN_INTERPOLATED_LINE, item.X - diagPoint, item.Y + diagPoint, item.X + diagPoint, item.Y - diagPoint);
+		//			//}
+		//			//aGraphics.DrawEllipse(PEN_ITEM_LINE, item.X - radius, item.Y - radius, item.Size, item.Size);
+		//		}
+		//	}
+		//}
 		private void Timer_Tick(object aSender, EventArgs aEventArgs)
 		{
 			if (_CurrentPage + _pageStep > _Data.PagesCount - 1)
@@ -2192,6 +2469,53 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			else
 				_highlightedItem = nextItem;
 			Invalidate();
+		}
+		private void Init()
+		{
+			Location = DrawArea.Location;
+			Size = DrawArea.Size;
+			Manager.Mode = AccessMode.ServerAndCache;
+			// config map         
+			MapProvider = GMapProviders.GoogleMap;
+			Position = new PointLatLng(54.6961334816182, 25.2985095977783);
+
+			Bearing = 0F;
+			CanDragMap = true;
+
+			GrayScaleMode = false;
+			HelperLineOption = HelperLineOptions.DontShow;
+
+			MarkersEnabled = true;
+
+			MouseWheelZoomEnabled = true;
+			MouseWheelZoomType = MouseWheelZoomType.ViewCenter;
+			NegativeMode = false;
+			//PolygonsEnabled = true;
+			RetryLoadTile = 2;
+			//RoutesEnabled = true;
+			ScaleMode = ScaleModes.Integer;
+			SelectedAreaFillColor = Color.FromArgb(33, 65, 105, 225);
+			ShowTileGridLines = false;
+			ShowCenter = false;
+			MapScaleInfoEnabled = true;
+
+			MaxZoom = 20;
+			Zoom = 9;
+			SetMinZoom();
+		}
+		private void SetMinZoom()
+		{
+			var area = DrawArea;
+			double mapWidth = Core.vWidth;
+			double mapHeight = Core.vHeight;
+
+			var mapArea = Core.sizeOfMapArea;
+			var heightScale = mapArea.Width;//(int)Math.Ceiling(Math.Max(area.Height/mapHeight, 1));
+			var widthScale = mapArea.Height;//(int)Math.Ceiling(Math.Max(area.Width/mapWidth, 1));
+			var scale = (int)Math.Max(heightScale, widthScale);
+			var zoom = Zoom;
+			MinZoom = scale;
+			Zoom = zoom;
 		}
 
 		private AdvancedBarButtonItem BBINoActions
@@ -2343,9 +2667,8 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 						OSDI item = _Data.Pages[value.PageID][value.ItemID];
 						if (item.CanShow)   //якщо його можна показати
 						{
-							using (Graphics graphics = CreateGraphics())
+							using (Graphics graphics = CreateGraphics().HighQualitySet())
 							{
-								DefaultQualitySet(graphics);
 								ItemHighlight(graphics, item); //підсвічуємо поточний елемент
 							}
 							HintsShow(value);   //показуємо хінти для поточного елементу
@@ -2359,7 +2682,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <summary>
 		/// Прямокутник за межі якого не повинен виїжджати жоден з хінтів над елементом.
 		/// </summary>
-		private Rectangle HintArea
+		public Rectangle DrawArea
 		{
 			get { return new Rectangle(YSLICE_DELTA + 1, 1, Width - YSLICE_DELTA - 2, Height - XSLICE_DELTA - 1); }
 		}
@@ -2431,11 +2754,12 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		}
 		protected override void OnMouseMove(MouseEventArgs aMouseEventArgs)
 		{
+			//base.OnMouseMove(aMouseEventArgs);
 			if (IsInAction || PopupMenu.Visible)
 				return;
 			int x = aMouseEventArgs.X;
 			int y = aMouseEventArgs.Y;
-			if (!_itemsArea.Contains(x, y))
+			if (!DrawArea.Contains(x, y))
 				return;
 			_mouseAt = MAC.macOlapScatter;
 			CI currItemIndex = CI.Default;
@@ -2478,6 +2802,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		}
 		protected override void OnMouseUp(MouseEventArgs aEventArgs)
 		{
+			//base.OnMouseUp(aEventArgs);
 			if (_Data == null || (_Data.Min.MX.ValueType & MVT.mvtNumber) == MVT.mvtNotSet
 				|| (_Data.Min.MY.ValueType & MVT.mvtNumber) == MVT.mvtNotSet)
 				return;
@@ -2515,13 +2840,37 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			}
 			Tracer.ExitMethod("OlapScatter.OnPaint()");
 		}
+		//protected override void OnPaint(PaintEventArgs aEventArgs)
+		//{
+		//	Tracer.EnterMethod("OlapScatter.OnPaint()");
+		//	base.OnPaint(aEventArgs);
+		//	//if (_bufferedPage != null)
+		//	//	_bufferedPage.Draw(aEventArgs.Graphics, aEventArgs.ClipRectangle);  //перемальовуємо скеттер з кешу
+		//	if (!IsActual)  //якщо дані не актуальні
+		//	{
+		//		//using (var brush = OlapFormsFrameworkDefs.NotActualBrushCreate())
+		//		//	aEventArgs.Graphics.FillRectangle(brush, aEventArgs.ClipRectangle); //засірюємо
+		//	}
+		//	if (_CurrentItem != CI.Default) //якщо є поточний елемент
+		//	{
+		//		aEventArgs.Graphics.HighQualitySet();
+		//		ItemHighlight(aEventArgs.Graphics, _Data.Pages[_CurrentItem.PageID][_CurrentItem.ItemID]);
+		//	}
+		//	if (_highlightedItem != CI.Default) //якщо є елемент шляхуякий потрібно підсвітити
+		//	{
+		//		aEventArgs.Graphics.HighQualitySet();
+		//		ItemHighlight(aEventArgs.Graphics, _Data.Pages[_highlightedItem.PageID][_highlightedItem.ItemID]);
+		//	}
+		//	Tracer.ExitMethod("OlapScatter.OnPaint()");
+		//}
 		protected override void OnPaintBackground(PaintEventArgs aEventArgs) { }
 		protected override void OnSizeChanged(EventArgs aEventArgs)
 		{
 			base.OnSizeChanged(aEventArgs);
+			//SetMinZoom();
 			if (_Data != null)
 			{
-				Rectangle hintArea = HintArea;
+				Rectangle hintArea = DrawArea;
 				AdvancedHint hint;
 				//змінюємо дозволені для хінтів межі
 				for (int i = 0; i < _Data.ItemsCount; ++i)
@@ -2577,6 +2926,31 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			DragDrop += DragDropPerform;
 			DragLeave += DragLeavePerform;
 			DragOver += DragOverPerform;
+			//Init();
+			//MarkersEnabled = true;
+			//Overlays.Add(_markersLayer);
+		}
+		protected override void EventOnMarkerEnterRaise(GMapMarker m)
+		{
+			base.EventOnMarkerEnterRaise(m);
+
+			var olapMarker = (OlapMapCircleMarker)m;
+			using (var graphics = CreateGraphics().HighQualitySet())
+			{
+				olapMarker.IsHighlighted = true;
+				olapMarker.OnRender(graphics);
+			}
+		}
+		protected override void EventOnMarkerLeaveRaise(GMapMarker m)
+		{
+			base.EventOnMarkerLeaveRaise(m);
+
+			//var olapMarker = (OlapMapCircleMarker)m;
+			//using (var graphics = CreateGraphics().HighQualitySet())
+			//{
+			//	olapMarker.IsHighlighted = false;
+			//	olapMarker.OnRender(graphics);
+			//}
 		}
 
 		public ScatterExportData ExportDataGet()
@@ -2927,5 +3301,27 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			get { return !Enabled; }
 		}
 		#endregion
+
+		//public AdvancedHint ItemHintGet(int aItemID)
+		//{
+		//	var hint = _Data.ItemHintGet(aItemID);
+		//	if (hint == null)
+		//	{
+		//		hint = _Data.ItemHintCreate(aItemID, this);
+		//		hint.ShowPointer = false;
+		//		hint.LocationChanged += ItemHint_EventLocationChanged;
+		//		hint.MouseEnter += ItemHint_EventMouseEnter;
+		//		hint.MouseLeave += ItemHint_EventMouseLeave;
+		//		hint.EventDragEnd += ItemHint_EventDragEnd;
+		//		hint.EventDragStart += ItemHint_EventDragStart;
+		//		hint.EventClose += ItemHint_EventClose;
+		//		hint.MouseUp += ItemHint_EventMouseUp;
+		//	}
+		//	hint.ID = aItemID;
+		//	//hint.CanDrag = true;
+		//	hint.CanShow = _Data.ShowHints;
+		//	hint.HintArea = DrawArea;
+		//	return hint;
+		//}
 	}
 }
