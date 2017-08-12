@@ -26,57 +26,108 @@ namespace GMap.NET.WindowsForms
 	/// </summary>   
 	public class GMapControl : OlapControlBase, IGMapControl
 	{
+		private static readonly object _EventOnMarkerClick = new object();
+		private static readonly object _EventOnPolygonClick = new object();
+		private static readonly object _EventOnRouteClick = new object();
+		private static readonly object _EventOnRouteEnter = new object();
+		private static readonly object _EventOnRouteLeave = new object();
+		private static readonly object _EventOnSelectionChange = new object();
+		private static readonly object _EventOnMarkerEnter = new object();
+		private static readonly object _EventOnMarkerLeave = new object();
+		private static readonly object _EventOnPolygonEnter = new object();
+		private static readonly object _EventOnPolygonLeave = new object();
+
 #if !PocketPC
 		/// <summary>
 		/// occurs when clicked on marker
 		/// </summary>
-		public event MarkerClick OnMarkerClick;
+		public event MarkerClick OnMarkerClick
+		{
+			add { Events.AddHandler(_EventOnMarkerClick, value); }
+			remove { Events.RemoveHandler(_EventOnMarkerClick, value); }
+		}
 
 		/// <summary>
 		/// occurs when clicked on polygon
 		/// </summary>
-		public event PolygonClick OnPolygonClick;
+		public event PolygonClick OnPolygonClick
+		{
+			add { Events.AddHandler(_EventOnPolygonClick, value); }
+			remove { Events.RemoveHandler(_EventOnPolygonClick, value); }
+		}
 
 		/// <summary>
 		/// occurs when clicked on route
 		/// </summary>
-		public event RouteClick OnRouteClick;
+		public event RouteClick OnRouteClick
+		{
+			add { Events.AddHandler(_EventOnRouteClick, value); }
+			remove { Events.RemoveHandler(_EventOnRouteClick, value); }
+		}
 
 		/// <summary>
 		/// occurs on mouse enters route area
 		/// </summary>
-		public event RouteEnter OnRouteEnter;
+		public event RouteEnter OnRouteEnter
+		{
+			add { Events.AddHandler(_EventOnRouteEnter, value); }
+			remove { Events.RemoveHandler(_EventOnRouteEnter, value); }
+		}
 
 		/// <summary>
 		/// occurs on mouse leaves route area
 		/// </summary>
-		public event RouteLeave OnRouteLeave;
+		public event RouteLeave OnRouteLeave
+		{
+			add { Events.AddHandler(_EventOnRouteLeave, value); }
+			remove { Events.RemoveHandler(_EventOnRouteLeave, value); }
+		}
 
 		/// <summary>
 		/// occurs when mouse selection is changed
 		/// </summary>        
-		public event SelectionChange OnSelectionChange;
+		public event SelectionChange OnSelectionChange
+		{
+			add { Events.AddHandler(_EventOnSelectionChange, value); }
+			remove { Events.RemoveHandler(_EventOnSelectionChange, value); }
+		}
 #endif
 
 		/// <summary>
 		/// occurs on mouse enters marker area
 		/// </summary>
-		public event MarkerEnter OnMarkerEnter;
+		public event MarkerEnter OnMarkerEnter
+		{
+			add { Events.AddHandler(_EventOnMarkerEnter, value); }
+			remove { Events.RemoveHandler(_EventOnMarkerEnter, value); }
+		}
 
 		/// <summary>
 		/// occurs on mouse leaves marker area
 		/// </summary>
-		public event MarkerLeave OnMarkerLeave;
+		public event MarkerLeave OnMarkerLeave
+		{
+			add { Events.AddHandler(_EventOnMarkerLeave, value); }
+			remove { Events.RemoveHandler(_EventOnMarkerLeave, value); }
+		}
 
 		/// <summary>
 		/// occurs on mouse enters Polygon area
 		/// </summary>
-		public event PolygonEnter OnPolygonEnter;
+		public event PolygonEnter OnPolygonEnter
+		{
+			add { Events.AddHandler(_EventOnPolygonEnter, value); }
+			remove { Events.RemoveHandler(_EventOnPolygonEnter, value); }
+		}
 
 		/// <summary>
 		/// occurs on mouse leaves Polygon area
 		/// </summary>
-		public event PolygonLeave OnPolygonLeave;
+		public event PolygonLeave OnPolygonLeave
+		{
+			add { Events.AddHandler(_EventOnPolygonLeave, value); }
+			remove { Events.RemoveHandler(_EventOnPolygonLeave, value); }
+		}
 
 		/// <summary>
 		/// list of overlays, should be thread safe
@@ -469,8 +520,8 @@ namespace GMap.NET.WindowsForms
 		private readonly ImageAttributes _tileFlipXyAttributes = new ImageAttributes();
 #endif
 		private double _zoomReal;
-		private Bitmap _backBuffer;
-		private Graphics _gxOff;
+		protected Bitmap _backBuffer;
+		protected Graphics _gxOff;
 
 #if !DESIGN
 		/// <summary>
@@ -1123,7 +1174,7 @@ namespace GMap.NET.WindowsForms
 			base.OnPaint(e);
 		}
 
-		private void DrawGraphics(Graphics g)
+		protected void DrawGraphics(Graphics g)
 		{
 			// render white background
 			g.Clear(EmptyMapBackground);
@@ -1656,7 +1707,7 @@ namespace GMap.NET.WindowsForms
 			}
 		}
 
-		private void UpdateBackBuffer()
+		protected void UpdateBackBuffer()
 		{
 			ClearBackBuffer();
 
@@ -1756,10 +1807,7 @@ namespace GMap.NET.WindowsForms
 						zoomtofit = SetZoomToFitRect(SelectedArea);
 					}
 
-					if (OnSelectionChange != null)
-					{
-						OnSelectionChange(SelectedArea, zoomtofit);
-					}
+					EventOnSelectionChangeRaise(zoomtofit);
 				}
 				else
 				{
@@ -1796,10 +1844,7 @@ namespace GMap.NET.WindowsForms
 #endif
 								if (m.LocalArea.Contains((int) rp.X, (int) rp.Y))
 								{
-									if (OnMarkerClick != null)
-									{
-										OnMarkerClick(m, e);
-									}
+									EventOnMarkerClickRaise(e, m);
 									break;
 								}
 
@@ -1822,10 +1867,7 @@ namespace GMap.NET.WindowsForms
 #endif
 								if (m.IsInside((int) rp.X, (int) rp.Y))
 								{
-									if (OnRouteClick != null)
-									{
-										OnRouteClick(m, e);
-									}
+									EventOnRouteClickRaise(e, m);
 									break;
 								}
 
@@ -1841,10 +1883,7 @@ namespace GMap.NET.WindowsForms
 
 								if (m.IsInside(FromLocalToLatLng(e.X, e.Y)))
 								{
-									if (OnPolygonClick != null)
-									{
-										OnPolygonClick(m, e);
-									}
+									EventOnPolygonClickRaise(e, m);
 									break;
 								}
 
@@ -2056,38 +2095,32 @@ namespace GMap.NET.WindowsForms
 										if (m.IsInside((int) rp.X, (int) rp.Y))
 										{
 											if (!m.IsMouseOver)
-											{
+										{
 #if !PocketPC
-												SetCursorHandOnEnter();
+											SetCursorHandOnEnter();
 #endif
-												m.IsMouseOver = true;
-												IsMouseOverRoute = true;
+											m.IsMouseOver = true;
+											IsMouseOverRoute = true;
 
-												if (OnRouteEnter != null)
-												{
-													OnRouteEnter(m);
-												}
+											EventOnRouteEnterRaise(m);
 
-												Invalidate();
-											}
+											Invalidate();
 										}
+									}
 										else
 										{
 											if (m.IsMouseOver)
-											{
-												m.IsMouseOver = false;
-												IsMouseOverRoute = false;
+										{
+											m.IsMouseOver = false;
+											IsMouseOverRoute = false;
 #if !PocketPC
-												RestoreCursorOnLeave();
+											RestoreCursorOnLeave();
 #endif
-												if (OnRouteLeave != null)
-												{
-													OnRouteLeave(m);
-												}
+											EventOnRouteLeaveRaise(m);
 
-												Invalidate();
-											}
+											Invalidate();
 										}
+									}
 
 										#endregion
 									}
@@ -2114,38 +2147,32 @@ namespace GMap.NET.WindowsForms
 #endif
 										{
 											if (!m.IsMouseOver)
-											{
+										{
 #if !PocketPC
-												SetCursorHandOnEnter();
+											SetCursorHandOnEnter();
 #endif
-												m.IsMouseOver = true;
-												IsMouseOverPolygon = true;
+											m.IsMouseOver = true;
+											IsMouseOverPolygon = true;
 
-												if (OnPolygonEnter != null)
-												{
-													OnPolygonEnter(m);
-												}
+											EventOnPolygonEnterRaise(m);
 
-												Invalidate();
-											}
+											Invalidate();
 										}
+									}
 										else
 										{
 											if (m.IsMouseOver)
-											{
-												m.IsMouseOver = false;
-												IsMouseOverPolygon = false;
+										{
+											m.IsMouseOver = false;
+											IsMouseOverPolygon = false;
 #if !PocketPC
-												RestoreCursorOnLeave();
+											RestoreCursorOnLeave();
 #endif
-												if (OnPolygonLeave != null)
-												{
-													OnPolygonLeave(m);
-												}
+											EventOnPolygonLeaveRaise(m);
 
-												Invalidate();
-											}
+											Invalidate();
 										}
+									}
 
 										#endregion
 									}
@@ -2163,18 +2190,57 @@ namespace GMap.NET.WindowsForms
 			}
 		}
 
+#if !PocketPC
+		protected virtual void EventOnMarkerClickRaise(MouseEventArgs e, GMapMarker m)
+		{
+			if (Events[_EventOnMarkerClick] != null)
+				((MarkerClick)Events[_EventOnMarkerClick]).Invoke(m, e);
+		}
+		protected virtual void EventOnPolygonClickRaise(MouseEventArgs e, GMapPolygon m)
+		{
+			if (Events[_EventOnPolygonClick] != null)
+				((PolygonClick)Events[_EventOnPolygonClick]).Invoke(m, e);
+		}
+		protected virtual void EventOnRouteClickRaise(MouseEventArgs e, GMapRoute m)
+		{
+			if (Events[_EventOnRouteClick] != null)
+				((RouteClick)Events[_EventOnRouteClick]).Invoke(m, e);
+		}
+		protected virtual void EventOnRouteEnterRaise(GMapRoute m)
+		{
+			if (Events[_EventOnRouteEnter] != null)
+				((RouteEnter)Events[_EventOnRouteEnter]).Invoke(m);
+		}
+		protected virtual void EventOnRouteLeaveRaise(GMapRoute m)
+		{
+			if (Events[_EventOnRouteLeave] != null)
+				((RouteLeave)Events[_EventOnRouteLeave]).Invoke(m);
+		}
+		protected virtual void EventOnSelectionChangeRaise(bool zoomtofit)
+		{
+			if (Events[_EventOnSelectionChange] != null)
+				((SelectionChange)Events[_EventOnSelectionChange]).Invoke(SelectedArea, zoomtofit);
+		}
+#endif
 		protected virtual void EventOnMarkerEnterRaise(GMapMarker m)
 		{
-			var onMarkerEnter = OnMarkerEnter;
-			if (onMarkerEnter != null)
-				onMarkerEnter(m);
-		}
-
+			if (Events[_EventOnMarkerEnter] != null)
+				((MarkerEnter)Events[_EventOnMarkerEnter]).Invoke(m);
+		}		
 		protected virtual void EventOnMarkerLeaveRaise(GMapMarker m)
 		{
-			var onMarkerLeave = OnMarkerLeave;
-			if (onMarkerLeave != null)
-				onMarkerLeave(m);
+			if (Events[_EventOnMarkerLeave] != null)
+				((MarkerLeave)Events[_EventOnMarkerLeave]).Invoke(m);
+		}		
+		protected virtual void EventOnPolygonEnterRaise(GMapPolygon m)
+		{
+			if (Events[_EventOnPolygonEnter] != null)
+				((PolygonEnter)Events[_EventOnPolygonEnter]).Invoke(m);
+		}
+		protected virtual void EventOnPolygonLeaveRaise(GMapPolygon m)
+		{
+			if (Events[_EventOnPolygonLeave] != null)
+				((PolygonLeave)Events[_EventOnPolygonLeave]).Invoke(m);
 		}
 
 #if !PocketPC
@@ -2916,6 +2982,7 @@ namespace GMap.NET.WindowsForms
 		#region Serialization
 
 		private static readonly BinaryFormatter BinaryFormatter = new BinaryFormatter();
+		
 
 		/// <summary>
 		/// Serializes the overlays.

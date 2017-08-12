@@ -24,12 +24,8 @@ namespace GMap.NET.WindowsForms
 		private readonly GMapRoute[] _deserializedRouteArray;
 		private readonly GMapPolygon[] _deserializedPolygonArray;
 		private readonly ObservableCollectionThreadSafe<GMapRoute> _routes = new ObservableCollectionThreadSafe<GMapRoute>();
-
-		private readonly ObservableCollectionThreadSafe<GMapMarker> _markers =
-			new ObservableCollectionThreadSafe<GMapMarker>();
-
-		private readonly ObservableCollectionThreadSafe<GMapPolygon> _polygons =
-			new ObservableCollectionThreadSafe<GMapPolygon>();
+		private readonly ObservableCollectionThreadSafe<GMapMarker> _markers = new ObservableCollectionThreadSafe<GMapMarker>();
+		private readonly ObservableCollectionThreadSafe<GMapPolygon> _polygons = new ObservableCollectionThreadSafe<GMapPolygon>();
 
 		private void CreateEvents()
 		{
@@ -215,12 +211,10 @@ namespace GMap.NET.WindowsForms
 				if (Control.MarkersEnabled)
 				{
 					// markers
-					//if(m.IsVisible && (m.DisableRegionCheck || Control.Core.currentRegion.Contains(m.LocalPosition.X, m.LocalPosition.Y)))
 					foreach (var m in Markers.Where(m => m.IsVisible || m.DisableRegionCheck))
 						m.OnRender(g);
 
 					// tooltips above
-					//if(m.ToolTip != null && m.IsVisible && Control.Core.currentRegion.Contains(m.LocalPosition.X, m.LocalPosition.Y))
 					foreach (var m in Markers.Where(m => m.ToolTip != null && m.IsVisible)
 						.Where(m => !string.IsNullOrEmpty(m.ToolTipText) &&
 						            (m.ToolTipMode == MarkerTooltipMode.Always ||
@@ -270,9 +264,7 @@ namespace GMap.NET.WindowsForms
 						if (_isVisible)
 						{
 							Control.HoldInvalidation = true;
-							{
-								ForceUpdate();
-							}
+							ForceUpdate();
 							Control.Refresh();
 						}
 						else

@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -14,7 +13,7 @@ namespace GMap.NET
 	/// <summary>
 	/// form helping to prefetch tiles on local db
 	/// </summary>
-	public partial class TilePrefetcher : Form
+	public partial class TilePrefetcher : FormsFramework.Windows.Forms.AdvancedForm
 	{
 		private BackgroundWorker _worker = new BackgroundWorker();
 		private List<GPoint> _list;
