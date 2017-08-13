@@ -86,7 +86,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		{
 			aGraphics.DrawLine(Pens.Black, aItemPointX, aItemPointY, aHint.Left + aHint.Width / 2, aHint.Top + aHint.Height / 2);
 		}
-
 		/// <summary>
 		/// Відмальовує скеттер сторінку при переміщенні хінта
 		/// </summary>
@@ -182,7 +181,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				Control.Update();
 			}
 		}
-
 		private AdvancedHint ItemHintGet()
 		{
 			var hint = new AdvancedHint(Control, false) {Visible = false}; //_Data.ItemHintGet(aItemID);

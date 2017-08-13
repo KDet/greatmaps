@@ -56,10 +56,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// </summary>
 		private const double MAX_DEVIATION_FROM_EXACT_VALUE = 0.01;
 		/// <summary>
-		/// Мінімальна відстань в пікселях між двома сусідніми підписами координатної сітки на одній з осей
-		/// </summary>
-		//private static readonly float MIN_DIST_BTWN_COORD_LABELS= CreateGraphics().MeasureString(SPACE, FONT_COORDINATES).Width * MIN_SPACES_BTWN_COORD_LABELS;
-		/// <summary>
 		/// Ширина в пікселях лінії що сполучає два сусідніх "кружка" в шляху елементу
 		/// </summary>
 		private const float WAY_LINE_WIDTH = 3;
@@ -105,7 +101,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				if (currentPos > aSliceDelta)   //якщо мітка за своєю координатою в пікселях більша за мінімальну можливу
 				{
 					int digitsAfterPoint;
-					var textToPaint = aMeasuresFormatRules.MeasureValueToString(MostPrettyValueNearCurrentGet(currentTotalValue, out digitsAfterPoint), digitsAfterPoint >= 0 ? digitsAfterPoint : 0, aMeasure);  //форматоване значення підпису
+					var textToPaint = aMeasuresFormatRules.MeasureValueToString(aMeasure, MostPrettyValueNearCurrentGet(currentTotalValue, out digitsAfterPoint), digitsAfterPoint >= 0 ? digitsAfterPoint : 0);  //форматоване значення підпису
 					size = aGraphics.MeasureString(textToPaint, FONT_COORDINATES);  //взнаємо розмір підпису в пікселях
 					coords.Add(new Triplet<string, int, SizeF>(textToPaint, currentPos, size)); //додаємо новий підпис в колекцію
 																								//перевірки щоб знайти максимальний розмір підпису зі всіх доданих
@@ -173,7 +169,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				if (currentPos > aSliceDelta)   //якщо мітка за своєю координатою в пікселях більша за мінімальну можливу
 				{
 					int digitsAfterPoint;
-					var textToPaint = aMeasuresFormatRules.MeasureValueToString(MostPrettyValueNearCurrentGet(currentTotalValue, out digitsAfterPoint), gradPow < 0 ? -gradPow : 0, aMeasure);    //форматоване значення підпису
+					var textToPaint = aMeasuresFormatRules.MeasureValueToString(aMeasure, MostPrettyValueNearCurrentGet(currentTotalValue, out digitsAfterPoint), gradPow < 0 ? -gradPow : 0);    //форматоване значення підпису
 					size = aGraphics.MeasureString(textToPaint, FONT_COORDINATES);  //взнаємо розмір підпису в пікселях
 					coords.Add(new Triplet<string, int, SizeF>(textToPaint, currentPos, size)); //додаємо новий підпис в колекцію
 																								//перевірки щоб знайти максимальний розмір підпису зі всіх доданих
@@ -417,27 +413,13 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			Tracer.ExitMethod("OlapScatter.CoordinatesDraw()");
 			return aYAxisLabelsVertical;
 		}
-		/// <summary>
-		/// Встановлюємо потрібну якість відмальовки для <paramref name="aGraphics"/>
-		/// </summary>
-		public static Graphics HighQualitySet(this Graphics aGraphics)
+		public static void DrawArrowTo(this Graphics aGraphics, Pen aPen, RectangleF aFrom, RectangleF aTo)
 		{
-			aGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-			aGraphics.CompositingQuality = CompositingQuality.HighQuality;
-			aGraphics.SmoothingMode = SmoothingMode.AntiAlias;
-			return aGraphics;
-		}
-		public static void DrawRectangle(this Graphics graphics, Pen pen, RectangleF rec)
-		{
-			graphics.DrawRectangle(pen, rec.X, rec.Y, rec.Width, rec.Height);
-		}
-		public static void DrawArrowTo(this Graphics graphics, Pen pen, RectangleF from, RectangleF to)
-		{
-			var x1 = from.X;
-			var y1 = from.Y;
-			var x2 = to.X;
-			var y2 = to.Y;
-			var s = Math.Min(to.Size.Height, to.Size.Width);
+			var x1 = aFrom.X;
+			var y1 = aFrom.Y;
+			var x2 = aTo.X;
+			var y2 = aTo.Y;
+			var s = Math.Min(aTo.Size.Height, aTo.Size.Width);
 			var d = (float)Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 			if (d > 0) //якщо центри не співпадають
 			{
@@ -449,19 +431,33 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				y2 -= y;
 				//pen.Color = ItemHintHighlightColorGet(_Data.Pages[i][aItemID]);
 				if (Math.Sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)) < WAY_LINE_WIDTH)
-					pen.EndCap = LineCap.Flat;
+					aPen.EndCap = LineCap.Flat;
 				else if (!SystemUtils.IsUnderWine)
-					pen.CustomEndCap = new AdjustableArrowCap(WAY_LINE_WIDTH, WAY_LINE_WIDTH, true);
+					aPen.CustomEndCap = new AdjustableArrowCap(WAY_LINE_WIDTH, WAY_LINE_WIDTH, true);
 				else
-					pen.EndCap = LineCap.Flat;
-				graphics.DrawLine(pen, x1, y1, x2, y2);
+					aPen.EndCap = LineCap.Flat;
+				aGraphics.DrawLine(aPen, x1, y1, x2, y2);
 			}
 		}
-		public static void DrawStatisticString(this Graphics aGraphics, int actual, int expected)
+		public static void DrawRectangle(this Graphics aGraphics, Pen aPen, RectangleF aRectangle)
+		{
+			aGraphics.DrawRectangle(aPen, aRectangle.X, aRectangle.Y, aRectangle.Width, aRectangle.Height);
+		}
+		public static void DrawStatisticString(this Graphics aGraphics, int aActual, int aExpected)
 		{
 			using (var font = FontUtils.FontCreate("Verdana", 8))
 			using (var brush = new SolidBrush(Color.FromArgb(100, Color.Black)))
-				aGraphics.DrawString(string.Format("{0}({1})", actual, expected), font, brush, XSLICE_DELTA + 2, 3);
+				aGraphics.DrawString(string.Format("{0}({1})", aActual, aExpected), font, brush, XSLICE_DELTA + 2, 3);
+		}
+		/// <summary>
+		/// Встановлюємо потрібну якість відмальовки для <paramref name="aGraphics"/>
+		/// </summary>
+		public static Graphics HighQualitySet(this Graphics aGraphics)
+		{
+			aGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+			aGraphics.CompositingQuality = CompositingQuality.HighQuality;
+			aGraphics.SmoothingMode = SmoothingMode.AntiAlias;
+			return aGraphics;
 		}
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -8,7 +7,6 @@ using FrameworkBase.Utils;
 using GMap.NET;
 using OlapFormsFramework.Windows.Forms.Grid.Formatting;
 using OlapFramework.Data;
-using OlapFramework.Olap.Metadata;
 
 namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 {
@@ -23,52 +21,27 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		private const string OlapScatterLabelNull = "OlapScatter_MeasureNullString";
 		#endregion
 
-		/// <summary>
-		/// Масив даних.
-		/// Перший індекс - номер сторінки. Другий індекс - номер елементу.
-		/// </summary>
-		public OlapMapCircleMarker[][] Pages { get; private set; }
-
-		public OlapMapCircleMarker this[int page, int item]
-		{
-			get { return Pages[page][item]; }
-			 
-		}
-
-		public Assembly ResourceAssembly { get; set; }
-
-
-		public MapStoryboard(OlapScatterFormsData data, FormatRulesMeasures measuresFormatRules)
-		{
-			ResourceAssembly = typeof (MapStoryboard).Assembly;
-			Pages = data.Pages.Select((items, i) => items?.Select(
-									  (item,j) => ToMarker(data, measuresFormatRules, item, i, j, ResourceAssembly)).ToArray()).ToArray();
-		}
-
 		private static OlapMapCircleMarker ToMarker(
-			OlapScatterFormsData data, 
-			FormatRulesMeasures measuresFormatRules, 
-			IMarkerData item, 
-			int page, 
-			int pos, 
+			OlapScatterFormsData aData, 
+			FormatRulesMeasures aFormatRules, 
+			IMarkerData aItem, 
+			int aPageID, 
+			int aItemID, 
 			Assembly aResourceAssembly)
 		{
-			if (item == null)
+			if (aItem == null)
 				return null;
-			var marker = new OlapMapCircleMarker(new PointLatLng(item.Latitude, item.Longitude));
-			marker.PageID = page;
-			marker.ItemID = pos;
-			marker.IsVisible = item.CanShow; //TODO: check all canShow
+			var marker = new OlapMapCircleMarker(new PointLatLng(aItem.Latitude, aItem.Longitude), aItem.CanShow);//TODO: check all canShow
+			marker.PageID = aPageID;
+			marker.ItemID = aItemID;
 			marker.IsHighlighted = false;
-			marker.MarkerColor = item.Color;
-			marker.Size = new SizeF(item.Size, item.Size);
-			marker.IsInterpolated = item.IsInterpolated;
-			marker.ToolTipText = HintConstruct(data, measuresFormatRules, item, page, pos, true, true, aResourceAssembly);
-			marker.Tag = item;
+			marker.MarkerColor = aItem.Color;
+			marker.Size = new SizeF(aItem.Size, aItem.Size);
+			marker.IsInterpolated = aItem.IsInterpolated;
+			marker.ToolTipText = HintConstruct(aData, aFormatRules, aItem, aPageID, aItemID, true, true, aResourceAssembly);
+			marker.Tag = aItem;
 			return marker;
 		}
-
-
 		/// <summary>
 		/// Генерує текст хінта для заданого елементу
 		/// </summary>
@@ -77,50 +50,75 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <param name="aAddItemID">Вказує чи додавати до хінта інформацію про елемент</param>
 		/// <returns>Повертає Caption для хінта</returns>
 		private static string HintConstruct(
-			OlapScatterFormsData data, 
-			FormatRulesMeasures measuresFormatRules, 
-			IMarkerData item, 
-			int aPageId, 
-			int aItemId, 
+			OlapScatterFormsData aData, 
+			FormatRulesMeasures aFormatRules, 
+			IMarkerData aItem, 
+			int aPageID, 
+			int aItemID, 
 			bool aAddPageCaption, 
 			bool aAddItemID, 
-			Assembly resourceAssembly)
+			Assembly aResourceAssembly)
 		{
-			if (item == null)
+			if (aItem == null)
 				return string.Empty;
 			var sb = new StringBuilder();
-			if (aAddPageCaption && data.PagesPresent)
-				sb.AppendLine(data.PagesMemberItems[aPageId].Caption);
+			if (aAddPageCaption && aData.PagesPresent)
+				sb.AppendLine(aData.PagesMemberItems[aPageID].Caption);
 			if (aAddItemID)
-				foreach (var mi in data.ItemsMemberItems[aItemId])
+				foreach (var mi in aData.ItemsMemberItems[aItemID])
 					sb.AppendLine(mi.Caption);
-			int i, k = 0;
-			for (i = 0; i < OlapScatterDataItem.MEASURES_COUNT; ++i)   //проходимось по всіх мірах
+			for (int i = 0, k = 0; i < OlapScatterDataItem.MEASURES_COUNT; ++i)   //проходимось по всіх мірах
 			{
 				//якщо міра втягнута і значення не може бути відображене безпосередньо біля міри і значення для цієї міри ще не було додано
-				if (data.Measures[i] != null
-					&& !item.CanShow //_hints[i].CanShow ??????
-					&& data.Measures.FindIndex(obj => obj != null && obj.ID == data.Measures[i].ID) == i)
+				if (aData.Measures[i] != null
+					&& !aItem.CanShow //_hints[i].CanShow ??????
+					&& aData.Measures.FindIndex(obj => obj != null && obj.ID == aData.Measures[i].ID) == i)
 				{
 					//додаємо Caption і значення міри
-					sb.Append(data.Measures[i].Caption);
+					sb.Append(aData.Measures[i].Caption);
 					sb.Append(": ");
-					if (item.Measures[k].ValueType == MeasureValueType.mvtError)
+					if (aItem.Measures[k].ValueType == MeasureValueType.mvtError)
 						sb.AppendLine("#ERR");
-					else if (item.Measures[k].ValueType == MeasureValueType.mvtNull)
-						sb.AppendLine(ResourceUtils.StringGet(OlapScatterLabelNull, resourceAssembly));
-					else
-						if (item.MeasureInterpolatedGet(k))
+					else if (aItem.Measures[k].ValueType == MeasureValueType.mvtNull)
+						sb.AppendLine(ResourceUtils.StringGet(OlapScatterLabelNull, aResourceAssembly));
+					else if (aItem.MeasureInterpolatedGet(k))
 					{
 						sb.Append(InterpolationChar);
-						sb.AppendLine(measuresFormatRules.MeasureValueToString(item.Measures[k].NumericValue, 2, data.Measures[i]));
+						sb.AppendLine(aFormatRules.MeasureValueToString(aData.Measures[i], aItem.Measures[k].NumericValue, 2));
 					}
 					else
-						sb.AppendLine(item.Measures[k].FormattedValue);
+						sb.AppendLine(aItem.Measures[k].FormattedValue);
 				}
 				++k;
 			}
 			return sb.ToString();
 		}
+
+		public MapStoryboard(
+			OlapScatterFormsData aData,
+			FormatRulesMeasures aFormatRules)
+		{
+			if (aData == null)
+				throw new ArgumentNullException(nameof(aData));
+			if (aFormatRules == null)
+				throw new ArgumentNullException(nameof(aFormatRules));
+
+			ResourceAssembly = typeof(MapStoryboard).Assembly;
+			Pages = aData.Pages?.Select((items, i) => items?.Select(
+										(item, j) => ToMarker(aData, aFormatRules, item, i, j, ResourceAssembly)).ToArray()).ToArray()
+							   ?? new OlapMapCircleMarker[0][];
+		}
+
+		/// <summary>
+		/// Масив даних.
+		/// Перший індекс - номер сторінки. Другий індекс - номер елементу.
+		/// </summary>
+		public OlapMapCircleMarker[][] Pages { get; private set; }
+		public Assembly ResourceAssembly { get; set; }
+
+		public OlapMapCircleMarker this[int page, int item]
+		{
+			get { return Pages[page][item]; }
+		}   
 	}
 }

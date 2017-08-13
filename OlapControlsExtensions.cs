@@ -1,50 +1,48 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using DevExpress.Skins;
 using FormsFramework.Windows.Forms;
-using FrameworkBase.Exceptions;
-using FrameworkBase.Log;
 using OlapFormsFramework.Utils;
 using OlapFormsFramework.Windows.Forms.Grid.Formatting;
-using OlapFramework.Data;
 using OlapFramework.Olap.Metadata;
 
 namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 {
 	public static class OlapControlsExtensions
 	{
+		public static Color Interpolate(this Color aColor, 
+			Color aTo, 
+			float aCoefficient = 1, 
+			int aAlpha = 255)
+		{
+			var cr = (int)(aColor.R + (aTo.R - aColor.R) * aCoefficient);
+			var cg = (int)(aColor.G + (aTo.G - aColor.G) * aCoefficient);
+			var cb = (int)(aColor.B + (aTo.B - aColor.B) * aCoefficient);
+			return Color.FromArgb(aAlpha, cr, cg, cb);
+		}
+		public static float Interpolate(this float aValue, 
+			float aTo, 
+			float aCoefficient = 1)
+		{
+			return aValue + (aTo - aValue) * aCoefficient;
+		}
+		public static Color ReplaceColor(this Color aColor, 
+			Color aWhich, 
+			Color aTo)
+        {
+            //return color == Color.White ? Color.LightGray : color;
+            return aColor == aWhich ? aTo : aColor;
+        }
 		public static Color SkinBackColorGet(this ISkinProvider aLookAndFeel)
 		{
 			var skin = CommonSkins.GetSkin(aLookAndFeel);
 			return skin.Colors["Control"];
 		}
-        public static Color ReplaceColor(this Color color, Color which, Color to)
-        {
-            //return color == Color.White ? Color.LightGray : color;
-            return color == which ? to : color;
-        }
-		public static PointF Offset(this PointF pointF, float x, float y)
+		public static PointF Offset(this PointF aPointF, 
+			float aX, 
+			float aY)
 		{
-			return new PointF(pointF.X + x, pointF.Y + y);
-		}
-		public static Color Interpolate(this Color color, Color to, float coefficient = 1, int alpha=255)
-	    {
-            var cr = (int)(color.R + (to.R - color.R) * coefficient);
-            var cg = (int)(color.G + (to.G - color.G) * coefficient);
-            var cb = (int)(color.B + (to.B - color.B) * coefficient);
-	        return Color.FromArgb(alpha, cr, cg, cb);
-	    }
-	    public static float Interpolate(this float value, float to, float coefficient = 1)
-        {
-            return value + (to - value) * coefficient;
-        }
-		public static void HintDismiss(this AdvancedHint aHint)
-		{
-			if (aHint == null)
-				throw new ArgumentNullException(nameof(aHint));
-			aHint.Visible = false;
-			aHint.Highlighted = false;
+			return new PointF(aPointF.X + aX, aPointF.Y + aY);
 		}
 
 		/// <summary>
@@ -54,7 +52,10 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <param name="aDigitsAfterPoint">Кількість точок після коми</param>
 		/// <param name="aMeasure">Міра, значення якої передано в параметрі <paramref name="aValue"/>.</param>
 		/// <returns>Повертає відформатоване значення <paramref name="aValue"/> відносно параметрів <paramref name="aDigitsAfterPoint"/> і <paramref name="aMeasure"/>.</returns>
-		public static string MeasureValueToString(this FormatRulesMeasures aRules, double aValue, int aDigitsAfterPoint, OlapMeasureObjectBase aMeasure)
+		public static string MeasureValueToString(this FormatRulesMeasures aRules, 
+			OlapMeasureObjectBase aMeasure, 
+			double aValue, 
+			int aDigitsAfterPoint)
 		{
 			var format = FormattingUtils.FormatSettingsGet(aRules, aMeasure.ID);
 			if (format != null

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.Serialization;
 using System.Threading;
 using GMap.NET;
 using GMap.NET.WindowsForms;
@@ -29,8 +30,6 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		private int _borderAlpha = 255;
 		//unknowledge url https://msdn.microsoft.com/ru-ru/library/system.threading.lazythreadsafetymode(v=vs.110).aspx
 		private readonly Lazy<OlapMapToolTip> _toolTipLazy;
-		//private static readonly object _lockerObject = new object();
-
 
 		// Малює елемент по aGraphics
 		private void ItemDraw(Graphics aGraphics)
@@ -49,7 +48,7 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 		/// <summary>
 		/// Підсвічує елемент відмальовуючи його разом з підсвіткою по <paramref name="aGraphics"/>
 		/// </summary>
-		private void ItemHighlight(Graphics aGraphics, Rectangle? itemsArea)
+		private void ItemHighlight(Graphics aGraphics, Rectangle? aItemsArea)
 		{
 			if (!IsVisible)
 				return;
@@ -64,8 +63,8 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			{
 				circle.AddEllipse(bounds);
 				var oldClip = aGraphics.Clip;
-				if (itemsArea != null)
-					aGraphics.IntersectClip(itemsArea.Value);
+				if (aItemsArea != null)
+					aGraphics.IntersectClip(aItemsArea.Value);
                 using (var commonClip = aGraphics.Clip)
 				{
 					using (var circleClip = new Region(circle))
@@ -88,11 +87,11 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 				aGraphics.Clip = oldClip;
 			}
 		}
-		private static OlapMapToolTip CreateToolTip(OlapMapCircleMarker marker)
+		private static OlapMapToolTip CreateToolTip(OlapMapCircleMarker aMarker)
 		{
 			//If tooltip is manually set up, return tooltip, else generate new one and return it
-			var res = marker._toolTip as OlapMapToolTip ?? new OlapMapToolTip(marker);
-			marker._toolTip = res;
+			var res = aMarker._toolTip as OlapMapToolTip ?? new OlapMapToolTip(aMarker);
+			aMarker._toolTip = res;
 			return res;
 		}
 
@@ -105,18 +104,18 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 			get { return Overlay?.Control; }
 		}
 
-
-		public OlapMapCircleMarker(PointLatLng point, bool visible = true)
-			: base(point)
+		public OlapMapCircleMarker(
+			PointLatLng aPoint, 
+			bool aVisible = true)
+			: base(aPoint)
 		{
 			MarkerColor = COLOR_DEFAULT_MARKER;
 			Size = new SizeF(ITEM_HIGHLIGHT_WIDTH, ITEM_HIGHLIGHT_WIDTH);
 			IsInterpolated = false;
-			Visible = visible;
+			Visible = aVisible;
 			_toolTipMode = MarkerTooltipMode.Always;
 			_toolTipLazy = new Lazy<OlapMapToolTip>(() => CreateToolTip(this), LazyThreadSafetyMode.PublicationOnly);
 		}
-
 
 		public override void OnRender(Graphics aGraphics)
 		{
@@ -126,6 +125,8 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 	            ItemDraw(aGraphics);
 	    }
 
+		public int PageID { get; set; }
+		public int ItemID { get; set; }
 
 		public bool IsHighlighted { get; set; }
 	    public int BorderAlpha
@@ -135,42 +136,69 @@ namespace OlapFormsFramework.Windows.Forms.Grid.Scatter
 	    }
 	    public Color MarkerColor { get; set; }
         public bool IsInterpolated { get; set; }
+
 		public override string ToolTipText
 		{
 			get { return _toolTipText; }
-			set
-			{
-				//lock (_lockerObject)
-				//{
-				//	if (_toolTip == null && !string.IsNullOrEmpty(value))
-				//		_toolTip = OlapToolTip;
-				//}				
-				_toolTipText = value;
-			}
+			set { _toolTipText = value; }
 		}
 		public OlapMapToolTip OlapToolTip
 		{
-			get { return /*_toolTip as OlapMapToolTip ??*/ _toolTipLazy.Value; }
-		}
+			get { return _toolTipLazy.Value; }
+		}	 
 		//public override GMapToolTip ToolTip
 		//{
 		//	get { return _toolTipLazy.IsValueCreated ? _toolTipLazy.Value : null; }
 		//}
-		
-
 		public new OlapMapOverlay Overlay
 		{
 			get { return (OlapMapOverlay)_overlay; }
 			private set { _overlay = value; }
 		}
-
 		public new IMarkerData Tag
 		{
-			get { return (IMarkerData) base.Tag; }
+			get { return base.Tag as IMarkerData; }
 			set { base.Tag = value; }
 		}
 
-		public int PageID { get; set; }
-		public int ItemID { get; set; }
+#if !PocketPC
+		#region ISerializable Members
+		/// <summary>
+		/// Populates a <see cref="T:System.Runtime.Serialization.SerializationInfo"/> with the data needed to serialize the target object.
+		/// </summary>
+		/// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> to populate with data.</param>
+		/// <param name="context">The destination (see <see cref="T:System.Runtime.Serialization.StreamingContext"/>) for this serialization.</param>
+		/// <exception cref="T:System.Security.SecurityException">
+		/// The caller does not have the required permission.
+		/// </exception>
+		public override void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			base.GetObjectData(info, context);
+			info.AddValue(nameof(PageID), PageID);
+			info.AddValue(nameof(ItemID), ItemID);
+			info.AddValue(nameof(IsHighlighted), IsHighlighted);
+			info.AddValue(nameof(BorderAlpha), BorderAlpha);
+			info.AddValue(nameof(MarkerColor), MarkerColor);
+			info.AddValue(nameof(IsInterpolated), IsInterpolated);
+
+			//info.AddValue("Tag", Tag); //TODO: implement tag
+			info.AddValue("ToolTip", ToolTip);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="GMapMarker"/> class.
+		/// </summary>
+		/// <param name="info">The info.</param>
+		/// <param name="context">The context.</param>
+		protected OlapMapCircleMarker(SerializationInfo info, StreamingContext context) : base(info, context)
+		{
+			//Tag = Extensions.GetValue<IMarkerData>(info, "Tag", null); //TODO: implement tag		
+			//_toolTip = Extensions.GetValue<GMapToolTip>(info, "ToolTip", null); //TODO: override 
+			//if (ToolTip != null)
+			//	ToolTip.Marker = this;
+			//ToolTipText = info.GetString("ToolTipText");
+		}
+		#endregion
+#endif
 	}
 }
